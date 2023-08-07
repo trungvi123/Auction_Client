@@ -1,0 +1,56 @@
+/* custom modal */
+.myModal.offcanvas.offcanvas-top {
+    top: 10%;
+    left: 25%;
+    width: 50%;
+    height: max-content;
+    max-height: 100%;
+    border-bottom: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
+
+}
+
+.login__head {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+}
+
+.login__close {
+    position: absolute;
+    content: '';
+    width: 40px;
+    height: 40px;
+    top: 0;
+    right: 0;
+    background: url('../../asset/images/icon/close2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.login__logo {
+    width: 30%;
+}
+
+.login__text {
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.login__text a {
+    font-weight: 600;
+}
+
+.forgot__link {
+    font-weight: 500;
+    margin: 10px 0;
+    display: block;
+    width: 150px;
+}
+
+.forgot__link:hover {
+    color: var(--primary-color);
+}

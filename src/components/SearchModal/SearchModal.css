@@ -1,0 +1,46 @@
+.searchModal.offcanvas.offcanvas-top {
+    top: 25%;
+    left: 12.5%;
+    width: 75%;
+    height: 20vh !important;
+    max-height: 100%;
+    border-bottom: none;
+    
+} 
+
+.searchModal.offcanvas {
+    color: #ffff;
+    background-color: transparent;
+}
+
+.search-input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #ffff;
+    border-bottom: 1px solid #ffff;
+    width: 100%;
+}
+
+.search-input::placeholder { 
+    color: #eee;
+}
+
+/* .btn-close:hover {
+    color: #ffff !important
+} */
+
+.searchModal .btn-close {
+    width: 2em;
+    height: 2em;
+    background: transparent url('../../asset/images/icon/close.png') center/2.5rem auto no-repeat;
+}
+
+.searchModal .btn-close:hover {
+    background: transparent url('../../asset/images/icon/close2.png') center/2.5rem auto no-repeat;
+
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
