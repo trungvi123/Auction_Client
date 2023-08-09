@@ -61,9 +61,31 @@
 }
 
 .nav-link:hover + .head-menu-child {
-  transform: translateY(0);
+  transform: translateY(10px);
   opacity: 1;
   visibility: visible;
+}
+
+
+.user__cirlce .head-menu-child {
+  left: unset;
+  right: 0;
+}
+
+.user__cirlce:hover .head-menu-child {
+  transform: translateY(10px);
+  opacity: 1;
+  visibility: visible;
+}
+
+.head-menu-child-user::before {
+  content: '';
+  background-color: transparent;
+  height: 25px;
+  width: 100%;
+  position: absolute;
+  top: -10px;
+  left: 0;
 }
 
 .head-menu-child:hover {
@@ -106,6 +128,7 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  position: relative;
 }
 .search__icon {
   font-size: 22px;

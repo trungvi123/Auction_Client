@@ -1,0 +1,39 @@
+.side-bar__bg {
+    height: 100vh;
+}
+
+.forgot-main {
+    padding: 5%;
+}
+
+.forgot-content {
+    margin-top: 100px;
+}
+
+.forgot-form {
+    margin-top: 30px;
+}
+
+.forgot-logo > img {
+    max-width: 100%;
+    width: 45%;
+}
+
+.forgot-main .text-top{
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 0;
+    margin-top: 22px;
+}
+.forgot-main .text-bot{
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--gray-color);
+}
+
+.email-lable {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-color);
+}

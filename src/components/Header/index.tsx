@@ -1,24 +1,45 @@
 import { Container } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
-import { BiChevronDown, BiSearch } from "react-icons/bi";
+import {
+  BiCheckShield,
+  BiChevronDown,
+  BiLogOut,
+  BiSearch,
+  BiUser,
+} from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+
 import { logo } from "../../asset/images";
 import CurrentTime from "../CurrentTime";
-import { useDispatch } from "react-redux";
-import { setShow } from "../../redux/myModalSlice";
+import { setShow, setStatus } from "../../redux/myModalSlice";
 import { setShowSearch } from "../../redux/searchModalSlice";
 import "./Header.css";
+import { IRootState } from "../../interface";
+import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const lastName = useSelector((e: IRootState) => e.auth.lastName);
 
   const openMyModal = () => {
+    dispatch(setStatus("login"));
     dispatch(setShow());
   };
-
+  const handleChangePass = () => {
+    dispatch(setStatus("changePass"));
+    dispatch(setShow());
+  };
   const openSearchModal = () => {
     dispatch(setShowSearch());
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    dispatch(setEmail(""));
+    dispatch(setLastName(""));
+    dispatch(setIdUser(""));
   };
 
   return (
@@ -119,10 +140,31 @@ const Header = () => {
             <div onClick={openSearchModal} className="search__circle">
               <BiSearch className="search__icon"></BiSearch>
             </div>
-
-            <div onClick={openMyModal} className="btn-11 head__btn__login">
-              Đăng Nhập
-            </div>
+            {!lastName ? (
+              <div onClick={openMyModal} className="btn-11 head__btn__login">
+                Đăng Nhập
+              </div>
+            ) : (
+              <div className="search__circle user__cirlce">
+                <BiUser className="search__icon"></BiUser>
+                <div className="head-menu-child head-menu-child-user">
+                  <h6>{lastName}</h6>
+                  <ul>
+                    <li
+                      onClick={handleChangePass}
+                      className="head-link d-flex align-items-center"
+                    >
+                      <BiCheckShield size={18}></BiCheckShield>
+                      <span className="px-2 d-block">Đổi mật khẩu</span>
+                    </li>
+                    <li onClick={handleLogout} className="head-link d-flex align-items-center">
+                      <BiLogOut size={18}></BiLogOut> 
+                      <span className="px-2 d-block">Đăng xuất</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </Container>
       </Navbar>

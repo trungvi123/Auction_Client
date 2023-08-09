@@ -16,7 +16,7 @@ const CurrentTime = () => {
     const y = date.getFullYear();
 
 
-    var dn: string[] = new Array(
+    var dn: string[] = [
         "Chủ nhật",
         "Thứ 2",
         "Thứ 3",
@@ -24,7 +24,7 @@ const CurrentTime = () => {
         "Thứ 5",
         "Thứ 6",
         "Thứ 7"
-      );
+    ];
       var date_pro =
         dn[d] +
         ", " +

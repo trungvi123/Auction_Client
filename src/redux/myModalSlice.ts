@@ -1,21 +1,25 @@
-import {createSlice} from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    show: false
-}
+  show: false,
+  status: 'login',
+};
 
 const myModalSlice = createSlice({
-    name:'myModal',
-    initialState,
-    reducers:{
-        setShow:(state)=>{
-            state.show = true
-        },
-        setClose:(state)=>{
-            state.show = false
-        }
-    }
-})
+  name: "myModal",
+  initialState,
+  reducers: {
+    setShow: (state) => {
+      state.show = true;
+    },
+    setClose: (state) => {
+      state.show = false;
+    },
+    setStatus: (state, action) => {
+      state.status = action.payload;
+    },
+  },
+});
 
-export const {setShow,setClose} = myModalSlice.actions
-export default myModalSlice.reducer
+export const { setShow, setClose, setStatus } = myModalSlice.actions;
+export default myModalSlice.reducer;

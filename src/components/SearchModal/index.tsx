@@ -1,6 +1,3 @@
-import React from 'react'
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../interface';

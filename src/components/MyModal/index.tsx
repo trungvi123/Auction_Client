@@ -1,6 +1,4 @@
-import React from "react";
-import { useState } from "react";
-import Button from "react-bootstrap/Button";
+
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../interface";
@@ -44,10 +42,8 @@ function MyModal({
               <img className="login__logo" src={logo} alt="" />
               <div className="login__close" onClick={handleClose}></div>
             </div>
-            <p className="login__text">
-              Bạn chưa có tài khoản? <Link to={'/register'}>Đăng Ký Ngay</Link>
-            </p>
-            <FormLogin></FormLogin>
+            
+            <FormLogin status={myModal.status}></FormLogin>
           </div>
         </Offcanvas.Body>
       </Offcanvas>

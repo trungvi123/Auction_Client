@@ -2,7 +2,8 @@ const routes = {
     home:'/',
     news:'/news',
     management:'/management',
-    register:'/register'
+    register:'/register',
+    forgotPass:'/forgotPass'
 
 }
 

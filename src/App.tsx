@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { publicRoute, privateRoute } from "./config/configRoute";
 import DefaultLayout from "./layouts/DefaultLayout";
+import SecondLayout from "./layouts/SecondLayout";
 import { Fragment } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,8 +15,8 @@ function App() {
       <Routes>
         {publicRoute.map((item, index) => {
           let Layout: any = DefaultLayout;
-          if (item.layout) {
-            Layout = item.layout;
+          if (item.layout === "SecondLayout") {
+            Layout = SecondLayout;
           } else if (item.layout === null) {
             Layout = Fragment;
           }
