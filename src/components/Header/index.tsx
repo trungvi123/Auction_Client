@@ -7,7 +7,7 @@ import {
   BiSearch,
   BiUser,
 } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,13 +15,16 @@ import { logo } from "../../asset/images";
 import CurrentTime from "../CurrentTime";
 import { setShow, setStatus } from "../../redux/myModalSlice";
 import { setShowSearch } from "../../redux/searchModalSlice";
-import "./Header.css";
 import { IRootState } from "../../interface";
 import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
+import "./Header.css";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
+  const next = useNavigate()
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const openMyModal = () => {
     dispatch(setStatus("login"));
@@ -42,8 +45,27 @@ const Header = () => {
     dispatch(setIdUser(""));
   };
 
+  const handleScroll = () => {
+    // Kiểm tra vị trí cuộn chuột để xác định có thêm class hay không
+    if (window.scrollY > 30) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    // Thêm sự kiện lắng nghe sự kiện cuộn chuột
+    window.addEventListener("scroll", handleScroll);
+
+    // Xóa sự kiện khi component unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div>
+    <div className={`header ${isScrolled ? "isScrolled" : ""}`}>
       <Navbar>
         <Container>
           <Navbar.Brand as={Link} to="/">
@@ -148,8 +170,22 @@ const Header = () => {
               <div className="search__circle user__cirlce">
                 <BiUser className="search__icon"></BiUser>
                 <div className="head-menu-child head-menu-child-user">
-                  <h6>{lastName}</h6>
+                  <h6 className="lastName">{lastName}</h6>
                   <ul>
+                    <li
+                      onClick={()=>next('/create-auction')}
+                      className="head-link d-flex align-items-center"
+                    >
+                      <BiCheckShield size={18}></BiCheckShield>
+                      <span className="px-2 d-block">Tạo cuộc đấu giá</span>
+                    </li>
+                    <li
+                      onClick={()=>next('/management-auction')}
+                      className="head-link d-flex align-items-center"
+                    >
+                      <BiCheckShield size={18}></BiCheckShield>
+                      <span className="px-2 d-block">Cuộc đấu giá đã tạo</span>
+                    </li>
                     <li
                       onClick={handleChangePass}
                       className="head-link d-flex align-items-center"
@@ -157,8 +193,11 @@ const Header = () => {
                       <BiCheckShield size={18}></BiCheckShield>
                       <span className="px-2 d-block">Đổi mật khẩu</span>
                     </li>
-                    <li onClick={handleLogout} className="head-link d-flex align-items-center">
-                      <BiLogOut size={18}></BiLogOut> 
+                    <li
+                      onClick={handleLogout}
+                      className="head-link d-flex align-items-center"
+                    >
+                      <BiLogOut size={18}></BiLogOut>
                       <span className="px-2 d-block">Đăng xuất</span>
                     </li>
                   </ul>

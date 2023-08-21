@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MyModal from "./components/MyModal";
 import SearchModal from "./components/SearchModal";
 import { Toaster } from "react-hot-toast";
+import ThirdLayout from "./layouts/ThirdLayout";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
           let Layout: any = DefaultLayout;
           if (item.layout === "SecondLayout") {
             Layout = SecondLayout;
+          }else if(item.layout === "ThirdLayout"){
+            Layout = ThirdLayout;
           } else if (item.layout === null) {
             Layout = Fragment;
           }

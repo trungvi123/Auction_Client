@@ -1,0 +1,35 @@
+.breadcrumbs-h1 {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+}
+
+.breadcrumbs-span {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gray-color);
+}
+
+.breadcrumbs-span.active {
+    font-weight: bold;
+}
+
+.breadcrumbs-box {
+    padding: 30px 0;
+}
+
+.breadcrumbs {
+  border-bottom: 1px solid #E0E0E0;
+  position: relative;
+
+}
+
+.breadcrumbs-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    object-fit: cover;
+    z-index: -1;
+    width: 100%;
+    max-height: 100%;
+}

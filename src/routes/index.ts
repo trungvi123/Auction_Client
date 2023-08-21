@@ -3,7 +3,11 @@ const routes = {
     news:'/news',
     management:'/management',
     register:'/register',
-    forgotPass:'/forgotPass'
+    forgotPass:'/forgotPass',
+    productDetail:'/chi-tiet-dau-gia/:id',
+    createAuction : '/create-auction',
+    managementAuction : '/management-auction'
+
 
 }
 

@@ -35,17 +35,14 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (
-      error.response &&
-      (error.response.status === 400 )
-    ) {
+    if (error.response && error.response.status === 400) {
       // Xử lý lỗi ở đây mà không cần thông báo đỏ lên màn hình
       toast.error(error.response.data.errors.msg);
     }
-    if(error.response.status === 422){
+    if (error.response && error.response.status === 422) {
       toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");
     }
-    if (error.response.status === 500) {
+    if (error.response && error.response.status === 500) {
       toast.error("Lỗi hệ thống!!!");
     }
   }
@@ -60,17 +57,14 @@ axiosClientJWT.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (
-      error.response &&
-      (error.response.status === 400 )
-    ) {
+    if (error.response && error.response.status === 400) {
       // Xử lý lỗi ở đây mà không cần thông báo đỏ lên màn hình
       toast.error(error.response.data.errors.msg);
     }
-    if(error.response.status === 422){
-        toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");
-      }
-    if (error.response.status === 500) {
+    if (error.response && error.response.status === 422) {
+      toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");
+    }
+    if (error.response && error.response.status === 500) {
       toast.error("Lỗi hệ thống!!!");
     }
   }

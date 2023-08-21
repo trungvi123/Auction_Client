@@ -9,6 +9,8 @@ html {
   --second-color: #121212;
 
   --gray-color: #787878;
+  --border-color:#E0E0E0;
+  --gray-text:#696969;
 
   --font-size-14: 14px;
   --font-size-16: 16px;
@@ -17,12 +19,12 @@ html {
 body {
   font-family: "Montserrat", sans-serif !important;
   /* background-color: white; */
+  height: 10000px;
 }
 
 body ul {
   list-style: none;
   padding-left: 0;
-
   margin-bottom: 0;
 }
 
@@ -31,10 +33,14 @@ body a {
   color: unset;
 }
 
+
+/* .image-gallery-image {
+  object-fit: cover;
+} */
+
 /* btn */
 
-
-.btn-11{
+.btn-11 {
   position: relative;
   display: block;
   overflow: hidden;
@@ -116,13 +122,12 @@ body a {
   }
 }
 
-
-.btn-11__content{
+.btn-11__content {
   position: absolute;
-  content: '';
+  content: "";
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   z-index: 2;
 }
 

@@ -47,8 +47,6 @@ const CurrentTime = () => {
 
       const newTimeString = formatDate(now);
       setTime(newTimeString);
-
-      
     }, 1000);
 
     return () => {

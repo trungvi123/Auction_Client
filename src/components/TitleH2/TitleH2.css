@@ -1,0 +1,14 @@
+.title-content {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.title-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 60px 0;
+
+}

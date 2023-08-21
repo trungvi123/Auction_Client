@@ -1,0 +1,22 @@
+.dropzone {
+    border: 1px dashed var(--gray-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.selected-images {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.selected-images__img {
+    width: 150px;
+    object-fit: cover;
+    height: 150px !important;
+}

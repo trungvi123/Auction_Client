@@ -46,6 +46,10 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/changePass";
     return axiosClient.post(url, payload);
   },
+  getUser:(id:string)=>{
+    const url = apiConfig.baseUrl + `user/${id}`;
+    return axiosClient.get(url);
+  },
 };
 
 export default userApi;

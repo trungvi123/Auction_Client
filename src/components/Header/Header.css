@@ -1,3 +1,18 @@
+.header {
+  border-bottom: 1px solid #69696912;
+}
+
+.header.isScrolled {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background: #fff;
+  transition: all 0.5s ease;
+  box-shadow: 5px 3px 40px rgba(0, 72, 88, 0.1);
+}
+
 .head__logo {
   height: 44px;
   width: 167px;
@@ -17,7 +32,7 @@
   color: black !important;
   position: relative;
   padding-left: 8px !important;
-    padding-right: 8px !important;
+  padding-right: 8px !important;
 }
 
 .arrow-icon__box {
@@ -42,8 +57,7 @@
 }
 
 .head-menu-child {
-  position: absolute;
-  top: 100%;
+  top: 90%;
   left: 0;
   padding: 12px;
   position: absolute;
@@ -58,6 +72,8 @@
   transition: all 0.55s ease-in-out;
   box-shadow: 5px 3px 40px rgba(0, 72, 88, 0.1);
   padding-bottom: 0;
+  background-color: white;
+  z-index: 10;
 }
 
 .nav-link:hover + .head-menu-child {
@@ -65,7 +81,6 @@
   opacity: 1;
   visibility: visible;
 }
-
 
 .user__cirlce .head-menu-child {
   left: unset;
@@ -78,8 +93,12 @@
   visibility: visible;
 }
 
+.lastName {
+  text-transform: capitalize;
+}
+
 .head-menu-child-user::before {
-  content: '';
+  content: "";
   background-color: transparent;
   height: 25px;
   width: 100%;
@@ -108,6 +127,10 @@
   height: 1px;
   width: 0;
   background-color: var(--primary-color);
+}
+.head-link a {
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .head-link:hover {
@@ -146,7 +169,6 @@
   justify-content: space-between;
   width: 100%;
 }
-
 
 .btn-11.head__btn__login:before,
 .btn-11.head__btn__login:after {
