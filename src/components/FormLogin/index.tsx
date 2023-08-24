@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 
 import userApi, { IChangePassPayload, ISignInPayload } from "../../api/userApi";
-import { setClose } from "../../redux/myModalSlice";
+import { setClose, setType } from "../../redux/myModalSlice";
 import { setEmail, setLastName, setIdUser } from "../../redux/authSlice";
 
 interface IToken {
@@ -52,6 +52,7 @@ function FormLogin(props: IPropsForm) {
           localStorage.setItem("token", result.token);
 
           const data: IToken = jwtDecode(result.token);
+          dispatch(setType('alert')) // set type for model
           dispatch(setClose());
           dispatch(setEmail(data.email));
           dispatch(setLastName(data.lastName));
@@ -90,7 +91,7 @@ function FormLogin(props: IPropsForm) {
       {props.status === "login" ? (
         <p className="login__text">
           Bạn chưa có tài khoản?{" "}
-          <Link onClick={handleClose} to={"/register"}>
+          <Link onClick={handleClose} to={"/dang-ky"}>
             Đăng Ký Ngay
           </Link>
         </p>
@@ -173,7 +174,7 @@ function FormLogin(props: IPropsForm) {
         </>
       )}
 
-      <Link className="forgot__link" onClick={handleClose} to={"/forgotPass"}>
+      <Link className="forgot__link" onClick={handleClose} to={"/quen-mat-khau"}>
         Quên mật khẩu?
       </Link>
       <div onClick={handleSubmit} className="btn-11 login__btn">

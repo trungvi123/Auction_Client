@@ -1,13 +1,16 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Image } from "react-bootstrap";
 import { useDropzone, FileWithPath, DropzoneOptions } from "react-dropzone";
-import { uploadImg } from "../../asset/images";
+import { minus, uploadImg } from "../../asset/images";
 import "./DropImages.css";
 
 interface ImageUploaderProps {
   onImagesUpload: (images: File[]) => void;
+  dataEdit?: any[];
 }
-const DropImages: React.FC<ImageUploaderProps> = ({ onImagesUpload }) => {
+const DropImages: React.FC<ImageUploaderProps> = ({
+  onImagesUpload
+}) => {
   const [selectedImages, setSelectedImages] = useState<FileWithPath[]>([]);
 
   const onDrop = useCallback(
@@ -17,6 +20,7 @@ const DropImages: React.FC<ImageUploaderProps> = ({ onImagesUpload }) => {
     },
     [onImagesUpload, selectedImages]
   );
+
   const dropzoneOptions: DropzoneOptions = {
     onDrop,
     accept: {
@@ -28,6 +32,14 @@ const DropImages: React.FC<ImageUploaderProps> = ({ onImagesUpload }) => {
     multiple: true,
   };
   const { getRootProps, getInputProps } = useDropzone(dropzoneOptions);
+
+  const handleRemoveImgSelect = (file: any) => {
+    const Images: FileWithPath[] = selectedImages.filter(
+      (e) => e.name !== file.name
+    );
+    URL.revokeObjectURL(file);
+    setSelectedImages(Images);
+  };
 
   return (
     <div>
@@ -42,15 +54,24 @@ const DropImages: React.FC<ImageUploaderProps> = ({ onImagesUpload }) => {
         </div>
       </div>
       <div className="selected-images">
-        {selectedImages.map((file, index) => (
-          <Image
-            className="selected-images__img"
-            key={index}
-            alt={`Image ${index}`}
-            src={URL.createObjectURL(file)}
-            thumbnail
-          />
-        ))}
+        {
+          selectedImages.map((file, index) => (
+            <div key={index} className="selected-images__box">
+              <Image
+                className="selected-images__img"
+                alt={`Image ${index}`}
+                src={URL.createObjectURL(file)}
+                thumbnail
+              />
+              <Image
+                onClick={() => handleRemoveImgSelect(file)}
+                className="selected-images__icon"
+                alt="icon-minus"
+                src={minus}
+              ></Image>
+            </div>
+          ))}
+        
       </div>
     </div>
   );

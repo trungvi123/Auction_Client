@@ -2,21 +2,24 @@ import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import "react-datepicker/dist/react-datepicker.css";
+import { useParams } from "react-router-dom";
 import ProductForm from "../../components/ProductForm";
 
-import "./CreateAuction.css";
+import "./EditAuction.css";
 
-function CreateAuction() {
+function EditAuction() {
+  const params = useParams()
+  
   return (
     <Container>
       <Row className="w-100 d-flex justify-content-center">
         <Col xl={10} lg={8} md={10}>
           <div className="reg__wrapper">
             <div className="reg__title">
-              <h1>Tạo cuộc đấu giá</h1>
+              <h1>Chỉnh sửa cuộc đấu giá</h1>
             </div>
 
-            <ProductForm type='create'></ProductForm>
+            <ProductForm type='edit' id={params.id}></ProductForm>
           </div>
         </Col>
       </Row>
@@ -24,4 +27,4 @@ function CreateAuction() {
   );
 }
 
-export default CreateAuction;
+export default EditAuction;

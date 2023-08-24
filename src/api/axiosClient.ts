@@ -37,7 +37,7 @@ axiosClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 400) {
       // Xử lý lỗi ở đây mà không cần thông báo đỏ lên màn hình
-      toast.error(error.response.data.errors.msg);
+      toast.error(error.response.data.errors?.msg);
     }
     if (error.response && error.response.status === 422) {
       toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");
@@ -51,7 +51,6 @@ axiosClient.interceptors.response.use(
 axiosClientJWT.interceptors.response.use(
   (response) => {
     if (response && response.data) {
-      // console.log(response);
       return response.data;
     }
     return response;
@@ -59,7 +58,7 @@ axiosClientJWT.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 400) {
       // Xử lý lỗi ở đây mà không cần thông báo đỏ lên màn hình
-      toast.error(error.response.data.errors.msg);
+      toast.error(error.response.data.errors?.msg);
     }
     if (error.response && error.response.status === 422) {
       toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");

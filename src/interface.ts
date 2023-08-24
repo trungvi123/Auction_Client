@@ -1,12 +1,15 @@
-
-
 export interface IMyModal {
   show: boolean;
   status: string;
+  type: string;
+  message: string;
+  variant: string;
+  idItemDelete: string;
+  refreshList:boolean
 }
 
 export interface IUtils {
-  prodDescription:string
+  prodDescription: string;
 }
 
 export interface IAuth {
@@ -23,7 +26,7 @@ export interface IRootState {
   myModal: IMyModal;
   searchModal: ISearchModal;
   auth: IAuth;
-  utils:IUtils
+  utils: IUtils;
 }
 
 // interface for product
@@ -34,7 +37,7 @@ export interface IProduct {
   basePrice: any;
   bids: string[];
   category: string;
-  price:any;
+  price: any;
   createdAt: string;
   currentPrice: any;
   description: string;

@@ -2,11 +2,13 @@ const routes = {
     home:'/',
     news:'/news',
     management:'/management',
-    register:'/register',
-    forgotPass:'/forgotPass',
+    register:'/dang-ky',
+    forgotPass:'/quen-mat-khau',
     productDetail:'/chi-tiet-dau-gia/:id',
-    createAuction : '/create-auction',
-    managementAuction : '/management-auction'
+    createAuction : '/tao-dau-gia',
+    managementAuction : '/quan-li-dau-gia',
+    editAuction : '/chinh-sua-dau-gia/:id'
+
 
 
 }

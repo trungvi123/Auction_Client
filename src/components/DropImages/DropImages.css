@@ -1,22 +1,35 @@
 .dropzone {
-    border: 1px dashed var(--gray-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-    cursor: pointer;
+  border: 1px dashed var(--gray-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
 }
 
 .selected-images {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    width: 100%;
-    margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 15px;
 }
 
 .selected-images__img {
-    width: 150px;
-    object-fit: cover;
-    height: 150px !important;
+  width: 150px;
+  object-fit: cover;
+  height: 150px !important;
+}
+
+.selected-images__box {
+  position: relative;
+}
+
+.selected-images__icon {
+  position: absolute;
+  font-size: 30px;
+  right: -6px;
+  color: var(--primary-color);
+  top: -5px;
+  cursor: pointer;
 }

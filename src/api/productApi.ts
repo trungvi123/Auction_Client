@@ -7,6 +7,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/${id}`;
     return axiosClient.get(url);
   },
+  deleteProductById: (payload:any) => {
+    const url = apiConfig.baseUrl + `product/delete/${payload.idProd}`;
+    return axiosClient.post(url,payload);
+  },
   getProducts: (quantity:Number = 5) => {
     const url = apiConfig.baseUrl + `product/all/${quantity}`;
     return axiosClient.get(url);
@@ -18,6 +22,10 @@ const productApi = {
   createProducts: (payload:any,config:any) => {
     const url = apiConfig.baseUrl + `product/create`;
     return axiosClient.post(url,payload,config);
+  },
+  editProducts: (payload:any,config:any) => {
+    const url = apiConfig.baseUrl + `product/edit`;
+    return axiosClient.patch(url,payload,config);
   },
 };
 

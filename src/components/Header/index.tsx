@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { logo } from "../../asset/images";
 import CurrentTime from "../CurrentTime";
-import { setShow, setStatus } from "../../redux/myModalSlice";
+import { setShow, setStatus, setType } from "../../redux/myModalSlice";
 import { setShowSearch } from "../../redux/searchModalSlice";
 import { IRootState } from "../../interface";
 import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
@@ -40,6 +40,9 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("reduxState");
+    next('/')
+    dispatch(setType('login'))
     dispatch(setEmail(""));
     dispatch(setLastName(""));
     dispatch(setIdUser(""));
@@ -173,14 +176,14 @@ const Header = () => {
                   <h6 className="lastName">{lastName}</h6>
                   <ul>
                     <li
-                      onClick={()=>next('/create-auction')}
+                      onClick={()=>next('/tao-dau-gia')}
                       className="head-link d-flex align-items-center"
                     >
                       <BiCheckShield size={18}></BiCheckShield>
                       <span className="px-2 d-block">Tạo cuộc đấu giá</span>
                     </li>
                     <li
-                      onClick={()=>next('/management-auction')}
+                      onClick={()=>next('/quan-li-dau-gia')}
                       className="head-link d-flex align-items-center"
                     >
                       <BiCheckShield size={18}></BiCheckShield>

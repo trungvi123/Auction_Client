@@ -8,6 +8,7 @@ import {
   ProductDetail,
   CreateAuction,
   ManagementAuction,
+  EditAuction,
 } from "../pages";
 
 interface IRoute {
@@ -24,6 +25,7 @@ export const publicRoute: IRoute[] = [
   { path: routes.productDetail, element: ProductDetail },
   { path: routes.createAuction, element: CreateAuction },
   { path: routes.managementAuction, element: ManagementAuction },
+  { path: routes.editAuction, element: EditAuction },
 ];
 
 export const privateRoute: IRoute[] = [

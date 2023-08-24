@@ -9,6 +9,7 @@ import MyModal from "./components/MyModal";
 import SearchModal from "./components/SearchModal";
 import { Toaster } from "react-hot-toast";
 import ThirdLayout from "./layouts/ThirdLayout";
+import MyAlert from "./components/MyAlert";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
       <MyModal placement={"top"} name={"myModal"}></MyModal>
       <SearchModal placement={"top"} name={"searchModal"}></SearchModal>
       <Toaster position="top-left" reverseOrder={true} />
+
     </div>
   );
 }

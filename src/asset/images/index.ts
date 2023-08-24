@@ -11,5 +11,7 @@ export { default as banner_res } from "./bg/banner_res.png";
 export { default as arrowTitleLeft } from "./icon/sec-arro1-2.svg";
 export { default as arrowTitleRight } from "./icon/sec-arro2-2.svg";
 export { default as uploadImg } from "./icon/uploadImg.png";
+export { default as minus } from "./icon/minus.png";
+
 
 export { default as auction } from "./auction.jpg";

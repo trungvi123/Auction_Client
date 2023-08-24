@@ -54,3 +54,15 @@
 .forgot__link:hover {
     color: var(--primary-color);
 }
+
+.myAlert__btn {
+    display: flex;
+    gap: 20px;
+    margin-top: 50px;
+    justify-content: end;
+    align-items: flex-end;
+}
+
+.myAlert__btn > .btn-11 {
+    flex: 1;
+}

@@ -6,18 +6,18 @@ import ProductsTable from "../../components/ProductsTable";
 import { IRootState } from "../../interface";
 
 const ManagementAuction = () => {
-  const idOwner = useSelector((e:IRootState)=>e.auth._id) 
-  const [data,setData] = useState([])
-  useEffect(()=>{
+  const idOwner = useSelector((e: IRootState) => e.auth._id);
+  const refreshList = useSelector((e: IRootState) => e.myModal.refreshList);
+  const [data, setData] = useState([]);
+  useEffect(() => {
     const fetchData = async () => {
-        const result:any = await productApi.getProductsByOwner(idOwner)
-        if(result.status === 'success'){
-          setData(result.data)
-        }
-        
-    }
-    fetchData()
-  },[idOwner])
+      const result: any = await productApi.getProductsByOwner(idOwner);
+      if (result.status === "success") {
+        setData(result.data);
+      }
+    };
+    fetchData();
+  }, [idOwner, refreshList]);
 
   return (
     <div>

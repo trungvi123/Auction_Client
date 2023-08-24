@@ -52,7 +52,6 @@ const ProductDetail = () => {
             const resCate: any = await categoryApi.getCategoryById(
               result.data.category
             );
-            console.log(resCate);
 
             if (resCate.status === "success") {
               setCate(resCate.category);

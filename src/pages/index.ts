@@ -5,7 +5,9 @@ export {default as Register } from './Register'
 export {default as ForgotPass } from './ForgotPass'
 export {default as ProductDetail } from './ProductDetail'
 export {default as CreateAuction } from './CreateAuction'
+export {default as EditAuction } from './EditAuction'
 export {default as ManagementAuction } from './ManagementAuction'
+
 
 
 
