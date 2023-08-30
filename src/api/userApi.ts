@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import axiosClient, { axiosClientJWT } from "./axiosClient";
 import apiConfig from "./axiosConfig";
 
 export interface ISignUpPayload {
@@ -22,7 +22,7 @@ export interface ISignInPayload {
 export interface IChangePassPayload {
   email: String;
   password: String;
-  newPassword:String
+  newPassword: String;
 }
 
 export interface IResetPass {
@@ -38,17 +38,21 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/signUp";
     return axiosClient.post(url, payload);
   },
-  resetPass:(payload:IResetPass)=>{
+  resetPass: (payload: IResetPass) => {
     const url = apiConfig.baseUrl + "user/resetPass";
-    return axiosClient.post(url, payload);
+    return axiosClientJWT.post(url, payload);
   },
-  changePass:(payload:IChangePassPayload)=>{
+  changePass: (payload: IChangePassPayload) => {
     const url = apiConfig.baseUrl + "user/changePass";
-    return axiosClient.post(url, payload);
+    return axiosClientJWT.post(url, payload);
   },
-  getUser:(id:string)=>{
+  getUser: (id: string) => {
     const url = apiConfig.baseUrl + `user/${id}`;
     return axiosClient.get(url);
+  },
+  refreshToken: () => {
+    const url = apiConfig.baseUrl + "token/refresh";
+    return axiosClient.post(url, {});
   },
 };
 

@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 
 import userApi, { IChangePassPayload, ISignInPayload } from "../../api/userApi";
@@ -15,6 +15,7 @@ interface IToken {
   _id: any;
   email: String;
   lastName: String;
+  role: String;
 }
 
 interface IPropsForm {
@@ -35,10 +36,11 @@ function FormLogin(props: IPropsForm) {
 
   const refForm: any = useRef();
   const dispatch = useDispatch();
-
+  const next = useNavigate()
   const handleClose = () => {
     dispatch(setClose());
   };
+
 
   const handleSubmit = async () => {
     const form = refForm.current;
@@ -49,10 +51,11 @@ function FormLogin(props: IPropsForm) {
         const result: any = await userApi.signIn(data);
         if (result?.status === "success") {
           toast.success("Đăng nhập thành công!");
-          localStorage.setItem("token", result.token);
+          next('/')
+          localStorage.setItem("token", result.accessToken);
 
-          const data: IToken = jwtDecode(result.token);
-          dispatch(setType('alert')) // set type for model
+          const data: IToken = jwtDecode(result.accessToken);
+          dispatch(setType("alert")); // set type for model
           dispatch(setClose());
           dispatch(setEmail(data.email));
           dispatch(setLastName(data.lastName));
@@ -68,7 +71,7 @@ function FormLogin(props: IPropsForm) {
           const result: any = await userApi.changePass(data);
           if (result?.status === "success") {
             toast.success("Đổi mật khẩu thành công!");
-            dispatch(setClose())
+            dispatch(setClose());
           } else {
             toast.error("Đổi mật khẩu thất bại!");
           }
@@ -174,7 +177,11 @@ function FormLogin(props: IPropsForm) {
         </>
       )}
 
-      <Link className="forgot__link" onClick={handleClose} to={"/quen-mat-khau"}>
+      <Link
+        className="forgot__link"
+        onClick={handleClose}
+        to={"/quen-mat-khau"}
+      >
         Quên mật khẩu?
       </Link>
       <div onClick={handleSubmit} className="btn-11 login__btn">

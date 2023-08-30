@@ -8,3 +8,42 @@
   border: 1px solid #e0e0e0;
   font-size: 14px;
 }
+
+.tabs-content.tabs-detail-bid {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.tabs-content__item {
+  display: flex;
+  gap: 10px;
+}
+
+.tabs-content__item + .tabs-content__item {
+  margin-top: 15px;
+}
+
+.tabs-content__item_avt {
+  width: 42px;
+  height: 42px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--primary-color);
+}
+.tabs-content__infor {
+  display: flex;
+  gap: 10px;
+}
+.tabs-content__infor__name,
+.tabs-content__infor__time {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.tabs-content__infor__bid {
+  margin-bottom: 5px;
+}
+

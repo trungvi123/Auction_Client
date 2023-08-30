@@ -15,6 +15,7 @@ import DropImages from "../DropImages";
 import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
 import "./ProductForm.css";
+import { useNavigate } from "react-router-dom";
 
 interface ICate {
   _id: string;
@@ -22,7 +23,7 @@ interface ICate {
 }
 const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
-
+  const next = useNavigate();
   const [cateList, setCateList] = useState<ICate[]>([]);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imgsEdit, setImgsEdit] = useState([]);
@@ -109,7 +110,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     const fetchcate = async () => {
       const resCate: any = await categoryApi.getAllCategory();
 
-      if (resCate.status === "success") {
+      if (resCate?.status === "success") {
         setCateList(resCate.category);
       }
     };
@@ -139,11 +140,11 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       formData.append("duration", data.duration);
       formData.append("startTime", startDate.toLocaleString());
       formData.append("endTime", auctionEndTime.toLocaleString());
+      for (let i = 0; i < uploadedImages.length; i++) {
+        formData.append("images", uploadedImages[i]);
+      }
 
       if (type !== "edit") {
-        for (let i = 0; i < uploadedImages.length; i++) {
-          formData.append("images", uploadedImages[i]);
-        }
         const createProd = async () => {
           const result: any = await productApi.createProducts(formData, config);
           if (result?.status === "success") {
@@ -151,15 +152,19 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
+            next("/quan-li-dau-gia");
           }
         };
         createProd();
       } else {
-        const totalImgs = [...imgsEdit, ...uploadedImages];
-        for (let i = 0; i < totalImgs.length; i++) {
-          formData.append("images", totalImgs[i]);
-        }
+        const KeepImgs:string[] = [...imgsEdit];
+        for (let i = 0; i < KeepImgs.length; i++) {
+          formData.append("keepImgs", KeepImgs[i]);
+        } // giữ lại những hình cũ
+        console.log(KeepImgs);
+        
         formData.append("id", id);
+
         formData.append("oldCategory", dataEdit.oldCategory);
 
         const editProd = async () => {
@@ -169,6 +174,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
+            next("/quan-li-dau-gia");
           }
         };
         editProd();

@@ -1,12 +1,22 @@
+import { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import "react-datepicker/dist/react-datepicker.css";
+import { useDispatch } from "react-redux";
 import ProductForm from "../../components/ProductForm";
+import { setProdDescription } from "../../redux/utilsSlice";
 
 import "./CreateAuction.css";
 
 function CreateAuction() {
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(setProdDescription(''))
+  },[dispatch])
+
+
   return (
     <Container>
       <Row className="w-100 d-flex justify-content-center">
