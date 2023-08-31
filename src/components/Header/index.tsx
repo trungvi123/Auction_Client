@@ -7,7 +7,7 @@ import {
   BiSearch,
   BiUser,
 } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,14 +18,12 @@ import { setShowSearch } from "../../redux/searchModalSlice";
 import { IRootState } from "../../interface";
 import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
 import "./Header.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
-  const next = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false);
-
   const openMyModal = () => {
     dispatch(setStatus("login"));
     dispatch(setShow());
@@ -41,13 +39,13 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("reduxState");
-    next('/')
-    dispatch(setType('login'))
+    dispatch(setType("login"));
     dispatch(setEmail(""));
     dispatch(setLastName(""));
     dispatch(setIdUser(""));
+    window.location.replace("/");
   };
-
+  
   const handleScroll = () => {
     // Kiểm tra vị trí cuộn chuột để xác định có thêm class hay không
     if (window.scrollY > 30) {
@@ -175,30 +173,37 @@ const Header = () => {
                 <div className="head-menu-child head-menu-child-user">
                   <h6 className="lastName">{lastName}</h6>
                   <ul>
-                    <li
-                      onClick={()=>next('/tao-dau-gia')}
-                      className="head-link d-flex align-items-center"
-                    >
-                      <BiCheckShield size={18}></BiCheckShield>
-                      <span className="px-2 d-block">Tạo cuộc đấu giá</span>
+                    <li>
+                      <Link
+                        to="/tao-dau-gia"
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <BiCheckShield size={18}></BiCheckShield>
+                        <span className="px-2 d-block">Tạo cuộc đấu giá</span>
+                      </Link>
                     </li>
-                    <li
-                      onClick={()=>next('/quan-li-dau-gia')}
-                      className="head-link d-flex align-items-center"
-                    >
-                      <BiCheckShield size={18}></BiCheckShield>
-                      <span className="px-2 d-block">Cuộc đấu giá đã tạo</span>
+                    <li>
+                      <Link
+                        to="/quan-li-dau-gia"
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <BiCheckShield size={18}></BiCheckShield>
+                        <span className="px-2 d-block">
+                          Cuộc đấu giá đã tạo
+                        </span>
+                      </Link>
                     </li>
+
                     <li
                       onClick={handleChangePass}
-                      className="head-link d-flex align-items-center"
+                      className="head-link d-flex align-items-center head-menu-child-item"
                     >
                       <BiCheckShield size={18}></BiCheckShield>
                       <span className="px-2 d-block">Đổi mật khẩu</span>
                     </li>
                     <li
                       onClick={handleLogout}
-                      className="head-link d-flex align-items-center"
+                      className="head-link d-flex align-items-center head-menu-child-item"
                     >
                       <BiLogOut size={18}></BiLogOut>
                       <span className="px-2 d-block">Đăng xuất</span>
@@ -214,4 +219,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default React.memo(Header);

@@ -128,9 +128,12 @@ axiosClientJWT.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const refreshResponse: any = await userApi.refreshToken();
-        if (refreshResponse.status ==='failure') {
+  
+        if (refreshResponse.status === "failure") {
+          alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!")
           window.location.replace("/");
-          toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!");
+          localStorage.removeItem("token");
+          localStorage.removeItem("reduxState");
         }
         const newAccessToken = refreshResponse?.accessToken;
         localStorage.setItem("token", newAccessToken);

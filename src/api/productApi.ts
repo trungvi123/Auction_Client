@@ -34,6 +34,13 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/edit`;
     return axiosClientJWT.patch(url, payload, config);
   },
+  updateAuctionStarted: (id: string) => {
+    const url = apiConfig.baseUrl + `product/edit/auctionStarted/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  updateAuctionEnded: (id: string) => {
+    const url = apiConfig.baseUrl + `product/edit/auctionEnded/${id}`;
+    return axiosClientJWT.get(url);
+  },
 };
-
 export default productApi;

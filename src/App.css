@@ -64,6 +64,25 @@ body a {
   width: 100%;
 }
 
+.btn-11.disable{
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-11.disable:hover {
+  color: var(--primary-color);
+  border: 1px solid currentColor;
+
+}
+
+.btn-11.disable:hover:before {
+  animation: none !important;
+}
+
+.btn-11.disable:hover:after {
+  animation: none !important;
+}
+
 @-webkit-keyframes criss-cross-left-cus {
   0% {
     left: -20px;

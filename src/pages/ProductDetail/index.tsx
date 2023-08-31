@@ -6,7 +6,6 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import { breadcrumbs } from "../../asset/images";
 import { useLocation } from "react-router-dom";
 import productApi from "../../api/productApi";
-// import changeTypeBreadcrumbs from "../../utils/changeTypeBreadcrumbs";
 import MyImageGallery from "../../components/MyImageGallery";
 import "./ProductDetail.css";
 import InforTabs from "../../components/InforTabs";
@@ -24,6 +23,13 @@ import * as io from "socket.io-client";
 const socket = io.connect("http://localhost:5000");
 
 const ProductDetail = () => {
+  const location = useLocation();
+  let url = location.pathname;
+  const idProduct = url.split("/")[2].trim();
+  const idClient = useSelector((e: IRootState) => e.auth._id);
+  const lastName = useSelector((e: IRootState) => e.auth.lastName);
+  const dispatch = useDispatch();
+
   const [title, setTitle] = useState<string>();
   const [product, setProduct] = useState<IProduct>();
   const [type, setType] = useState<string>();
@@ -33,14 +39,33 @@ const ProductDetail = () => {
   const [stateAuction, setStateAuction] = useState<string>("");
   const [joined, setJoined] = useState(false);
   const [auctionPrice, setAuctionPrice] = useState<number>(0);
-  const [currentPriceBid, setCurrentPriceBid] = useState<number>(); // giá này là giá sẽ hiển thị khi người dùng liên tục trả giá, mà k cần request lại db
-
-  const location = useLocation();
-  let url = location.pathname;
-  const idProduct = url.split("/")[2].trim();
-  const idClient = useSelector((e: IRootState) => e.auth._id);
-  const lastName = useSelector((e: IRootState) => e.auth.lastName);
-  const dispatch = useDispatch();
+  const [currentPriceBid, setCurrentPriceBid] = useState<number>(0); // giá này là giá sẽ hiển thị khi người dùng liên tục trả giá, mà k cần request lại db
+  const [timeCountDown, setTimeCountDown] = useState<any>();
+  const bidsTime = (notify = false, type = "start") => {
+    if (notify) {
+      if (type === "start") {
+        const fectProduct = async () => {
+          const result: any = await productApi.updateAuctionStarted(idProduct);
+          if (result) {
+            setProduct(result.data);
+            setTimeCountDown({
+              time: result.data.endTime,
+              type: "end",
+            });
+          }
+        };
+        fectProduct();
+      } else {
+        const fectProduct = async () => {
+          const result: any = await productApi.updateAuctionEnded(idProduct);
+          if (result) {
+            setProduct(result.data);
+          }
+        };
+        fectProduct();
+      }
+    }
+  };
 
   useEffect(() => {
     // chi tiết của cuộc đấu giá
@@ -52,7 +77,10 @@ const ProductDetail = () => {
           setTitle(result.data.name);
           setImgData(result.data.images);
           setType("Chi tiết đấu giá");
-
+          setTimeCountDown({
+            time: result.data.startTime,
+            type: "start",
+          });
           //getuser
           const fetchUser = async () => {
             const resUser: any = await userApi.getUser(result.data.owner);
@@ -100,6 +128,7 @@ const ProductDetail = () => {
 
         if (check) {
           setJoined(true);
+          socket.emit("joinRoom", product?.room);
         } else {
           setJoined(false);
         }
@@ -108,27 +137,24 @@ const ProductDetail = () => {
     if (idClient !== "") {
       checkJoin();
     }
-  }, [idClient, idProduct, url]);
+  }, [idClient, idProduct, product, url]);
 
   const handleJoinAuction = () => {
     const handleJoinRoom = async () => {
       if (idClient === "") {
         dispatch(setShow());
       } else {
-        const result: any = await roomApi.getRoomByIdProd(idProduct);
-        if (result?.status === "success") {
-          const res: any = await roomApi.joinRoom({
-            idProd: idProduct,
-            idRoom: result.room._id,
-            idUser: idClient,
-          });
-          if (res?.status === "success") {
-            toast.success("Tham gia đấu giá thành công!");
-
-            setJoined(true);
-          } else {
-            toast.error("Tham gia đấu giá thất bại!");
-          }
+        const res: any = await roomApi.joinRoom({
+          idProd: idProduct,
+          idRoom: product?.room,
+          idUser: idClient,
+        });
+        if (res?.status === "success") {
+          toast.success("Tham gia đấu giá thành công!");
+          socket.emit("joinRoom", product?.room);
+          setJoined(true);
+        } else {
+          toast.error("Tham gia đấu giá thất bại!");
         }
       }
     };
@@ -137,7 +163,7 @@ const ProductDetail = () => {
 
   const handleBid = () => {
     if (auctionPrice > parseFloat(product?.currentPrice.$numberDecimal)) {
-      if (auctionPrice === currentPriceBid) {
+      if (auctionPrice <= currentPriceBid) {
         toast.error("Giá của bạn phải cao hơn giá hiện tại của sản phẩm!");
       } else {
         socket.emit("bid_price", {
@@ -145,9 +171,10 @@ const ProductDetail = () => {
           product: idProduct,
           price: auctionPrice,
           lastName: lastName,
+          room: product?.room,
         });
         setCurrentPriceBid(auctionPrice);
-        toast.error("Ra giá thành công!");
+        toast.success("Ra giá thành công!");
       }
     } else {
       toast.error("Giá của bạn phải cao hơn giá hiện tại của sản phẩm!");
@@ -156,14 +183,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     socket.on("respone_bid_price", (data) => {
-      const fectRealPrice = async () => {
-        // khi nhận được phản hồi từ socket, tiến hành lấy giá hiện tại của sản phẩm
-        const res: any = await productApi.getCurrentPriceById(idProduct);
-        if (res?.status === "success") {
-          setCurrentPriceBid(parseFloat(res.data.currentPrice.$numberDecimal));
-        }
-      };
-      fectRealPrice();
+      setCurrentPriceBid(parseFloat(data.price.$numberDecimal));
     });
   }, [idProduct]);
 
@@ -176,10 +196,20 @@ const ProductDetail = () => {
             <MyImageGallery imagesLink={imgData}></MyImageGallery>
           </Col>
           <Col md={5}>
-            <p className="countdown-time-title">
-              Thời gian đếm ngược bắt đầu đấu giá:
-            </p>
-            <CountDownTime time={product?.startTime}></CountDownTime>
+            {stateAuction !== "Đã kết thúc" && (
+              <p className="countdown-time-title">
+                {stateAuction === "Chưa diễn ra"
+                  ? "Thời gian đếm ngược bắt đầu đấu giá:"
+                  : "Thời gian đếm ngược kết thúc đấu giá:"}
+              </p>
+            )}
+            {stateAuction === "Đã kết thúc" && (
+              <p className="countdown-time-title">Cuộc đấu giá đã kêt thúc</p>
+            )}
+            <CountDownTime
+              time={timeCountDown}
+              bidsTime={bidsTime}
+            ></CountDownTime>
             <div className="infor-container">
               <div className="infor-row">
                 <p className="infor-row__left">Loại tài sản:</p>
@@ -230,7 +260,7 @@ const ProductDetail = () => {
                 </p>
               </div>
 
-              {!product?.auctionStarted && (
+              {product?.auctionStarted && (
                 <>
                   <div className="infor-row">
                     <p className="infor-row__left">Giá cao nhất hiện tại:</p>
@@ -243,39 +273,49 @@ const ProductDetail = () => {
                 </>
               )}
             </div>
-            {!joined ? (
-              <div className="handle-auction">
-                <div
-                  className="btn-11 btn-11__full"
-                  onClick={handleJoinAuction}
-                >
-                  <span className="btn-11__content">Tham gia đấu giá</span>
-                </div>
-              </div>
-            ) : (
-              <div className="handle-auction">
-                <div className="btn-11 btn-11__full">
-                  <span className="btn-11__content">Mua ngay</span>
-                </div>
-                <div className="handle-auction__bid">
-                  <input
-                    className="handle-auction__input"
-                    type="number"
-                    value={auctionPrice}
-                    onChange={(e: any) => setAuctionPrice(e.target.value)}
-                    placeholder="VD: 10000 (VND)"
-                  />
-                  <div className="btn-11 bid" onClick={handleBid}>
-                    <span className="btn-11__content">Đấu giá</span>
+            {stateAuction === "Đang diễn ra" && (
+              <div>
+                {!joined ? (
+                  <div className="handle-auction">
+                    <div
+                      className={`btn-11 btn-11__full ${
+                        product?.auctionStarted ? "" : "disable"
+                      } `}
+                      onClick={handleJoinAuction}
+                    >
+                      <span className="btn-11__content ">Tham gia đấu giá</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="handle-auction">
+                    <div className="btn-11 btn-11__full">
+                      <span className="btn-11__content">Mua ngay</span>
+                    </div>
+                    <div className="handle-auction__bid">
+                      <input
+                        className="handle-auction__input"
+                        type="number"
+                        value={auctionPrice}
+                        onChange={(e: any) => setAuctionPrice(e.target.value)}
+                        placeholder="VD: 10000 (VND)"
+                      />
+                      <div className="btn-11 bid" onClick={handleBid}>
+                        <span className="btn-11__content">Đấu giá</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </Col>
         </Row>
         <Row className="pt-5">
           <Col>
-            <InforTabs data={product}></InforTabs>
+            <InforTabs
+              data={product}
+              socket={socket}
+              joined={joined}
+            ></InforTabs>
           </Col>
         </Row>
       </Container>

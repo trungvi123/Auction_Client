@@ -14,7 +14,10 @@ interface IProTable {
     idProduct: string;
   };
   status: string;
-  _id: string;
+  handle: {
+    _id: string;
+    status: string;
+  };
 }
 
 //a more complex example with nested data
@@ -42,7 +45,10 @@ function ProductsTable({ data }: any) {
           idProduct: item._id,
         },
         status: item.status,
-        _id: item._id,
+        handle: {
+          _id: item._id,
+          status: item.status,
+        },
       };
     });
   }
@@ -61,7 +67,7 @@ function ProductsTable({ data }: any) {
             src: string;
             idProduct: string;
           }>();
-          
+
           return (
             <Image
               onClick={() => next(`/chi-tiet-dau-gia/${data.idProduct}`)}
@@ -85,28 +91,40 @@ function ProductsTable({ data }: any) {
       },
       {
         header: "Xử lí",
-        accessorKey: "_id",
-        Cell: ({ cell }) => (
-          <div>
-            <Link
-              to={`/chinh-sua-dau-gia/${cell.getValue<string>()}`}
-              className="btn-11"
-            >
-              <span className="btn-11__content">Sửa</span>
-            </Link>
-            <div className="btn-11 mt-2" onClick={() => handleDelete(cell.getValue<string>())}>
-              <span
-                className="btn-11__content"
-                
+        accessorKey: "handle",
+        Cell: ({ cell }) => {
+          const data: {
+            _id: string;
+            status: string;
+          } = cell.getValue<{
+            _id: string;
+            status: string;
+          }>();
+          return (
+            <div>
+              {data.status === "Đang chờ duyệt" && (
+                <Link to={`/chinh-sua-dau-gia/${data._id}`} className="btn-11">
+                  <span className="btn-11__content">Sửa</span>
+                </Link>
+              )}
+              {data.status === "Đã được duyệt" && (
+                <div className="btn-11 disable">
+                  <span className="btn-11__content">Sửa</span>
+                </div>
+              )}
+
+              <div
+                className="btn-11 mt-2"
+                onClick={() => handleDelete(cell.getValue<string>())}
               >
-                Xóa
-              </span>
+                <span className="btn-11__content">Xóa</span>
+              </div>
             </div>
-          </div>
-        ),
+          );
+        },
       },
     ],
-    [handleDelete]
+    [handleDelete, next]
   );
   return (
     <MaterialReactTable

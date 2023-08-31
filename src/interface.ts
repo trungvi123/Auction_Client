@@ -5,7 +5,7 @@ export interface IMyModal {
   message: string;
   variant: string;
   idItemDelete: string;
-  refreshList:boolean
+  refreshList: boolean;
 }
 
 export interface IUtils {
@@ -51,4 +51,5 @@ export interface IProduct {
   stepPrice: any;
   updatedAt: string;
   _id: string;
+  room: string;
 }

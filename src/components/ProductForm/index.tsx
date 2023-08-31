@@ -83,7 +83,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   }, [dispatch, id, type, reset]);
 
   const handleStartDateChange = (date: Date) => {
-    const hoursToAdd = 6;
+    const hoursToAdd = 6/60/60;
     const currentTime = new Date();
     // Tạo một đối tượng Date mới sau khi thêm số giờ
     const newDate = new Date(
