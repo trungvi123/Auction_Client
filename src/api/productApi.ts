@@ -22,10 +22,6 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/delete/${payload.idProd}`;
     return axiosClientJWT.post(url, payload);
   },
-  getProductsByOwner: (id: string) => {
-    const url = apiConfig.baseUrl + `product/owner/${id}`;
-    return axiosClientJWT.get(url);
-  },
   createProducts: (payload: any, config: any) => {
     const url = apiConfig.baseUrl + `product/create`;
     return axiosClientJWT.post(url, payload, config);
@@ -38,9 +34,17 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/edit/auctionStarted/${id}`;
     return axiosClientJWT.get(url);
   },
-  updateAuctionEnded: (id: string) => {
-    const url = apiConfig.baseUrl + `product/edit/auctionEnded/${id}`;
-    return axiosClientJWT.get(url);
+  updateAuctionEnded: (payload: any) => {
+    const url = apiConfig.baseUrl + `product/edit/auctionEnded/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
+  approveProduct: (payload: any) => {
+    const url = apiConfig.baseUrl + `product/edit/approveProduct/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
+  refuseProduct: (payload: any) => {
+    const url = apiConfig.baseUrl + `product/edit/refuseProduct/${payload.id}`;
+    return axiosClientJWT.patch(url, payload);
   },
 };
 export default productApi;

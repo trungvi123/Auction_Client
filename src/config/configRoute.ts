@@ -9,6 +9,7 @@ import {
   CreateAuction,
   ManagementAuction,
   EditAuction,
+  Dashboard,
 } from "../pages";
 
 interface IRoute {
@@ -26,6 +27,10 @@ export const publicRoute: IRoute[] = [
   { path: routes.createAuction, element: CreateAuction },
   { path: routes.managementAuction, element: ManagementAuction },
   { path: routes.editAuction, element: EditAuction },
+
+  //test , khi test xong để vào private
+
+  { path: routes.dashboard, element: Dashboard, layout: "AdminDefaultLayout" },
 ];
 
 export const privateRoute: IRoute[] = [

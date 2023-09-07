@@ -46,3 +46,20 @@
 .btn-11.bid{
   width: 50%;
 }
+
+.custom-toast {
+  background-color: white;
+  border: 1px solid var(--primary-color);
+  padding: 20px;
+}
+
+.custom-toast .btn-11 {
+  width: 180px !important;
+}
+
+.custom-toast .confirm-box {
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+  margin-top: 30px;
+}

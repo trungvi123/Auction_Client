@@ -6,6 +6,7 @@ export interface IMyModal {
   variant: string;
   idItemDelete: string;
   refreshList: boolean;
+  typeSelect: string;
 }
 
 export interface IUtils {

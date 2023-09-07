@@ -161,7 +161,6 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
         for (let i = 0; i < KeepImgs.length; i++) {
           formData.append("keepImgs", KeepImgs[i]);
         } // giữ lại những hình cũ
-        console.log(KeepImgs);
         
         formData.append("id", id);
 
@@ -327,7 +326,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           <Form.Control
             type="number"
             placeholder="Dưới 2880 phút"
-            {...register("duration", { required: true, min: 5, max: 2880 })}
+            {...register("duration", { required: true, min: 0.5, max: 2880 })}
           />
           {errors?.duration?.type === "required" && (
             <p className="text__invalid">Vui lòng nhập thời gian diễn ra</p>

@@ -3,7 +3,12 @@ import { type MRT_ColumnDef } from "material-react-table";
 import { useCallback, useMemo } from "react";
 import { Image } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { setIdItemDelete, setMessage, setShow } from "../../redux/myModalSlice";
+import {
+  setIdItemDelete,
+  setMessage,
+  setShow,
+  setTypeSelect,
+} from "../../redux/myModalSlice";
 import { auction } from "../../asset/images";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -22,21 +27,22 @@ interface IProTable {
 
 //a more complex example with nested data
 
-function ProductsTable({ data }: any) {
+function ProductsTable({ data, typeSelect }: any) {
   let dataLocal: IProTable[] = [];
   const dispatch = useDispatch();
   const next = useNavigate();
 
   const handleDelete = useCallback(
-    (_id: string) => {
+    (_id: string, typeSelect: string) => {
       dispatch(setShow());
       dispatch(setMessage("Bạn có chắc muốn xóa?"));
       dispatch(setIdItemDelete(_id));
+      dispatch(setTypeSelect(typeSelect));
     },
     [dispatch]
   );
 
-  if (data) {
+  if (data.length > 0) {
     dataLocal = data?.map((item: any) => {
       return {
         name: item.name,
@@ -102,12 +108,12 @@ function ProductsTable({ data }: any) {
           }>();
           return (
             <div>
-              {data.status === "Đang chờ duyệt" && (
+              {typeSelect === "create" && data.status === "Đang chờ duyệt" && (
                 <Link to={`/chinh-sua-dau-gia/${data._id}`} className="btn-11">
                   <span className="btn-11__content">Sửa</span>
                 </Link>
               )}
-              {data.status === "Đã được duyệt" && (
+              {typeSelect === "create" && data.status === "Đã được duyệt" && (
                 <div className="btn-11 disable">
                   <span className="btn-11__content">Sửa</span>
                 </div>
@@ -115,7 +121,7 @@ function ProductsTable({ data }: any) {
 
               <div
                 className="btn-11 mt-2"
-                onClick={() => handleDelete(cell.getValue<string>())}
+                onClick={() => handleDelete(data._id, typeSelect)}
               >
                 <span className="btn-11__content">Xóa</span>
               </div>
@@ -124,7 +130,7 @@ function ProductsTable({ data }: any) {
         },
       },
     ],
-    [handleDelete, next]
+    [handleDelete, next, typeSelect]
   );
   return (
     <MaterialReactTable
@@ -136,4 +142,4 @@ function ProductsTable({ data }: any) {
   );
 }
 
-export default ProductsTable;
+export default ProductsTable

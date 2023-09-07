@@ -54,6 +54,31 @@ const userApi = {
     const url = apiConfig.baseUrl + "token/refresh";
     return axiosClient.post(url, {});
   },
+  getPurchasedProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/purchasedProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getWinProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/winProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getBidsProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/bidsProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/owner/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  deleteProductHistory: (payload: {
+    idOwner: string;
+    type: string;
+    idProd: string;
+  }) => {
+    const url =
+      apiConfig.baseUrl + `user/deleteProductHistory/${payload.idOwner}`;
+    return axiosClientJWT.post(url, payload);
+  },
 };
 
 export default userApi;

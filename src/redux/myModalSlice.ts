@@ -6,6 +6,8 @@ const initialState = {
   type: "login", // phân biệt login và thông báo
   message: "", // nội dung
   variant: "", // loại thông báo
+
+  typeSelect:'create',
   idItemDelete: "", // id của sản phẩm bị xóa
   refreshList: false,
 };
@@ -38,6 +40,9 @@ const myModalSlice = createSlice({
     setIdItemDelete: (state, action) => {
       state.idItemDelete = action.payload;
     },
+    setTypeSelect: (state, action) => {
+      state.typeSelect = action.payload;
+    },
   },
 });
 
@@ -46,7 +51,7 @@ export const {
   setClose,
   setStatus,
   setType,
-  setMessage,
+  setMessage,setTypeSelect,
   setVariant,
   setIdItemDelete,
   setRefreshList

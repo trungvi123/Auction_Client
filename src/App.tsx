@@ -9,7 +9,7 @@ import MyModal from "./components/MyModal";
 import SearchModal from "./components/SearchModal";
 import { Toaster } from "react-hot-toast";
 import ThirdLayout from "./layouts/ThirdLayout";
-import MyAlert from "./components/MyAlert";
+import AdminDefaultLayout from "./layouts/AdminDefaultLayout";
 
 function App() {
   return (
@@ -19,8 +19,10 @@ function App() {
           let Layout: any = DefaultLayout;
           if (item.layout === "SecondLayout") {
             Layout = SecondLayout;
-          }else if(item.layout === "ThirdLayout"){
+          } else if (item.layout === "ThirdLayout") {
             Layout = ThirdLayout;
+          } else if (item.layout === "AdminDefaultLayout") {
+            Layout = AdminDefaultLayout;
           } else if (item.layout === null) {
             Layout = Fragment;
           }
@@ -39,8 +41,18 @@ function App() {
       </Routes>
       <MyModal placement={"top"} name={"myModal"}></MyModal>
       <SearchModal placement={"top"} name={"searchModal"}></SearchModal>
-      <Toaster position="top-left" reverseOrder={true} />
+      <Toaster
+        position="top-left"
+        reverseOrder={true}
+        toastOptions={{
+          duration: 6000,
 
+          // Default options for specific types
+          success: {
+            duration: 5000,
+          },
+        }}
+      />
     </div>
   );
 }

@@ -7,8 +7,8 @@ const routes = {
     productDetail:'/chi-tiet-dau-gia/:id',
     createAuction : '/tao-dau-gia',
     managementAuction : '/quan-li-dau-gia',
-    editAuction : '/chinh-sua-dau-gia/:id'
-
+    editAuction : '/chinh-sua-dau-gia/:id',
+    dashboard : '/admin/dashboard'
 
 
 }

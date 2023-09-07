@@ -8,6 +8,7 @@ import "./MyModal.css";
 import FormLogin from "../FormLogin";
 import productApi from "../../api/productApi";
 import toast from "react-hot-toast";
+import userApi from "../../api/userApi";
 
 function MyModal({
   name,
@@ -27,22 +28,33 @@ function MyModal({
 
   const handleDeleteItem = () => {
     const _id: string = myModal.idItemDelete;
+    const typeSelect: string = myModal.typeSelect;
     const payload = {
       idProd: _id,
       idOwner,
     };
     const delApi = async () => {
-      const result: any = await productApi.deleteProductById(payload);
+      let result: any;
+      if (typeSelect === "create") {
+        // xóa bên bảng các sản phẩm đã tạo
+        result = await productApi.deleteProductById(payload);
+      } else {
+        const pl = {
+          ...payload,
+          type: typeSelect,
+        };
+        result = await userApi.deleteProductHistory(pl);
+      }
       if (result?.status === "success") {
         toast.success("Đã xóa sản phẩm thành công!");
-        dispatch(setRefreshList())
-        dispatch(setClose())
+        dispatch(setRefreshList());
+        dispatch(setClose());
       } else {
         toast.error("Đã xóa sản phẩm thất bại!");
-        dispatch(setClose())
+        dispatch(setClose());
       }
     };
-    delApi()
+    delApi();
   };
 
   return (
@@ -70,12 +82,7 @@ function MyModal({
                     <span className="btn-11__content">Đóng</span>
                   </div>
                   <div className="btn-11" onClick={handleDeleteItem}>
-                    <span
-                      className="btn-11__content"
-                      
-                    >
-                      Tiếp tục
-                    </span>
+                    <span className="btn-11__content">Tiếp tục</span>
                   </div>
                 </div>
               </div>

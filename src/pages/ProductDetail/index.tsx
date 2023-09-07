@@ -41,6 +41,8 @@ const ProductDetail = () => {
   const [auctionPrice, setAuctionPrice] = useState<number>(0);
   const [currentPriceBid, setCurrentPriceBid] = useState<number>(0); // giá này là giá sẽ hiển thị khi người dùng liên tục trả giá, mà k cần request lại db
   const [timeCountDown, setTimeCountDown] = useState<any>();
+  const [stopCountDown, setTopCountDown] = useState<boolean>(false);
+
   const bidsTime = (notify = false, type = "start") => {
     if (notify) {
       if (type === "start") {
@@ -57,7 +59,11 @@ const ProductDetail = () => {
         fectProduct();
       } else {
         const fectProduct = async () => {
-          const result: any = await productApi.updateAuctionEnded(idProduct);
+          const result: any = await productApi.updateAuctionEnded({
+            id: idProduct,
+            idUser: idClient,
+            type: "bid",
+          });
           if (result) {
             setProduct(result.data);
           }
@@ -187,6 +193,41 @@ const ProductDetail = () => {
     });
   }, [idProduct]);
 
+  const buyNow = () => {
+    toast.custom((t) => (
+      <div className="custom-toast">
+        <h5>
+          Xác nhận rằng bạn sẽ mua sản phẩm này với giá{" "}
+          {formatMoney(product?.price?.$numberDecimal)}
+        </h5>
+        <div className="confirm-box">
+          <div className="btn-11 w-25" onClick={() => toast.dismiss(t.id)}>
+            <span className="btn-11__content">Hủy</span>
+          </div>
+          <div className="btn-11 w-25">
+            <span className="btn-11__content" onClick={confirmBuyNow}>
+              Tiếp tục
+            </span>
+          </div>
+        </div>
+      </div>
+    ));
+  };
+  const confirmBuyNow = () => {
+    const fectProduct = async () => {
+      const result: any = await productApi.updateAuctionEnded({
+        id: idProduct,
+        idUser: idClient,
+        type: "buy",
+      });
+      setTopCountDown(true);
+      if (result) {
+        console.log(result);
+      }
+    };
+    fectProduct();
+  };
+
   return (
     <div>
       <Container>
@@ -207,6 +248,7 @@ const ProductDetail = () => {
               <p className="countdown-time-title">Cuộc đấu giá đã kêt thúc</p>
             )}
             <CountDownTime
+              stop={stopCountDown}
               time={timeCountDown}
               bidsTime={bidsTime}
             ></CountDownTime>
@@ -288,7 +330,7 @@ const ProductDetail = () => {
                   </div>
                 ) : (
                   <div className="handle-auction">
-                    <div className="btn-11 btn-11__full">
+                    <div className="btn-11 btn-11__full" onClick={buyNow}>
                       <span className="btn-11__content">Mua ngay</span>
                     </div>
                     <div className="handle-auction__bid">

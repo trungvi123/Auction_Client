@@ -7,17 +7,18 @@ interface IProps {
     time: any;
     type: string;
   };
+  stop: boolean;
   bidsTime: (notify: any, type: string) => any;
 }
 
-const CountDownTime = ({ time, bidsTime }: IProps) => {
+const CountDownTime = ({ time, bidsTime, stop = false }: IProps) => {
   const [hour, setHour]: any = useState();
   const [minute, setMinute]: any = useState();
   const [second, setSecond]: any = useState();
   const [downLoop, setDownLoop] = useState(false);
 
   useEffect(() => {
-    if (!downLoop) {
+    if (!downLoop || stop) {
       const clockInterval = setInterval(() => {
         // Tính khoảng thời gian giữa thời gian hiện tại và thời gian cụ thể
         const countTime = new Date(time.time).getTime() - new Date().getTime();
@@ -48,7 +49,7 @@ const CountDownTime = ({ time, bidsTime }: IProps) => {
         clearInterval(clockInterval);
       };
     }
-  }, [bidsTime, downLoop, time]);
+  }, [bidsTime, downLoop, stop, time]);
 
   return (
     <>
