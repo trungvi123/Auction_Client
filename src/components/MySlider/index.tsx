@@ -1,29 +1,16 @@
-import { useEffect, useState } from "react";
-// import Slider from 'react-slick';
-import Slider, {Settings} from 'react-slick';
-import { IProduct } from "../../interface";
+
+import Slider, { Settings } from "react-slick";
 import ProductCard from "../../components/ProductCard";
-import productApi from "../../api/productApi";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-const MySlider = ({ type, quantity = 6 }: any) => {
 
+interface IProps {
+  type: string;
+  data: any;
+}
 
-  const [products, setProducts] = useState<IProduct[]>();
-
-  useEffect(() => {
-    if (type === "product") {
-      const getProducts = async () => {
-        const result: any = await productApi.getProducts(quantity);
-        if (result?.status === "success") {
-          setProducts(result.data);
-        }
-      };
-      getProducts();
-    }
-  }, [type,quantity]);
-
+const MySlider = ({ type, data }: IProps) => {
   const settings = {
     className: "section-outstanding__slider",
     slidesToShow: 4,
@@ -54,8 +41,8 @@ const MySlider = ({ type, quantity = 6 }: any) => {
   return (
     <div>
       <Slider {...settings}>
-        {products &&
-          products?.map((item) => {
+        {data &&
+          data?.map((item: any) => {
             return <ProductCard key={item._id} data={item}></ProductCard>;
           })}
       </Slider>

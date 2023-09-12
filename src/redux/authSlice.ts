@@ -4,6 +4,7 @@ const initialState = {
   email: "",
   _id: "",
   lastName: "",
+  basicUser: true,
 };
 
 const authSlice = createSlice({
@@ -19,9 +20,13 @@ const authSlice = createSlice({
     setLastName: (state, action) => {
       state.lastName = action.payload;
     },
+    setBasicUser: (state) => {
+      state.basicUser = false;
+    },
   },
 });
 
-export const { setEmail, setIdUser, setLastName } = authSlice.actions;
+export const { setEmail, setIdUser, setLastName, setBasicUser } =
+  authSlice.actions;
 
 export default authSlice.reducer;

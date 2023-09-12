@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -8,8 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 
 import userApi, { IChangePassPayload, ISignInPayload } from "../../api/userApi";
-import { setClose, setType } from "../../redux/myModalSlice";
-import { setEmail, setLastName, setIdUser } from "../../redux/authSlice";
+import { setClose, setStatus } from "../../redux/myModalSlice";
+import { setEmail, setLastName, setIdUser, setBasicUser } from "../../redux/authSlice";
 
 interface IToken {
   _id: any;
@@ -55,7 +55,10 @@ function FormLogin(props: IPropsForm) {
           localStorage.setItem("token", result.accessToken);
 
           const data: IToken = jwtDecode(result.accessToken);
-          dispatch(setType("alert")); // set type for model
+          if(data.role !== 'user'){
+            dispatch(setBasicUser())
+          }
+          dispatch(setStatus('changePass'))
           dispatch(setClose());
           dispatch(setEmail(data.email));
           dispatch(setLastName(data.lastName));

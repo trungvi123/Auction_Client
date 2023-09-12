@@ -1,12 +1,11 @@
 export interface IMyModal {
   show: boolean;
   status: string;
-  type: string;
-  message: string;
-  variant: string;
-  idItemDelete: string;
-  refreshList: boolean;
-  typeSelect: string;
+}
+
+export interface IUi {
+  menuSidebarCollapsed: boolean;
+  controlSidebarCollapsed: boolean;
 }
 
 export interface IUtils {
@@ -17,6 +16,7 @@ export interface IAuth {
   email: string;
   _id: any;
   lastName: string;
+  basicUser: boolean;
 }
 
 export interface ISearchModal {
@@ -28,6 +28,7 @@ export interface IRootState {
   searchModal: ISearchModal;
   auth: IAuth;
   utils: IUtils;
+  ui: IUi;
 }
 
 // interface for product

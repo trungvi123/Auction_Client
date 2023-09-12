@@ -140,6 +140,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       formData.append("duration", data.duration);
       formData.append("startTime", startDate.toLocaleString());
       formData.append("endTime", auctionEndTime.toLocaleString());
+      
       for (let i = 0; i < uploadedImages.length; i++) {
         formData.append("images", uploadedImages[i]);
       }
@@ -152,7 +153,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            next("/quan-li-dau-gia");
+            // next("/quan-li-dau-gia");
           }
         };
         createProd();
@@ -173,7 +174,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            next("/quan-li-dau-gia");
+            // next("/quan-li-dau-gia");
           }
         };
         editProd();

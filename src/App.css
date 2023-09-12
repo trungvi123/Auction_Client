@@ -33,6 +33,9 @@ body a {
   color: unset;
 }
 
+body a:hover {
+  color: unset;
+}
 
 /* .image-gallery-image {
   object-fit: cover;

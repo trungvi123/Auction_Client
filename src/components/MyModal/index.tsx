@@ -1,14 +1,11 @@
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../interface";
-import { setClose, setRefreshList } from "../../redux/myModalSlice";
+import { setClose } from "../../redux/myModalSlice";
 import { logo } from "../../asset/images";
 
 import "./MyModal.css";
 import FormLogin from "../FormLogin";
-import productApi from "../../api/productApi";
-import toast from "react-hot-toast";
-import userApi from "../../api/userApi";
 
 function MyModal({
   name,
@@ -19,42 +16,10 @@ function MyModal({
   placement: any;
 }) {
   const myModal = useSelector((e: IRootState) => e.myModal);
-  const idOwner: any = useSelector((e: IRootState) => e.auth._id);
   const dispatch = useDispatch();
 
   const handleClose = () => {
     dispatch(setClose());
-  };
-
-  const handleDeleteItem = () => {
-    const _id: string = myModal.idItemDelete;
-    const typeSelect: string = myModal.typeSelect;
-    const payload = {
-      idProd: _id,
-      idOwner,
-    };
-    const delApi = async () => {
-      let result: any;
-      if (typeSelect === "create") {
-        // xóa bên bảng các sản phẩm đã tạo
-        result = await productApi.deleteProductById(payload);
-      } else {
-        const pl = {
-          ...payload,
-          type: typeSelect,
-        };
-        result = await userApi.deleteProductHistory(pl);
-      }
-      if (result?.status === "success") {
-        toast.success("Đã xóa sản phẩm thành công!");
-        dispatch(setRefreshList());
-        dispatch(setClose());
-      } else {
-        toast.error("Đã xóa sản phẩm thất bại!");
-        dispatch(setClose());
-      }
-    };
-    delApi();
   };
 
   return (
@@ -72,21 +37,8 @@ function MyModal({
               <img className="login__logo" src={logo} alt="" />
               <div className="login__close" onClick={handleClose}></div>
             </div>
-            {myModal.type === "login" ? (
-              <FormLogin status={myModal.status}></FormLogin>
-            ) : (
-              <div className={`myAlert ${myModal.variant}`}>
-                <h4 className="mt-4">{myModal.message}</h4>
-                <div className="myAlert__btn">
-                  <div className="btn-11" onClick={handleClose}>
-                    <span className="btn-11__content">Đóng</span>
-                  </div>
-                  <div className="btn-11" onClick={handleDeleteItem}>
-                    <span className="btn-11__content">Tiếp tục</span>
-                  </div>
-                </div>
-              </div>
-            )}
+
+            <FormLogin status={myModal.status}></FormLogin>
           </div>
         </Offcanvas.Body>
       </Offcanvas>

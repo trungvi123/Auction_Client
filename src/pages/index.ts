@@ -9,6 +9,9 @@ export {default as EditAuction } from './EditAuction'
 export {default as ManagementAuction } from './ManagementAuction'
 
 export {default as Dashboard } from './Admin/Dashboard'
+export {default as UsersManagement } from './Admin/UsersManagement'
+export {default as AuctionManagement } from './Admin/AuctionManagement'
+
 
 
 

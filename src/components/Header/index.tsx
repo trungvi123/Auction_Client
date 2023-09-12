@@ -7,13 +7,13 @@ import {
   BiSearch,
   BiUser,
 } from "react-icons/bi";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 
 import { logo } from "../../asset/images";
 import CurrentTime from "../CurrentTime";
-import { setShow, setStatus, setType } from "../../redux/myModalSlice";
+import { setShow, setStatus } from "../../redux/myModalSlice";
 import { setShowSearch } from "../../redux/searchModalSlice";
 import { IRootState } from "../../interface";
 import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
+  const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
   const [isScrolled, setIsScrolled] = useState(false);
   const openMyModal = () => {
     dispatch(setStatus("login"));
@@ -39,13 +40,12 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("reduxState");
-    dispatch(setType("login"));
     dispatch(setEmail(""));
     dispatch(setLastName(""));
     dispatch(setIdUser(""));
     window.location.replace("/");
   };
-  
+
   const handleScroll = () => {
     // Kiểm tra vị trí cuộn chuột để xác định có thêm class hay không
     if (window.scrollY > 30) {
@@ -72,7 +72,6 @@ const Header = () => {
           <Navbar.Brand as={Link} to="/">
             <img className="head__logo" src={logo} alt="" />
           </Navbar.Brand>
-
           <Nav>
             <div className="NavLink-box">
               <Nav.Link>
@@ -173,6 +172,17 @@ const Header = () => {
                 <div className="head-menu-child head-menu-child-user">
                   <h6 className="lastName">{lastName}</h6>
                   <ul>
+                    {!basicUser && (
+                      <li>
+                        <Link
+                          to="/admin/dashboard"
+                          className="head-link d-flex align-items-center head-menu-child-item"
+                        >
+                          <BiCheckShield size={18}></BiCheckShield>
+                          <span className="px-2 d-block">DashBoard</span>
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <Link
                         to="/tao-dau-gia"
@@ -193,7 +203,7 @@ const Header = () => {
                         </span>
                       </Link>
                     </li>
-                 
+
                     <li
                       onClick={handleChangePass}
                       className="head-link d-flex align-items-center head-menu-child-item"

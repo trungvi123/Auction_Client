@@ -4,10 +4,13 @@ import "./AdminDefaultLayout.css";
 
 const AdminDefaultLayout: any = ({ children }: any) => {
   return (
-    <div>
-      <AdminHeader></AdminHeader>
-      {children}
-      <Footer></Footer>
+
+    <div className="d-flex h-100">
+      <div className="ad-content">
+        <AdminHeader></AdminHeader>
+        {children}
+        <Footer></Footer>
+      </div>
     </div>
   );
 };

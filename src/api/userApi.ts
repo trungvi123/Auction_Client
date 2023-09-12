@@ -58,8 +58,16 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/purchasedProducts/${id}`;
     return axiosClientJWT.get(url);
   },
+  getQuatityUser: () => {
+    const url = apiConfig.baseUrl + `user/quatityUsers`;
+    return axiosClient.get(url);
+  },
   getWinProductsByOwner: (id: string) => {
     const url = apiConfig.baseUrl + `user/winProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getRefuseProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/refuseProducts/${id}`;
     return axiosClientJWT.get(url);
   },
   getBidsProductsByOwner: (id: string) => {

@@ -1,4 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { Col, Container, Row } from "react-bootstrap";
+import productApi from "../../api/productApi";
 import {
   home_intro,
   banner,
@@ -6,10 +8,18 @@ import {
   product_bg,
 } from "../../asset/images/";
 import MySlider from "../../components/MySlider";
+import ProductCard from "../../components/ProductCard";
 import TitleH2 from "../../components/TitleH2";
 
 import "./Home.css";
 const Home = () => {
+  const quantity = 6;
+
+  const productsQuery = useQuery({
+    queryKey: ["products", quantity],
+    queryFn: () => productApi.getProducts(),
+  });
+
   return (
     <Container fluid>
       <section className="home-intro">
@@ -76,11 +86,28 @@ const Home = () => {
         <Container>
           <div>
             <TitleH2 title="Tài sản sắp được đấu giá"></TitleH2>
-            <div>
-              {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
-              {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
-              <MySlider type={"product"} quantity={6}></MySlider>
-            </div>
+            {productsQuery?.data?.data?.length >= 6 ? (
+              <div>
+                {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                <MySlider
+                  type={"product"}
+                  data={productsQuery?.data?.data}
+                ></MySlider>
+              </div>
+            ) : (
+              <div>
+                <Row>
+                  {productsQuery?.data?.data?.map((item: any) => {
+                    return (
+                      <Col md={5} lg={3} sm={2} key={item._id}>
+                        <ProductCard data={item}></ProductCard>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              </div>
+            )}
           </div>
         </Container>
       </section>
