@@ -7,6 +7,10 @@ export {default as ProductDetail } from './ProductDetail'
 export {default as CreateAuction } from './CreateAuction'
 export {default as EditAuction } from './EditAuction'
 export {default as ManagementAuction } from './ManagementAuction'
+export {default as CreateFreeProduct } from './CreateFreeProduct'
+export {default as Checkout } from './Checkout'
+
+
 
 export {default as Dashboard } from './Admin/Dashboard'
 export {default as UsersManagement } from './Admin/UsersManagement'

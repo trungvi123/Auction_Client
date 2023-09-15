@@ -9,7 +9,11 @@ import {
   CreateAuction,
   ManagementAuction,
   EditAuction,
-  Dashboard,AuctionManagement,UsersManagement
+  Dashboard,
+  AuctionManagement,
+  UsersManagement,
+  CreateFreeProduct,
+  Checkout,
 } from "../pages";
 
 interface IRoute {
@@ -27,13 +31,23 @@ export const publicRoute: IRoute[] = [
   { path: routes.createAuction, element: CreateAuction },
   { path: routes.managementAuction, element: ManagementAuction },
   { path: routes.editAuction, element: EditAuction },
+  { path: routes.createFreeProduct, element: CreateFreeProduct },
+  { path: routes.checkOut, element: Checkout },
+
 
   //test , khi test xong để vào private
 
   { path: routes.dashboard, element: Dashboard, layout: "AdminDefaultLayout" },
-  { path: routes.AdAuction, element: AuctionManagement, layout: "AdminDefaultLayout" },
-  { path: routes.AdUsers, element: UsersManagement, layout: "AdminDefaultLayout" },
-
+  {
+    path: routes.AdAuction,
+    element: AuctionManagement,
+    layout: "AdminDefaultLayout",
+  },
+  {
+    path: routes.AdUsers,
+    element: UsersManagement,
+    layout: "AdminDefaultLayout",
+  },
 ];
 
 export const privateRoute: IRoute[] = [

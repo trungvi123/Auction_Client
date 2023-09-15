@@ -194,6 +194,15 @@ const Header = () => {
                     </li>
                     <li>
                       <Link
+                        to="/chia-se-vat-pham"
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <BiCheckShield size={18}></BiCheckShield>
+                        <span className="px-2 d-block">Tặng / chia sẻ vật phẩm</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
                         to="/quan-li-dau-gia"
                         className="head-link d-flex align-items-center head-menu-child-item"
                       >
