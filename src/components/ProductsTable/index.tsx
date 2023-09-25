@@ -1,6 +1,6 @@
 import { MaterialReactTable } from "material-react-table";
 import { type MRT_ColumnDef } from "material-react-table";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Image } from "react-bootstrap";
 
 import { auction } from "../../asset/images";
@@ -10,9 +10,13 @@ import toast from "react-hot-toast";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import userApi from "../../api/userApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../interface";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  setFreeProductPermission,
+  setProductPermission,
+} from "../../redux/authSlice";
 
 interface IProTable {
   name: string;
@@ -23,6 +27,7 @@ interface IProTable {
   status: string;
   handle: {
     _id: string;
+    name: string;
     status: string;
   };
 }
@@ -32,15 +37,21 @@ function ProductsTable({
   typeList, // create => myProduct => can delete || other => not myProduct => can't delete
   handleByAdmin = false,
   statusAuction = "Đã được duyệt",
+  freeProduct = false,
 }: any) {
-  const dataLocal = useRef<IProTable[]>([]);
   const next = useNavigate();
+  const dispatch = useDispatch();
+  const dataLocal = useRef<IProTable[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [msgModal, setMsgModal] = useState("");
   const [inforHandle, setInforHanle] = useState({
     variable: "",
     id: "",
   });
+  const prodPer: any = useSelector((e: IRootState) => e.auth.productPermission);
+  const freeProdPer: any = useSelector(
+    (e: IRootState) => e.auth.freeProductPermission
+  );
   const idOwner: any = useSelector((e: IRootState) => e.auth._id);
   const queryClient = useQueryClient();
 
@@ -51,16 +62,34 @@ function ProductsTable({
 
   const handleApprove = (id: string) => {
     const approveApi = async () => {
-      const res: any = await productApi.approveProduct({ id });
-      console.log(res);
+      const res: any = await productApi.approveProduct({
+        id,
+        isFree: freeProduct,
+      });
       if (res?.status === "success") {
         toast.success("Duyệt cuộc đấu giá thành công!");
-        queryClient.invalidateQueries({
-          queryKey: ["auction-list__admin", { statusAuction }],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["auction-list__admin", { statusAuction: "Đã được duyệt" }],
-        });
+        if (freeProduct) {
+          queryClient.invalidateQueries({
+            queryKey: ["freeProduct-list__admin", { statusAuction }],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "freeProduct-list__admin",
+              { statusAuction: "Đã được duyệt" },
+            ],
+          });
+        } else {
+          queryClient.invalidateQueries({
+            queryKey: ["auction-list__admin", { statusAuction }],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "auction-list__admin",
+              { statusAuction: "Đã được duyệt" },
+            ],
+          });
+        }
+
         // thêm api gửi mail
       }
     };
@@ -69,18 +98,32 @@ function ProductsTable({
 
   const handleRefuse = (id: string) => {
     const refuseApi = async () => {
-      const res: any = await productApi.refuseProduct({ id });
+      const res: any = await productApi.refuseProduct({
+        id,
+        isFree: freeProduct,
+      });
       if (res?.status === "success") {
         toast.success("Đã từ chối cuộc đấu giá thành công!");
         // thêm api gửi mail
+        if (freeProduct) {
+          queryClient.invalidateQueries({
+            queryKey: ["freeProduct-list__admin", { statusAuction }],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              "freeProduct-list__admin",
+              { statusAuction: "Đã từ chối" },
+            ],
+          });
+        } else {
+          queryClient.invalidateQueries({
+            queryKey: ["auction-list__admin", { statusAuction }],
+          });
 
-        queryClient.invalidateQueries({
-          queryKey: ["auction-list__admin", { statusAuction }],
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: ["auction-list__admin", { statusAuction: "Đã từ chối" }],
-        });
+          queryClient.invalidateQueries({
+            queryKey: ["auction-list__admin", { statusAuction: "Đã từ chối" }],
+          });
+        }
       }
     };
     refuseApi();
@@ -88,7 +131,10 @@ function ProductsTable({
 
   const handleApproveAgain = (id: string) => {
     const againApi = async () => {
-      const res: any = await productApi.approveAgainProduct({ id });
+      const res: any = await productApi.approveAgainProduct({
+        id,
+        isFree: freeProduct,
+      });
       if (res?.status === "success") {
         toast.success("Đã kiến nghị duyệt lại cuộc đấu giá thành công!");
 
@@ -107,9 +153,10 @@ function ProductsTable({
       const payload = {
         idProd: id,
         idOwner,
+        isFree: freeProduct,
       };
-      if (typeList === "create") {
-        // xóa bên bảng các sản phẩm đã tạo
+      if (typeList === "create" || typeList === "refuse") {
+        // xóa bên bảng các sản phẩm đã tạo hoac bi tu choi
         result = await productApi.deleteProductById(payload);
       } else {
         const pl = {
@@ -119,15 +166,63 @@ function ProductsTable({
         result = await userApi.deleteProductHistory(pl);
       }
       if (result?.status === "success") {
-        toast.success("Đã xóa sản phẩm thành công!");
-        if (handleByAdmin) {
-          queryClient.invalidateQueries({
-            queryKey: ["auction-admin", { statusAuction }],
-          });
+        if (freeProduct) {
+          dispatch(setFreeProductPermission([...freeProdPer, result._id]));
         } else {
-          queryClient.invalidateQueries({
-            queryKey: ["auction-list__user", { typeList }],
-          });
+          dispatch(setProductPermission([...prodPer, result._id]));
+        }
+        toast.success("Đã xóa thành công!");
+        if (handleByAdmin) {
+          if (freeProduct) {
+            queryClient.invalidateQueries({
+              queryKey: ["freeProduct-list__admin", { statusAuction }],
+            });
+          } else {
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__admin", { statusAuction }],
+            });
+          }
+        } else {
+          if (freeProduct) {
+            if (typeList === "create") {
+              // khi xoa o create thi cap nhat lai luon cache cua refuse
+              queryClient.invalidateQueries({
+                queryKey: [
+                  "freeProduct-list__user",
+                  { typeFreeList: "refuse" },
+                ],
+              });
+            }
+            if (typeList === "refuse") {
+              // khi xoa o refuse thi cap nhat lai luon cache cua create
+              queryClient.invalidateQueries({
+                queryKey: [
+                  "freeProduct-list__user",
+                  { typeFreeList: "create" },
+                ],
+              });
+            }
+            // cap nhat cache san pham mien phi
+            queryClient.invalidateQueries({
+              queryKey: ["freeProduct-list__user", { typeFreeList: typeList }],
+            });
+          } else {
+            if (typeList === "create") {
+              // khi xoa o create thi cap nhat lai luon cache cua refuse
+              queryClient.invalidateQueries({
+                queryKey: ["auction-list__user", { typeList: "refuse" }],
+              });
+            }
+            if (typeList === "refuse") {
+              // khi xoa o refuse thi cap nhat lai luon cade cua create
+              queryClient.invalidateQueries({
+                queryKey: ["auction-list__user", { typeList: "create" }],
+              });
+            }
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__user", { typeList }],
+            });
+          }
         }
       } else {
         toast.error("Đã xóa sản phẩm thất bại!");
@@ -161,6 +256,7 @@ function ProductsTable({
           status: item.status,
           handle: {
             _id: item._id,
+            name: item.name,
             status: item.status,
           },
         };
@@ -169,6 +265,10 @@ function ProductsTable({
       dataLocal.current = [];
     }
   }, [data]);
+
+  const handleViewReceivedList = (id: string) => {
+    next(`/danh-sach/${id}`);
+  };
 
   const columns = useMemo<MRT_ColumnDef<IProTable>[]>(
     () => [
@@ -187,7 +287,13 @@ function ProductsTable({
 
           return (
             <Image
-              onClick={() => next(`/chi-tiet-dau-gia/${data.idProduct}`)}
+              onClick={() =>
+                next(
+                  `${
+                    freeProduct ? "/chi-tiet-chia-se/" : "/chi-tiet-dau-gia/"
+                  }${data.idProduct}`
+                )
+              }
               width={120}
               height={120}
               src={data.src}
@@ -213,8 +319,10 @@ function ProductsTable({
           const data: {
             _id: string;
             status: string;
+            name: string;
           } = cell.getValue<{
             _id: string;
+            name: string;
             status: string;
           }>();
           return (
@@ -224,17 +332,33 @@ function ProductsTable({
                   {typeList === "create" &&
                     data.status === "Đang chờ duyệt" && (
                       <Link
-                        to={`/chinh-sua-dau-gia/${data._id}`}
+                        to={`${
+                          freeProduct
+                            ? "/chinh-sua-chia-se/"
+                            : "/chinh-sua-dau-gia/"
+                        }${data._id}`}
                         className="btn-11"
                       >
                         <span className="btn-11__content">Sửa</span>
                       </Link>
                     )}
-                  {typeList === "create" && data.status === "Đã được duyệt" && (
-                    <div className="btn-11 disable">
-                      <span className="btn-11__content">Sửa</span>
-                    </div>
-                  )}
+                  {typeList === "create" &&
+                    data.status === "Đã được duyệt" &&
+                    !freeProduct && (
+                      <div className="btn-11 disable">
+                        <span className="btn-11__content">Sửa</span>
+                      </div>
+                    )}
+                  {typeList === "create" &&
+                    data.status === "Đã được duyệt" &&
+                    freeProduct && (
+                      <div
+                        className="btn-11"
+                        onClick={() => handleViewReceivedList(data._id)}
+                      >
+                        <span className="btn-11__content">Xem danh sách</span>
+                      </div>
+                    )}
                   {typeList === "refuse" && data.status === "Đã bị từ chối" && (
                     <div
                       className="btn-11"
@@ -361,7 +485,8 @@ function ProductsTable({
         },
       },
     ],
-    [next, handleByAdmin, typeList, statusAuction]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [next, freeProduct, handleByAdmin, typeList, statusAuction]
   );
   return (
     <>

@@ -58,6 +58,14 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/purchasedProducts/${id}`;
     return axiosClientJWT.get(url);
   },
+  getReceivedProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/receivedProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getParticipateProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/getParticipateReceiving/${id}`;
+    return axiosClientJWT.get(url);
+  },
   getQuatityUser: () => {
     const url = apiConfig.baseUrl + `user/quatityUsers`;
     return axiosClient.get(url);
@@ -70,12 +78,20 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/refuseProducts/${id}`;
     return axiosClientJWT.get(url);
   },
+  getRefuseFreeProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/refuseFreeProducts/${id}`;
+    return axiosClientJWT.get(url);
+  },
   getBidsProductsByOwner: (id: string) => {
     const url = apiConfig.baseUrl + `user/bidsProducts/${id}`;
     return axiosClientJWT.get(url);
   },
   getProductsByOwner: (id: string) => {
     const url = apiConfig.baseUrl + `user/owner/${id}`;
+    return axiosClientJWT.get(url);
+  },
+  getFreeProductsByOwner: (id: string) => {
+    const url = apiConfig.baseUrl + `user/owner/freeProduct/${id}`;
     return axiosClientJWT.get(url);
   },
   deleteProductHistory: (payload: {

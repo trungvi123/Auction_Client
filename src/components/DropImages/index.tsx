@@ -6,10 +6,10 @@ import "./DropImages.css";
 
 interface ImageUploaderProps {
   onImagesUpload: (images: File[]) => void;
-  dataEdit?: any[];
+  resetSelectedImages?:boolean
 }
 const DropImages: React.FC<ImageUploaderProps> = ({
-  onImagesUpload
+  onImagesUpload,resetSelectedImages = false
 }) => {
   const [selectedImages, setSelectedImages] = useState<FileWithPath[]>([]);
 
@@ -20,6 +20,11 @@ const DropImages: React.FC<ImageUploaderProps> = ({
     },
     [onImagesUpload, selectedImages]
   );
+  useEffect(()=>{
+    if(resetSelectedImages){
+      setSelectedImages([])
+    }
+  },[resetSelectedImages])
 
   const dropzoneOptions: DropzoneOptions = {
     onDrop,

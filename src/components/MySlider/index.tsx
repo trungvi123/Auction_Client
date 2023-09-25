@@ -1,9 +1,9 @@
-
 import Slider, { Settings } from "react-slick";
 import ProductCard from "../../components/ProductCard";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import FreeProductCard from "../FreeProductCard";
 
 interface IProps {
   type: string;
@@ -40,12 +40,24 @@ const MySlider = ({ type, data }: IProps) => {
   };
   return (
     <div>
-      <Slider {...settings}>
-        {data &&
-          data?.map((item: any) => {
-            return <ProductCard key={item._id} data={item}></ProductCard>;
-          })}
-      </Slider>
+      {type === "product" && (
+        <Slider {...settings}>
+          {data &&
+            data?.map((item: any) => {
+              return <ProductCard key={item._id} data={item}></ProductCard>;
+            })}
+        </Slider>
+      )}
+      {type !== "product" && (
+        <Slider {...settings}>
+          {data &&
+            data?.map((item: any) => {
+              return (
+                <FreeProductCard key={item._id} data={item}></FreeProductCard>
+              );
+            })}
+        </Slider>
+      )}
     </div>
   );
 };

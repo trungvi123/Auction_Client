@@ -14,32 +14,32 @@ import TextEditor from "../TextEditor";
 import DropImages from "../DropImages";
 import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
+import { setProductPermission } from "../../redux/authSlice";
 import "./ProductForm.css";
-import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
-interface ICate {
-  _id: string;
-  name: string;
-}
+const initialStateData = {
+  name: "",
+  basePrice: "",
+  price: "",
+  stepPrice: "",
+  category: "",
+  oldCategory: "",
+  startTime: "",
+  duration: "",
+  description: "",
+};
 const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
-  const next = useNavigate();
-  const [cateList, setCateList] = useState<ICate[]>([]);
+  const productsPerrmission = useSelector(
+    (e: IRootState) => e.auth.productPermission
+  );
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imgsEdit, setImgsEdit] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [invalidDate, setInvalidDate] = useState<boolean>();
-  const [dataEdit, setDataEdit] = useState({
-    name: "",
-    basePrice: "",
-    price: "",
-    stepPrice: "",
-    category: "",
-    oldCategory: "",
-    startTime: "",
-    duration: "",
-    description: "",
-  });
+  const [resetImgs, setResetImgs] = useState<boolean>(false);
+  const [dataEdit, setDataEdit] = useState(initialStateData);
 
   const prodDescription = useSelector(
     (e: IRootState) => e.utils.prodDescription
@@ -83,7 +83,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   }, [dispatch, id, type, reset]);
 
   const handleStartDateChange = (date: Date) => {
-    const hoursToAdd = 6/60/60;
+    const hoursToAdd = 6 / 60 / 60;
     const currentTime = new Date();
     // Tạo một đối tượng Date mới sau khi thêm số giờ
     const newDate = new Date(
@@ -106,16 +106,14 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     setUploadedImages(images);
   };
 
-  useEffect(() => {
-    const fetchcate = async () => {
-      const resCate: any = await categoryApi.getAllCategory();
-
-      if (resCate?.status === "success") {
-        setCateList(resCate.category);
-      }
-    };
-    fetchcate();
-  }, []);
+  const caterogyQuery = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => {
+      const res: any = await categoryApi.getAllCategory();
+      return res;
+    },
+    staleTime: 1000 * 600,
+  });
 
   const submit = (data: any) => {
     // phòng trường hợp người dùng k click vào thay đổi thì sẽ không vào được hàm handleStartDateChange
@@ -140,7 +138,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       formData.append("duration", data.duration);
       formData.append("startTime", startDate.toLocaleString());
       formData.append("endTime", auctionEndTime.toLocaleString());
-      
+
       for (let i = 0; i < uploadedImages.length; i++) {
         formData.append("images", uploadedImages[i]);
       }
@@ -149,20 +147,25 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
         const createProd = async () => {
           const result: any = await productApi.createProducts(formData, config);
           if (result?.status === "success") {
+            dispatch(
+              setProductPermission([...productsPerrmission, result._id])
+            );
             toast.success("Tạo cuộc đấu giá thành công!");
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            // next("/quan-li-dau-gia");
+            // dispatch(setProdDescription(""));
+            // reset(initialStateData);
+            // setResetImgs(true)
           }
         };
         createProd();
       } else {
-        const KeepImgs:string[] = [...imgsEdit];
+        const KeepImgs: string[] = [...imgsEdit];
         for (let i = 0; i < KeepImgs.length; i++) {
           formData.append("keepImgs", KeepImgs[i]);
         } // giữ lại những hình cũ
-        
+
         formData.append("id", id);
 
         formData.append("oldCategory", dataEdit.oldCategory);
@@ -174,7 +177,9 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            // next("/quan-li-dau-gia");
+            // setResetImgs(true)
+            // reset(initialStateData);
+            // dispatch(setProdDescription(""));
           }
         };
         editProd();
@@ -289,8 +294,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             {...register("category", { required: true })}
           >
             <option value="">Chọn loại sản phẩm</option>
-            {cateList &&
-              cateList.map((item) => {
+            {caterogyQuery?.data?.category?.map((item:any) => {
                 return (
                   <option key={item._id} value={item._id}>
                     {item.name}
@@ -357,7 +361,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             Ảnh (Ảnh đầu tiên sẽ là ảnh đại diện cho sản phẩm)
           </Form.Label>
           <DropImages
-            dataEdit={uploadedImages}
+            resetSelectedImages={resetImgs}
             onImagesUpload={handleImageUpload}
           ></DropImages>
           {imgsEdit.length > 0 && (

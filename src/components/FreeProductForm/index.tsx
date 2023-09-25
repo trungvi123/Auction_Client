@@ -16,28 +16,32 @@ import { minus } from "../../asset/images";
 import "../ProductForm/ProductForm.css";
 import { useNavigate } from "react-router-dom";
 import freeProductApi from "../../api/freeProduct";
-interface ICate {
-  _id: string;
-  name: string;
-}
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { setFreeProductPermission } from "../../redux/authSlice";
+
+const initialStateData = {
+  name: "",
+  category: "",
+  oldCategory: "",
+  description: "",
+};
 const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
   const next = useNavigate();
-  const [cateList, setCateList] = useState<ICate[]>([]);
+  const queryClient = useQueryClient();
+
+  const [resetImgs, setResetImgs] = useState<boolean>(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imgsEdit, setImgsEdit] = useState([]);
-  const [dataEdit, setDataEdit] = useState({
-    name: "",
-    category: "",
-    oldCategory: "",
-    description: "",
-  });
+  const [dataEdit, setDataEdit] = useState(initialStateData);
 
   const prodDescription = useSelector(
     (e: IRootState) => e.utils.prodDescription
   );
   const idOwner = useSelector((e: IRootState) => e.auth._id);
-
+  const freeProductsPerrmission = useSelector(
+    (e: IRootState) => e.auth.freeProductPermission
+  );
   const {
     register,
     handleSubmit,
@@ -48,7 +52,7 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   useEffect(() => {
     if (type === "edit") {
       const fetchProd = async () => {
-        const result: any = await productApi.getProductById(id);
+        const result: any = await freeProductApi.getProductById(id);
 
         if (result?.status === "success") {
           const data = {
@@ -74,19 +78,17 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     setUploadedImages(images);
   };
 
-  useEffect(() => {
-    const fetchcate = async () => {
-      const resCate: any = await categoryApi.getAllCategory();
 
-      if (resCate?.status === "success") {
-        setCateList(resCate.category);
-      }
-    };
-    fetchcate();
-  }, []);
+  const caterogyQuery = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => {
+      const res: any = await categoryApi.getAllCategory();
+      return res;
+    },
+    staleTime: 1000 * 600,
+  });
 
   const submit = (data: any) => {
-    // phòng trường hợp người dùng k click vào thay đổi thì sẽ không vào được hàm handleStartDateChange
     const formData = new FormData();
     const config = {
       headers: {
@@ -108,35 +110,45 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           config
         );
         if (result?.status === "success") {
-          toast.success("Tạo cuộc đấu giá thành công!");
-          toast.success(
-            "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
+          dispatch(
+            setFreeProductPermission([...freeProductsPerrmission, result._id])
           );
-          // next("/quan-li-dau-gia");
+          queryClient.invalidateQueries({
+            queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
+          });
+          toast.success("Chia sẻ thành công!");
+          // dispatch(setProdDescription(""));
+          // reset(initialStateData);
+          // setResetImgs(true);
         }
       };
       createFreeProd();
     } else {
-      // const KeepImgs: string[] = [...imgsEdit];
-      // for (let i = 0; i < KeepImgs.length; i++) {
-      //   formData.append("keepImgs", KeepImgs[i]);
-      // } // giữ lại những hình cũ
+      const KeepImgs: string[] = [...imgsEdit];
+      for (let i = 0; i < KeepImgs.length; i++) {
+        formData.append("keepImgs", KeepImgs[i]);
+      } // giữ lại những hình cũ
 
-      // formData.append("id", id);
+      formData.append("id", id);
 
-      // formData.append("oldCategory", dataEdit.oldCategory);
+      formData.append("oldCategory", dataEdit.oldCategory);
 
-      // const editProd = async () => {
-      //   const result: any = await productApi.editProducts(formData, config);
-      //   if (result?.status === "success") {
-      //     toast.success("Sửa cuộc đấu giá thành công!");
-      //     toast.success(
-      //       "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
-      //     );
-      //     // next("/quan-li-dau-gia");
-      //   }
-      // };
-      // editProd();
+      const editProd = async () => {
+        const result: any = await freeProductApi.editFreeProduct(
+          formData,
+          config
+        );
+        if (result?.status === "success") {
+          toast.success("Chỉnh sửa thành công!");
+          queryClient.invalidateQueries({
+            queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
+          });
+          // dispatch(setProdDescription(""));
+          // reset(initialStateData);
+          // setResetImgs(true);
+        }
+      };
+      editProd();
     }
   };
 
@@ -165,8 +177,8 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             {...register("category", { required: true })}
           >
             <option value="">Chọn loại sản phẩm</option>
-            {cateList &&
-              cateList.map((item) => {
+            {
+              caterogyQuery?.data?.category?.map((item:any) => {
                 return (
                   <option key={item._id} value={item._id}>
                     {item.name}
@@ -193,7 +205,7 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             Ảnh (Ảnh đầu tiên sẽ là ảnh đại diện cho sản phẩm)
           </Form.Label>
           <DropImages
-            dataEdit={uploadedImages}
+            resetSelectedImages={resetImgs}
             onImagesUpload={handleImageUpload}
           ></DropImages>
           {imgsEdit.length > 0 && (

@@ -10,6 +10,7 @@ export interface IUi {
 
 export interface IUtils {
   prodDescription: string;
+  prodName: string;
 }
 
 export interface IAuth {
@@ -17,6 +18,8 @@ export interface IAuth {
   _id: any;
   lastName: string;
   basicUser: boolean;
+  productPermission: string[];
+  freeProductPermission: string[];
 }
 
 export interface ISearchModal {
@@ -54,4 +57,18 @@ export interface IProduct {
   updatedAt: string;
   _id: string;
   room: string;
+}
+
+export interface IFreeProduct {
+  category: string;
+  createdAt: string;
+  currentPrice: any;
+  description: string;
+  images: string[];
+  name: string;
+  owner: string;
+  sold: boolean;
+  createAt: string;
+  updatedAt: string;
+  _id: string;
 }

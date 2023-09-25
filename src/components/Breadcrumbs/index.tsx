@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Breadcrumbs.css";
 
-const Breadcrumbs = ({title,type, img}:any) => {
+const Breadcrumbs = ({ title, type, img }: any) => {
   return (
     <div className="breadcrumbs">
       <div className="breadcrumbs-box">
@@ -20,4 +20,4 @@ const Breadcrumbs = ({title,type, img}:any) => {
   );
 };
 
-export default Breadcrumbs;
+export default React.memo(Breadcrumbs);

@@ -18,8 +18,12 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/quatityProduct`;
     return axiosClient.get(url);
   },
-  getProducts: (quantity: Number = 5) => {
-    const url = apiConfig.baseUrl + `product/all/${quantity}`;
+  getProducts: (page: Number = 1) => {
+    const url = apiConfig.baseUrl + `product/page/${page}`;
+    return axiosClient.get(url);
+  },
+  getAllProducts: () => {
+    const url = apiConfig.baseUrl + `product/all/`;
     return axiosClient.get(url);
   },
   getBidsById: (id: string) => {

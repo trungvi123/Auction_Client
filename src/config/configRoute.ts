@@ -14,6 +14,10 @@ import {
   UsersManagement,
   CreateFreeProduct,
   Checkout,
+  EditFreeProduct,
+  FreeProductDetail,
+  ReceivedList,
+  ProductList,
 } from "../pages";
 
 interface IRoute {
@@ -33,6 +37,12 @@ export const publicRoute: IRoute[] = [
   { path: routes.editAuction, element: EditAuction },
   { path: routes.createFreeProduct, element: CreateFreeProduct },
   { path: routes.checkOut, element: Checkout },
+  { path: routes.editFreeProduct, element: EditFreeProduct },
+  { path: routes.freeProductDetail, element: FreeProductDetail },
+  { path: routes.receivedList, element: ReceivedList },
+  { path: routes.productList, element: ProductList },
+
+
 
 
   //test , khi test xong để vào private

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
+import freeProductApi from "../../../api/freeProduct";
 import productApi from "../../../api/productApi";
 import ProductsTable from "../../../components/ProductsTable";
 
@@ -13,6 +14,19 @@ const AuctionManagement = () => {
         status: statusAuction,
       };
       const res = await productApi.getProductByStatus(payload);
+
+      return res;
+    },
+    staleTime: 240 * 1000,
+  });
+
+  const freeProduct_list = useQuery({
+    queryKey: ["freeProduct-list__admin", { statusAuction }],
+    queryFn: async () => {
+      const payload = {
+        status: statusAuction,
+      };
+      const res = await freeProductApi.getProductByStatus(payload);
 
       return res;
     },
@@ -40,6 +54,29 @@ const AuctionManagement = () => {
             typeList={"create"}
             handleByAdmin={true}
             data={auction_list?.data?.data || []}
+          ></ProductsTable>
+        </Col>
+      </Row>
+      <Row className="mt-5 justify-content-end">
+        <Col sm={4} className={"my-4"}>
+          <Form.Select
+            onChange={(e: any) => setStatusAuction(e.target.value)}
+            aria-label="Default select example"
+          >
+            <option value="Đã được duyệt">Sản phẩm chia sẻ đã được duyệt</option>
+            <option value="Đang chờ duyệt">Sản phẩm chia sẻ chưa được duyệt</option>
+            <option value="Đã từ chối">Sản phẩm chia sẻ đã từ chối</option>
+          </Form.Select>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ProductsTable
+            statusAuction={statusAuction}
+            typeList={"create"}
+            handleByAdmin={true}
+            freeProduct={true}
+            data={freeProduct_list?.data?.data || []}
           ></ProductsTable>
         </Col>
       </Row>

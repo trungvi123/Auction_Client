@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Col, Container, Row } from "react-bootstrap";
+import freeProductApi from "../../api/freeProduct";
 import productApi from "../../api/productApi";
 import {
   home_intro,
@@ -7,17 +8,26 @@ import {
   banner_res,
   product_bg,
 } from "../../asset/images/";
+import FreeProductCard from "../../components/FreeProductCard";
 import MySlider from "../../components/MySlider";
 import ProductCard from "../../components/ProductCard";
 import TitleH2 from "../../components/TitleH2";
 
 import "./Home.css";
 const Home = () => {
-  const quantity = 6;
+  const page = 1;
 
   const productsQuery = useQuery({
-    queryKey: ["products", quantity],
+    queryKey: ["products", page],
     queryFn: () => productApi.getProducts(),
+    staleTime:1000*600
+  });
+
+  const freeProductsQuery = useQuery({
+    queryKey: ["freePproducts", page],
+    queryFn: () => freeProductApi.getFreeProducts(),
+    staleTime:1000*600
+
   });
 
   return (
@@ -102,6 +112,37 @@ const Home = () => {
                     return (
                       <Col md={5} lg={3} sm={2} key={item._id}>
                         <ProductCard data={item}></ProductCard>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      <section className="product-section">
+        <img className="product-section__bg" src={product_bg} alt="" />
+        <Container>
+          <div>
+            <TitleH2 title="Các sản phẩm có thể nhận miễn phí"></TitleH2>
+            {freeProductsQuery?.data?.data?.length >= 6 ? (
+              <div>
+                {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                <MySlider
+                  type={"freeProduct"}
+                  data={freeProductsQuery?.data?.data}
+                ></MySlider>
+              </div>
+            ) : (
+              <div>
+                <Row>
+                  {freeProductsQuery?.data?.data?.map((item: any) => {
+                    return (
+                      <Col md={5} lg={3} sm={2} key={item._id}>
+                        <FreeProductCard data={item}></FreeProductCard>
                       </Col>
                     );
                   })}

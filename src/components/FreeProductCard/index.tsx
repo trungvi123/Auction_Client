@@ -4,32 +4,37 @@ import { Link } from "react-router-dom";
 import { auction } from "../../asset/images";
 import { IProduct } from "../../interface";
 import formatDateTime from "../../utils/formatDay";
-import "./ProductCard.css";
+// import "./FreeProductCard.css";
 
-const ProductCard = ({ data }: { data: IProduct }) => {
+interface IProps {
+  createdAt: string;
+  images: string[];
+  name: string;
+  accepterList: string[];
+  _id: string;
+}
+
+const FreeProductCard = ({ data }: { data: IProps }) => {
   return (
     <div className="card-container">
       <div className="card-content">
-        <p className="card-time1">Thời gian đấu giá</p>
-        <p className="card-time2">{formatDateTime(data?.startTime)}</p>
+        <p className="card-time1">Thời gian có thể tham gia</p>
+        <p className="card-time2">{formatDateTime(data.createdAt)}</p>
         <div className="card-img-box">
           <img
             className="card-img"
-            src={data?.images[0] ? data.images[0] : auction}
+            src={data.images[0] ? data.images[0] : auction}
             alt="product-img"
           />
         </div>
         <p className="card-name">{data.name}</p>
         <p>
-          Giá khởi điểm:
-          <span className="card-price">
-            {" "}
-            {data?.basePrice?.$numberDecimal} VND
-          </span>
+          Số lượng người tham gia nhận hiện tại
+          <span className="card-price"> {data.accepterList.length} người</span>
         </p>
         <div className="card-more">
           <Link
-            to={`/chi-tiet-dau-gia/${data?._id}`}
+            to={`/chi-tiet-chia-se/${data._id}`}
             className="btn-11 card-more__btn"
           >
             <span className="btn-11__content">Chi tiết</span>
@@ -43,4 +48,4 @@ const ProductCard = ({ data }: { data: IProduct }) => {
   );
 };
 
-export default ProductCard;
+export default FreeProductCard;

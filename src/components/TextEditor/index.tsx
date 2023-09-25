@@ -65,6 +65,8 @@ const TextEditor = () => {
         onChange={(event, editor) => {
           const data = editor.getData();
           dispatch(setProdDescription(data));
+
+          
         }}
       ></CKEditor>
     </div>

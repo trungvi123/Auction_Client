@@ -5,6 +5,8 @@ const initialState = {
   _id: "",
   lastName: "",
   basicUser: true,
+  productPermission: [],
+  freeProductPermission: [],
 };
 
 const authSlice = createSlice({
@@ -23,10 +25,22 @@ const authSlice = createSlice({
     setBasicUser: (state) => {
       state.basicUser = false;
     },
+    setProductPermission: (state, action) => {
+      state.productPermission = action.payload;
+    },
+    setFreeProductPermission: (state, action) => {
+      state.freeProductPermission = action.payload;
+    },
   },
 });
 
-export const { setEmail, setIdUser, setLastName, setBasicUser } =
-  authSlice.actions;
+export const {
+  setEmail,
+  setIdUser,
+  setLastName,
+  setBasicUser,
+  setProductPermission,
+  setFreeProductPermission,
+} = authSlice.actions;
 
 export default authSlice.reducer;

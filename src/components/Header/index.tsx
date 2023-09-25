@@ -19,12 +19,24 @@ import { IRootState } from "../../interface";
 import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
 import "./Header.css";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import categoryApi from "../../api/categoryApi";
 
 const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const caterogyQuery = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => {
+      const res: any = await categoryApi.getAllCategory();
+      return res;
+    },
+    staleTime: 1000 * 600,
+  });
+
   const openMyModal = () => {
     dispatch(setStatus("login"));
     dispatch(setShow());
@@ -83,52 +95,22 @@ const Header = () => {
               <div className="head-menu-child">
                 <ul>
                   <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Quần áo</Link>
+                    <Link to={`/danh-muc-tai-san`}>Tất cả</Link>
                   </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Đồ gia dụng</Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Sách</Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Khác</Link>
-                  </li>
+                  {caterogyQuery?.data &&
+                    caterogyQuery?.data?.category?.map((e: any) => {
+                      return (
+                        <li key={e.link} className="head-link">
+                          <Link to={`/danh-muc-tai-san/${e.link}`}>
+                            {e.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
                 </ul>
               </div>
             </div>
-            <div className="NavLink-box">
-              <Nav.Link>
-                Cuộc đấu giá
-                <div className="arrow-icon__box">
-                  <BiChevronDown className="arrow-icon"></BiChevronDown>
-                </div>
-              </Nav.Link>
-              <div className="head-menu-child">
-                <ul>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>
-                      Cuộc đấu giá sắp diễn ra
-                    </Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>
-                      Cuộc đấu giá đang diễn ra
-                    </Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>
-                      Cuộc đấu giá sắp kết thúc
-                    </Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>
-                      Cuộc đấu giá đã kết thúc
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
+           
             <div className="NavLink-box">
               <Nav.Link>
                 Tin tức
@@ -198,7 +180,9 @@ const Header = () => {
                         className="head-link d-flex align-items-center head-menu-child-item"
                       >
                         <BiCheckShield size={18}></BiCheckShield>
-                        <span className="px-2 d-block">Tặng / chia sẻ vật phẩm</span>
+                        <span className="px-2 d-block">
+                          Tặng / chia sẻ vật phẩm
+                        </span>
                       </Link>
                     </li>
                     <li>

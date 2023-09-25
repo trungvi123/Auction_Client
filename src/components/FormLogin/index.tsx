@@ -9,13 +9,22 @@ import jwtDecode from "jwt-decode";
 
 import userApi, { IChangePassPayload, ISignInPayload } from "../../api/userApi";
 import { setClose, setStatus } from "../../redux/myModalSlice";
-import { setEmail, setLastName, setIdUser, setBasicUser } from "../../redux/authSlice";
+import {
+  setEmail,
+  setLastName,
+  setIdUser,
+  setBasicUser,
+  setProductPermission,
+  setFreeProductPermission,
+} from "../../redux/authSlice";
 
 interface IToken {
   _id: any;
   email: String;
   lastName: String;
   role: String;
+  productPermission: string[];
+  freeProductPermission: string[];
 }
 
 interface IPropsForm {
@@ -36,11 +45,10 @@ function FormLogin(props: IPropsForm) {
 
   const refForm: any = useRef();
   const dispatch = useDispatch();
-  const next = useNavigate()
+  const next = useNavigate();
   const handleClose = () => {
     dispatch(setClose());
   };
-
 
   const handleSubmit = async () => {
     const form = refForm.current;
@@ -51,18 +59,22 @@ function FormLogin(props: IPropsForm) {
         const result: any = await userApi.signIn(data);
         if (result?.status === "success") {
           toast.success("Đăng nhập thành công!");
-          next('/')
+          next("/");
           localStorage.setItem("token", result.accessToken);
 
           const data: IToken = jwtDecode(result.accessToken);
-          if(data.role !== 'user'){
-            dispatch(setBasicUser())
+          if (data.role !== "user") {
+            dispatch(setBasicUser());
           }
-          dispatch(setStatus('changePass'))
+          console.log(data);
+
+          dispatch(setStatus("changePass"));
           dispatch(setClose());
           dispatch(setEmail(data.email));
           dispatch(setLastName(data.lastName));
           dispatch(setIdUser(data._id));
+          dispatch(setProductPermission(data.productPermission));
+          dispatch(setFreeProductPermission(data.freeProductPermission));
         }
       } else {
         if (dataChange.passChange === dataChange.passChange2) {

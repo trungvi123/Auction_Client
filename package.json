@@ -32,6 +32,7 @@
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
     "dompurify": "^3.0.5",
+    "gsap": "^3.12.2",
     "i": "^0.3.7",
     "jwt-decode": "^3.1.2",
     "material-react-table": "^1.14.0",
