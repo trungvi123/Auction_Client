@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import './CurrentTime.css'
+import "./CurrentTime.css";
 
 const CurrentTime = () => {
   const [time, setTime]: any = useState();
   const [time2, setTime2]: any = useState();
+  const [isVisible, setIsVisible] = useState(true);
 
   function formatDate(date: Date) {
     if (!date) return "";
@@ -15,52 +16,66 @@ const CurrentTime = () => {
     const m = date.getMonth() + 1;
     const y = date.getFullYear();
 
-
     var dn: string[] = [
-        "Chủ nhật",
-        "Thứ 2",
-        "Thứ 3",
-        "Thứ 4",
-        "Thứ 5",
-        "Thứ 6",
-        "Thứ 7"
+      "Chủ nhật",
+      "Thứ 2",
+      "Thứ 3",
+      "Thứ 4",
+      "Thứ 5",
+      "Thứ 6",
+      "Thứ 7",
     ];
-      var date_pro =
-        dn[d] +
-        ", " +
-        (date.getDate() < 10 ? "0" : "") +
-        date.getDate() +
-        "/" +
-        (m < 10 ? "0" : "") +
-        m +
-        "/" +
-        y;
-        
-        setTime2(date_pro)
+    var date_pro =
+      dn[d] +
+      ", " +
+      (date.getDate() < 10 ? "0" : "") +
+      date.getDate() +
+      "/" +
+      (m < 10 ? "0" : "") +
+      m +
+      "/" +
+      y;
+
+    setTime2(date_pro);
 
     return `${hours}:${minutes}:${seconds}`;
   }
-
+  const updateVisibility = () => {
+    const windowWidth = window.innerWidth;
+    if (windowWidth < 850) {
+      setIsVisible(false); // Ẩn component khi màn hình có chiều ngang dưới 850px
+    } else {
+      setIsVisible(true);
+    }
+  };
   useEffect(() => {
-    const clockInterval = setInterval(() => {
-      const now = new Date();
+    // Gọi hàm cập nhật hiển thị khi màn hình thay đổi kích thước
+    window.addEventListener("resize", updateVisibility);
 
-      const newTimeString = formatDate(now);
-      setTime(newTimeString);
-    }, 1000);
+    // Gọi hàm cập nhật hiển thị ban đầu
+    updateVisibility();
+    let clockInterval:any = null;
+    if (isVisible) {
+      clockInterval = setInterval(() => {
+        const now = new Date();
+
+        const newTimeString = formatDate(now);
+        setTime(newTimeString);
+      }, 1000);
+    }
 
     return () => {
       clearInterval(clockInterval);
+      window.removeEventListener("resize", updateVisibility);
     };
-  }, []);
+  }, [isVisible]);
 
-
-  return (
-      <div className="codepro-time">
-        <div id="codepro-hour">{time}</div>
-        <div id="codepro-date">{time2}</div>
-      </div>
-  );
+  return isVisible ? (
+    <div className="codepro-time">
+      <div id="codepro-hour">{time}</div>
+      <div id="codepro-date">{time2}</div>
+    </div>
+  ) : null;
 };
 
 export default CurrentTime;

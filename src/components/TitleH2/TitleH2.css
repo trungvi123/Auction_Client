@@ -2,6 +2,7 @@
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 0;
+    text-align: center;
 }
 
 .title-box {
@@ -9,7 +10,19 @@
     gap: 10px;
     align-items: center;
     justify-content: center;
-
     padding: 60px 0;
+}
 
+@media only screen and (max-width: 992px) {
+    .title-content {
+        font-size: 1.7rem;
+        font-weight: 600;
+    } 
+}
+
+@media only screen and (max-width: 600px) {
+    .title-content {
+        font-size: 1.2rem;
+        font-weight: 600;
+    } 
 }

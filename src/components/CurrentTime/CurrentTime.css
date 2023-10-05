@@ -25,3 +25,8 @@
     Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+@media only screen and (max-width: 850px) {
+  .codepro-time {
+    display: none;
+  }
+}

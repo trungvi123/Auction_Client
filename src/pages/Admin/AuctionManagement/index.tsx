@@ -6,7 +6,7 @@ import productApi from "../../../api/productApi";
 import ProductsTable from "../../../components/ProductsTable";
 
 const AuctionManagement = () => {
-  const [statusAuction, setStatusAuction] = useState("Đã được duyệt");
+  const [statusAuction, setStatusAuction] = useState("Đang chờ duyệt");
   const auction_list = useQuery({
     queryKey: ["auction-list__admin", { statusAuction }],
     queryFn: async () => {
@@ -41,8 +41,8 @@ const AuctionManagement = () => {
             onChange={(e: any) => setStatusAuction(e.target.value)}
             aria-label="Default select example"
           >
-            <option value="Đã được duyệt">Cuộc đấu giá đã được duyệt</option>
             <option value="Đang chờ duyệt">Cuộc đấu giá chưa được duyệt</option>
+            <option value="Đã được duyệt">Cuộc đấu giá đã được duyệt</option>
             <option value="Đã từ chối">Cuộc đấu giá đã từ chối</option>
           </Form.Select>
         </Col>
@@ -63,8 +63,8 @@ const AuctionManagement = () => {
             onChange={(e: any) => setStatusAuction(e.target.value)}
             aria-label="Default select example"
           >
-            <option value="Đã được duyệt">Sản phẩm chia sẻ đã được duyệt</option>
             <option value="Đang chờ duyệt">Sản phẩm chia sẻ chưa được duyệt</option>
+            <option value="Đã được duyệt">Sản phẩm chia sẻ đã được duyệt</option>
             <option value="Đã từ chối">Sản phẩm chia sẻ đã từ chối</option>
           </Form.Select>
         </Col>

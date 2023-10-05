@@ -10,8 +10,8 @@ const routes = {
   createAuction: "/tao-dau-gia",
   productList: "/danh-muc-tai-san/:cate?",
   createFreeProduct: "/chia-se-vat-pham",
-  checkOut: "/thanh-toan",
-
+  checkOut: "/thanh-toan/:type?/:id",
+  search:'/tim-kiem',
   managementAuction: "/quan-li-dau-gia",
   editAuction: "/chinh-sua-dau-gia/:id",
   editFreeProduct: "/chinh-sua-chia-se/:id",

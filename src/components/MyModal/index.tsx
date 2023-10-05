@@ -32,7 +32,7 @@ function MyModal({
         {...props}
       >
         <Offcanvas.Body>
-          <div className="p-5">
+          <div className="p-5 login-container">
             <div className="login__head">
               <img className="login__logo" src={logo} alt="" />
               <div className="login__close" onClick={handleClose}></div>

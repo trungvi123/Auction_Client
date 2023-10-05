@@ -12,6 +12,7 @@ interface IProTable {
   time: string;
   handle: {
     idUser: string;
+    email: string;
   };
 }
 
@@ -30,6 +31,7 @@ function ReceivedListTable({
 }) {
   const [showModal, setShowModal] = useState(false);
   const [msgModal, setMsgModal] = useState("");
+  const [idHandle, setIdhandle] = useState("");
   const dataLocal = useRef<IProTable[]>([]);
   const queryClient = useQueryClient();
   const handleClose = () => setShowModal(false);
@@ -46,6 +48,7 @@ function ReceivedListTable({
           time: formatDateTime(item.time),
           handle: {
             idUser: item.user,
+            email: item.email,
           },
         };
       });
@@ -77,9 +80,9 @@ function ReceivedListTable({
     }
   }, [productInfor._id, productInfor.owner, queryClient, userReceived]);
 
-  const handleReceived = async (idUser: string) => {
+  const handleReceived = async () => {
     const payload = {
-      idUser: idUser,
+      idUser: idHandle,
       owner: productInfor.owner,
       idProduct: productInfor._id,
       type: "idUser",
@@ -88,11 +91,13 @@ function ReceivedListTable({
     const res: any = await freeProductApi.confirmSharingProduct(payload);
     if (res.status === "success") {
       toast.success("Tặng sản phẩm thành công!");
+      handleClose()
       queryClient.invalidateQueries({
         queryKey: ["participationList", { idProduct: productInfor._id }],
       });
     } else {
       toast.error("Tặng sản phẩm thất bại!");
+      handleClose()
     }
   };
 
@@ -117,14 +122,19 @@ function ReceivedListTable({
         header: "Xử lí",
         accessorKey: "handle",
         Cell: ({ cell }) => {
-          const data: { idUser: string } = cell.getValue<{ idUser: string }>();
+          const data: { email: string; idUser: string } = cell.getValue<{
+            email: string;
+            idUser: string;
+          }>();
           return (
             <>
               <div
                 className={`btn-11 ${productInfor.receiver ? "disable" : ""}`}
                 onClick={() => {
                   if (!productInfor.receiver) {
-                    handleReceived(data.idUser);
+                    setIdhandle(data.idUser);
+                    setMsgModal(`Bạn sẽ tặng tài sản này cho người dùng có email là ${data.email}?`)
+                    handleShow();
                   }
                 }}
               >
@@ -135,7 +145,7 @@ function ReceivedListTable({
         },
       },
     ],
-    [productInfor]
+    [productInfor.receiver]
   );
   return (
     <>
@@ -154,7 +164,7 @@ function ReceivedListTable({
             <Button variant="secondary" onClick={handleClose}>
               Hủy
             </Button>
-            <Button variant="danger" onClick={() => {}}>
+            <Button variant="danger" onClick={handleReceived}>
               Tiếp tục
             </Button>
           </Modal.Footer>

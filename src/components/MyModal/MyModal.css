@@ -6,7 +6,6 @@
     height: max-content;
     max-height: 100%;
     border-bottom: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
-
 }
 
 .login__head {
@@ -30,7 +29,7 @@
 }
 
 .login__logo {
-    width: 30%;
+    width: 250px;
 }
 
 .login__text {
@@ -65,4 +64,26 @@
 
 .myAlert__btn > .btn-11 {
     flex: 1;
+}
+
+@media only screen and (max-width:992px){
+    .myModal.offcanvas.offcanvas-top {
+        left: 10%;
+        width: 80%;
+    } 
+    .login__logo {
+        width: 200px;
+    }
+}
+
+@media only screen and (max-width:450px){
+  .login-container {
+      padding: 10px !important;
+  }
+
+  .myModal.offcanvas.offcanvas-top {
+      top: 3%;
+    left: 5%;
+    width: 90%;
+} 
 }

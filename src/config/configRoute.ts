@@ -18,6 +18,7 @@ import {
   FreeProductDetail,
   ReceivedList,
   ProductList,
+  Search,
 } from "../pages";
 
 interface IRoute {
@@ -41,6 +42,8 @@ export const publicRoute: IRoute[] = [
   { path: routes.freeProductDetail, element: FreeProductDetail },
   { path: routes.receivedList, element: ReceivedList },
   { path: routes.productList, element: ProductList },
+  { path: routes.search, element: Search },
+
 
 
 

@@ -100,3 +100,30 @@
   height: 0;
   width: 0;
 }
+
+.filter-col {
+  position: relative;
+}
+.btn-11.filter-btn {
+  display: none;
+}
+
+.filter-container.active .filter-box {
+  margin: 0;
+  border-radius: 0;
+}
+@media only screen and (max-width: 992px) {
+  .filter-container {
+    display: none;
+    
+  }
+  .btn-11.filter-btn {
+    display: block;
+  }
+
+  .products-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+

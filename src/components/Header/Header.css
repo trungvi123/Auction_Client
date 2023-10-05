@@ -1,5 +1,6 @@
 .header {
   border-bottom: 1px solid #69696912;
+  height: 84px;
 }
 
 .header.isScrolled {
@@ -175,9 +176,18 @@
   z-index: -1 !important;
 }
 
+.temporaryDrawer {
+  display: none;
+}
 
 
 @media only screen and (max-width: 1199px) {
+  .header-container.container {
+    max-width: 100% !important;
+    margin: 0 50px !important;
+  }
+
+
   .nav-link {
     font-size: 14px !important;
     padding-left: 4px !important;
@@ -190,5 +200,23 @@
 
   .navbar-brand {
     margin-right: 0px !important;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .nav-container{
+    display: none !important;
+  }
+  .search__circle.search {
+    display: none;
+  }
+  .temporaryDrawer {
+    display: block;
+  }
+}
+
+@media only screen and (max-width:666px) {
+  .header-container.container {
+    margin: 0 !important;
   }
 }

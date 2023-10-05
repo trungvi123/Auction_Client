@@ -110,7 +110,7 @@
     }
 }
 
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 992px) {
     .home-intro {
        display: none;
     }
@@ -118,7 +118,27 @@
     .home-intro__res {
         display: block;
     }
+
+    .home-intro__left__h1 {
+        font-size: 1.9rem;
+    }
+
 }
+
+@media only screen and (max-width: 600px) {
+    .home-intro__left__h1 {
+        font-size: 1.4rem;
+    }
+
+    .home-intro__left__text2 {
+        font-weight: 400;
+        font-size: 15px;
+        color: var(--gray-color);
+        margin-bottom: 40px;
+        margin-top: 30px;
+    }
+
+ }
 
 
 

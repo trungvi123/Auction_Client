@@ -16,7 +16,9 @@ import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
 import { setProductPermission } from "../../redux/authSlice";
 import "./ProductForm.css";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { auctionType, checkoutType } from "../../constant";
 
 const initialStateData = {
   name: "",
@@ -24,27 +26,36 @@ const initialStateData = {
   price: "",
   stepPrice: "",
   category: "",
-  oldCategory: "",
   startTime: "",
   duration: "",
   description: "",
+  auctionTypeSlug: "",
+  checkoutTypeSlug: "",
 };
+
 const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
   const productsPerrmission = useSelector(
     (e: IRootState) => e.auth.productPermission
   );
+  const idOwner = useSelector((e: IRootState) => e.auth._id);
+  const prodDescription = useSelector(
+    (e: IRootState) => e.utils.prodDescription
+  );
+
+  const queryClient = useQueryClient();
+
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imgsEdit, setImgsEdit] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [invalidDate, setInvalidDate] = useState<boolean>();
   const [resetImgs, setResetImgs] = useState<boolean>(false);
   const [dataEdit, setDataEdit] = useState(initialStateData);
-
-  const prodDescription = useSelector(
-    (e: IRootState) => e.utils.prodDescription
-  );
-  const idOwner = useSelector((e: IRootState) => e.auth._id);
+  const [oldCategory, setOldCategory] = useState({
+    link: "",
+    name: "",
+    _id: "",
+  });
 
   const {
     register,
@@ -66,11 +77,18 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             stepPrice: result.data.stepPrice.$numberDecimal,
             startTime: result.data.startTime,
             duration: result.data.duration,
-            oldCategory: result.data.category,
+            auctionTypeSlug: result.data.auctionTypeSlug,
+            checkoutTypeSlug: result.data.checkoutTypeSlug,
             category: "",
             description: "",
           };
+          setOldCategory({
+            name: result.data.category.name,
+            link: result.data.category.link,
+            _id: result.data.category._id,
+          });
           setDataEdit(data);
+          setStartDate(new Date(data.startTime));
           reset(data);
           setImgsEdit(result.data.images);
           // setUploadedImages(result.data.images);
@@ -83,19 +101,19 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   }, [dispatch, id, type, reset]);
 
   const handleStartDateChange = (date: Date) => {
-    const hoursToAdd = 6 / 60 / 60;
-    const currentTime = new Date();
-    // Tạo một đối tượng Date mới sau khi thêm số giờ
-    const newDate = new Date(
-      currentTime.getTime() + hoursToAdd * 60 * 60 * 1000
-    );
+    // const hoursToAdd = 6;
+    // const currentTime = new Date();
+    // // Tạo một đối tượng Date mới sau khi thêm số giờ
+    // const newDate = new Date(
+    //   currentTime.getTime() + hoursToAdd * 1000
+    // );
 
     // So sánh newDate với currentTime + 6 tiếng
     // nếu newDate nhỏ hơn date truyền vào thì thông qua
-    if (newDate >= date) {
-      setInvalidDate(true);
-      return false;
-    }
+    // if (newDate >= date) {
+    // setInvalidDate(true);
+    // return false;
+    // }
     setInvalidDate(false);
     setStartDate(date);
     return true;
@@ -128,11 +146,11 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           "Content-Type": "multipart/form-data",
         },
       };
+
       formData.append("name", data.name);
       formData.append("description", prodDescription);
       formData.append("basePrice", data.basePrice);
       formData.append("price", data.price);
-      formData.append("category", data.category);
       formData.append("stepPrice", data.stepPrice);
       formData.append("owner", idOwner);
       formData.append("duration", data.duration);
@@ -144,12 +162,19 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       }
 
       if (type !== "edit") {
+        formData.append("category", data.category);
+        formData.append("auctionTypeSlug", data.auctionTypeSlug);
+        formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
+
         const createProd = async () => {
           const result: any = await productApi.createProducts(formData, config);
           if (result?.status === "success") {
             dispatch(
               setProductPermission([...productsPerrmission, result._id])
             );
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__user", { typeList: "create" }],
+            });
             toast.success("Tạo cuộc đấu giá thành công!");
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
@@ -161,6 +186,24 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
         };
         createProd();
       } else {
+        if (data.category === "") {
+          formData.append("category", oldCategory._id);
+        } else {
+          formData.append("category", data.category);
+        }
+
+        if (data.auctionTypeSlug === "") {
+          formData.append("auctionTypeSlug", dataEdit.auctionTypeSlug);
+        } else {
+          formData.append("auctionTypeSlug", data.auctionTypeSlug);
+        }
+
+        if (data.checkoutTypeSlug === "") {
+          formData.append("checkoutTypeSlug", dataEdit.checkoutTypeSlug);
+        } else {
+          formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
+        }
+
         const KeepImgs: string[] = [...imgsEdit];
         for (let i = 0; i < KeepImgs.length; i++) {
           formData.append("keepImgs", KeepImgs[i]);
@@ -168,7 +211,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
 
         formData.append("id", id);
 
-        formData.append("oldCategory", dataEdit.oldCategory);
+        formData.append("oldCategory", oldCategory._id);
 
         const editProd = async () => {
           const result: any = await productApi.editProducts(formData, config);
@@ -194,8 +237,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
 
   return (
     <Form>
-      <Row className="mb-3">
-        <Form.Group as={Col} md="12" controlId="validationCustom01">
+      <Row >
+        <Form.Group className="mb-3"  as={Col} md="12" controlId="validationCustom01">
           <Form.Label>Tên sản phẩm</Form.Label>
           <Form.Control
             type="text"
@@ -207,8 +250,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           )}
         </Form.Group>
       </Row>
-      <Row className="mb-3">
-        <Form.Group as={Col} md="6" controlId="validationCustom02">
+      <Row >
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom02">
           <Form.Label>Giá khởi điểm (VND)</Form.Label>
           <Form.Control
             type="number"
@@ -234,7 +277,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           )}
         </Form.Group>
 
-        <Form.Group as={Col} md="6" controlId="validationCustom022">
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom022">
           <Form.Label>Giá mua ngay (VND)</Form.Label>
           <Form.Control
             type="number"
@@ -260,8 +303,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           )}
         </Form.Group>
       </Row>
-      <Row className="mb-3">
-        <Form.Group as={Col} md="6" controlId="validationCustom03">
+      <Row >
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom03">
           <Form.Label>Bước giá (VND)</Form.Label>
           <Form.Control
             type="number"
@@ -287,28 +330,78 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           )}
         </Form.Group>
 
-        <Form.Group as={Col} md="6" controlId="validationCustom0333">
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom0333">
           <Form.Label>Loại sản phẩm</Form.Label>
           <Form.Select
-            // aria-label="Chọn loại sản phẩm"
-            {...register("category", { required: true })}
+            aria-label="Chọn loại sản phẩm"
+            {...register("category", {
+              required: type !== "edit" ? true : false,
+            })}
           >
-            <option value="">Chọn loại sản phẩm</option>
-            {caterogyQuery?.data?.category?.map((item:any) => {
-                return (
+            <option value={""}>
+              {type !== "edit" ? "Chọn loại sản phẩm" : oldCategory.name}
+            </option>
+
+            {caterogyQuery?.data?.category?.map((item: any) => {
+              return (
+                item._id !== oldCategory._id && (
                   <option key={item._id} value={item._id}>
                     {item.name}
                   </option>
-                );
-              })}
+                )
+              );
+            })}
           </Form.Select>
-          {errors?.category?.type === "required" && (
+          {type !== "edit" && errors?.category?.type === "required" && (
             <p className="text__invalid">Vui lòng chọn loại sản phẩm</p>
           )}
         </Form.Group>
       </Row>
-      <Row className="mb-3">
-        <Form.Group as={Col} md="6" controlId="validationCustom033">
+      <Row >
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom03335">
+          <Form.Label>Hình thức đấu giá</Form.Label>
+          <Form.Select
+            aria-label="Chọn hình thức đấu giá"
+            {...register("auctionTypeSlug", {
+              required: type !== "edit" ? true : false,
+            })}
+          >
+            <option value={""}>
+              {type !== "edit"
+                ? "Chọn hình thức đấu giá"
+                : auctionType[dataEdit.auctionTypeSlug]}
+            </option>
+            <option value="dau-gia-xuoi">Đấu giá xuôi</option>
+            <option value="dau-gia-nguoc">Đấu giá ngược</option>
+          </Form.Select>
+          {type !== "edit" && errors?.auctionTypeSlug?.type === "required" && (
+            <p className="text__invalid">Vui lòng chọn hình thức đấu giá</p>
+          )}
+        </Form.Group>
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom03336">
+          <Form.Label>Hình thức thanh toán</Form.Label>
+          <Form.Select
+            aria-label="Chọn hình thức thanh toán"
+            {...register("checkoutTypeSlug", {
+              required: type !== "edit" ? true : false,
+            })}
+          >
+            <option value={""}>
+              {type !== "edit"
+                ? "Chọn hình thức thanh toán"
+                : checkoutType[dataEdit.checkoutTypeSlug]}
+            </option>
+            <option value="cod">Thanh toán khi nhận hàng</option>
+            <option value="payment">Chuyển khoản qua Paypal</option>
+            <option value="all">Thanh toán trước hoặc thanh toán khi nhận hàng</option>
+          </Form.Select>
+          {type !== "edit" && errors?.checkoutTypeSlug?.type === "required" && (
+            <p className="text__invalid">Vui lòng chọn hình thức thanh toán</p>
+          )}
+        </Form.Group>
+      </Row>
+      <Row >
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom033">
           <label className="labelTime" htmlFor="datePicker">
             Thời gian dự kiến bắt đầu cuộc đấu giá
           </label>
@@ -326,7 +419,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             </p>
           )}
         </Form.Group>
-        <Form.Group as={Col} md="6" controlId="validationCustom03333">
+        <Form.Group className="mb-3" as={Col} md="6" controlId="validationCustom03333">
           <Form.Label>Thời gian của cuộc đấu giá (PHÚT)</Form.Label>
           <Form.Control
             type="number"
@@ -348,15 +441,14 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           )}
         </Form.Group>
       </Row>
-      <Row className="mb-3">
-        <Col sm={12}>
+      <Row >
+        <Col className="mb-3" sm={12}>
           <Form.Label>Mô tả sản phẩm</Form.Label>
           <TextEditor></TextEditor>
         </Col>
       </Row>
-
-      <Row className="mb-3">
-        <Col sm={12}>
+      <Row >
+        <Col className="mb-3" sm={12}>
           <Form.Label>
             Ảnh (Ảnh đầu tiên sẽ là ảnh đại diện cho sản phẩm)
           </Form.Label>
@@ -387,7 +479,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
         </Col>
       </Row>
 
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3" >
         <Form.Check
           {...register("checkbox", { required: true })}
           label="Tôi cam kết tuân thủ Quyền và trách nhiệm của Người tham gia đấu giá (Quy định theo tài sản đấu giá) , Chính sách bảo mật thông tin khách hàng , Cơ chế giải quyết tranh chấp , Quy chế hoạt động tại website đấu giá trực tuyến"

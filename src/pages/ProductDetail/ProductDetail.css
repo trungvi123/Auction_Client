@@ -29,23 +29,44 @@
   color: var(--primary-color);
 }
 
+.step-price-time,.step-price-equal {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 0;
+}
 
 
 .handle-auction__bid {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
+  /* margin-top: 10px; */
 }
 .handle-auction__input {
-  width: 50%;
+  width: 90px;
   outline: none;
+  height: 42px;
   padding: 0 10px;
   border: 1px solid var(--primary-color);
 }
 
-.btn-11.bid{
-  width: 50%;
+.step-price,.total-price {
+  height: 42px;
+  border: 1px solid var(--primary-color);
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: var(--primary-color);
+  flex: 1;
 }
+
+/* .btn-11.bid{
+  width: 50%;
+} */
 
 .custom-toast {
   background-color: white;

@@ -1,3 +1,4 @@
+import React from "react";
 import { BiSolidShareAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
@@ -48,4 +49,4 @@ const FreeProductCard = ({ data }: { data: IProps }) => {
   );
 };
 
-export default FreeProductCard;
+export default React.memo(FreeProductCard);

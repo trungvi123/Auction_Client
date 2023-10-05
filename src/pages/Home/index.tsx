@@ -96,7 +96,7 @@ const Home = () => {
         <Container>
           <div>
             <TitleH2 title="Tài sản sắp được đấu giá"></TitleH2>
-            {productsQuery?.data?.data?.length >= 6 ? (
+            {productsQuery?.data?.data?.length >= 3 ? (
               <div>
                 {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
                 {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
@@ -110,7 +110,7 @@ const Home = () => {
                 <Row>
                   {productsQuery?.data?.data?.map((item: any) => {
                     return (
-                      <Col md={5} lg={3} sm={2} key={item._id}>
+                      <Col md={6} lg={4} sm={12} key={item._id}>
                         <ProductCard data={item}></ProductCard>
                       </Col>
                     );

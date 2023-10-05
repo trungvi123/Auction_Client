@@ -1,13 +1,15 @@
-import { Pagination, Stack, Typography } from "@mui/material";
+import { Pagination, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { useLocation, useParams } from "react-router-dom";
+import { BiFilterAlt } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
 import productApi from "../../api/productApi";
 import { breadcrumbs } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
+import FilterDrawer from "../../components/FilterDrawer";
 import FreeProductCard from "../../components/FreeProductCard";
 import ProductCard from "../../components/ProductCard";
 import "./ProductList.css";
@@ -16,12 +18,14 @@ interface IFilter {
   status: any[];
   category: any[];
   typeProduct: any[];
+  typeAuction: any[];
 }
 const ProductList = () => {
   const initialFilter = {
     status: [],
     category: [],
     typeProduct: [],
+    typeAuction: [],
   };
 
   const status = [
@@ -56,11 +60,13 @@ const ProductList = () => {
     event: React.ChangeEvent<unknown>,
     pageCurr: number
   ) => {
-    const pageCount = Math.ceil(products.length / 9);
-    const newArrProd = products.slice((pageCurr - 1) * 9, pageCurr * 9);
-    setPage(pageCurr);
-    setProductRender(newArrProd);
-    setPageNumber(pageCount);
+    if (products.length > 9) {
+      const pageCount = Math.ceil(products.length / 9);
+      const newArrProd = products.slice((pageCurr - 1) * 9, pageCurr * 9);
+      setPage(pageCurr);
+      setProductRender(newArrProd);
+      setPageNumber(pageCount);
+    }
   };
 
   useEffect(() => {
@@ -90,38 +96,54 @@ const ProductList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.cate]);
 
-  const filterSelect = (type: string, check: boolean, item: any) => {
-    if (check) {
-      // check
-      switch (type) {
-        case "STATUS":
-          setFilter({ ...filter, status: [...filter.status, item.slug] });
-          break;
-        case "CATEGORY":
-          setFilter({ ...filter, category: [...filter.category, item.link] });
-          break;
-        case "TYPEPRODUCT":
-          setFilter({ ...filter, typeProduct: [...filter.typeProduct, item] });
-          break;
+  const filterSelect = useCallback(
+    (type: string, check: boolean, item: any) => {
+      if (check) {
+        // check
+        switch (type) {
+          case "STATUS":
+            setFilter({ ...filter, status: [...filter.status, item.slug] });
+            break;
+          case "CATEGORY":
+            setFilter({ ...filter, category: [...filter.category, item.link] });
+            break;
+          case "TYPEPRODUCT":
+            setFilter({
+              ...filter,
+              typeProduct: [...filter.typeProduct, item],
+            });
+            break;
+          case "TYPEAUCTION":
+            setFilter({
+              ...filter,
+              typeAuction: [...filter.typeAuction, item],
+            });
+            break;
+        }
+      } else {
+        // uncheck
+        switch (type) {
+          case "STATUS":
+            const newStatus = filter.status.filter((e) => e !== item.slug);
+            setFilter({ ...filter, status: newStatus });
+            break;
+          case "CATEGORY":
+            const newCategory = filter.category.filter((e) => e !== item.link);
+            setFilter({ ...filter, category: newCategory });
+            break;
+          case "TYPEPRODUCT":
+            const newType = filter.typeProduct.filter((e) => e !== item);
+            setFilter({ ...filter, typeProduct: newType });
+            break;
+          case "TYPEAUCTION":
+            const newTypeAuction = filter.typeAuction.filter((e) => e !== item);
+            setFilter({ ...filter, typeAuction: newTypeAuction });
+            break;
+        }
       }
-    } else {
-      // uncheck
-      switch (type) {
-        case "STATUS":
-          const newStatus = filter.status.filter((e) => e !== item.slug);
-          setFilter({ ...filter, status: newStatus });
-          break;
-        case "CATEGORY":
-          const newCategory = filter.category.filter((e) => e !== item.link);
-          setFilter({ ...filter, category: newCategory });
-          break;
-        case "TYPEPRODUCT":
-          const newType = filter.typeProduct.filter((e) => e !== item);
-          setFilter({ ...filter, typeProduct: newType });
-          break;
-      }
-    }
-  };
+    },
+    [filter]
+  );
 
   useMemo(() => {
     const array1 = freeProductsQuery.data?.data;
@@ -138,32 +160,42 @@ const ProductList = () => {
       }
     }
 
-    if (filter.category.length > 0 && productTemp) {
+    if (filter?.category.length > 0 && productTemp) {
       productTemp = productTemp.filter((e: any) =>
-        filter.category.includes(e.category.link)
+        filter?.category.includes(e?.category?.link)
       );
     }
 
-    if (filter.status.length > 0) {
+    if (filter?.typeAuction.length > 0 && productTemp) {
+      productTemp = productTemp.filter((e: any) =>
+        filter?.typeAuction.includes(e?.auctionTypeSlug)
+      );
+    }
+
+    if (filter?.status.length > 0) {
       productTemp = productTemp?.filter((e: any) =>
-        filter.status.includes(e.slugCase)
+        filter.status.includes(e?.stateSlug)
       );
     }
-
-    const pageCount = Math.ceil(productTemp?.length / 9);
-    const newArrProd = productTemp?.slice((1 - 1) * 9, 1 * 9);
-    setProductRender(productTemp?.slice(0, 9));
+    if (productTemp?.length > 9) {
+      const pageCount = Math.ceil(productTemp?.length / 9);
+      const newArrProd = productTemp?.slice((1 - 1) * 9, 1 * 9);
+      setPage(1);
+      setProductRender(newArrProd);
+      setPageNumber(pageCount);
+    }
     setProduct(productTemp);
-    setPage(1);
-    setProductRender(newArrProd);
-    setPageNumber(pageCount);
+    setProductRender(productTemp);
   }, [
-    filter.category,
+    filter?.category,
     filter.status,
+    filter?.typeAuction,
     filter.typeProduct,
     freeProductsQuery.data?.data,
     productsQuery.data?.data,
   ]);
+
+  console.log("render");
 
   return (
     <Container>
@@ -173,8 +205,14 @@ const ProductList = () => {
         img={breadcrumbs}
       ></Breadcrumbs>
       <Row>
-        <Col md={3}>
-          <div className="filter-container">
+        <Col md={12} lg={3} className="filter-col">
+          <FilterDrawer
+            filterSelect={filterSelect}
+            categories={categoryQuery.data?.category}
+            params={params}
+          ></FilterDrawer>
+
+          <div className={`filter-container`}>
             <div className="filter-box">
               <div className="status-filter">
                 <div className="mb-3">
@@ -295,15 +333,61 @@ const ProductList = () => {
                 </div>
               </div>
             </div>
+            <div className="filter-box">
+              <div className="status-filter">
+                <div className="mb-3">
+                  <h4 style={{ fontWeight: 600 }}>Hình thức đấu giá</h4>
+                  <span className="title-hightlight"></span>
+                </div>
+                <div>
+                  <label className="containerCheckbox" htmlFor={"auctionType1"}>
+                    Đấu giá xuôi
+                    <input
+                      type="checkbox"
+                      onChange={(e) =>
+                        filterSelect(
+                          "TYPEAUCTION",
+                          e.target.checked,
+                          "dau-gia-xuoi"
+                        )
+                      }
+                      id={"auctionType1"}
+                      className="status-checkall"
+                      name="checkbox-status"
+                      value="0"
+                    ></input>
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="containerCheckbox" htmlFor={"auctionType2"}>
+                    Đấu giá ngược
+                    <input
+                      type="checkbox"
+                      onChange={(e) =>
+                        filterSelect(
+                          "TYPEAUCTION",
+                          e.target.checked,
+                          "dau-gia-nguoc"
+                        )
+                      }
+                      id={"auctionType2"}
+                      className="status-checkall"
+                      name="checkbox-status"
+                      value="0"
+                    ></input>
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         </Col>
-        <Col md={9}>
+        <Col md={12} lg={9}>
           <div>
-            <Row>
+            <Row className="justify-content-center products-row">
               {productsRender &&
                 productsRender?.map((item: any, index: number) => {
                   return (
-                    <Col md={4} key={index}>
+                    <Col xs={6} lg={4} key={index}>
                       {item?.isFree ? (
                         <FreeProductCard data={item}></FreeProductCard>
                       ) : (

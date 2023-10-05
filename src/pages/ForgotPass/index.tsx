@@ -61,7 +61,7 @@ const ForgotPass = () => {
               validated={validated}
               className="forgot-form"
             >
-              <Form.Group as={Col} md="6" controlId="validationCustom01">
+              <Form.Group as={Col} sm={12} md="6" controlId="validationCustom01">
                 <Form.Label className="email-lable">Email</Form.Label>
                 <Form.Control
                   required

@@ -1,10 +1,10 @@
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { err } from "../../asset/images";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { auction } from "../../asset/images";
 
-const MyImageGallery = ({ imagesLink }: { imagesLink: string[] }) => {
+const MyImageGallery = ({ imagesLink = []}: { imagesLink: string[] }) => {
   const [images, setImages] = useState<any>([]);
   
   useEffect(() => {
@@ -13,8 +13,9 @@ const MyImageGallery = ({ imagesLink }: { imagesLink: string[] }) => {
         return {
           original: item,
           thumbnail: item,
-          // originalHeight: 600,
-          // thumbnailHeight: 80,
+          
+          originalHeight: 500,
+          thumbnailHeight: 80,
         };
       });
       setImages(result);
@@ -40,4 +41,4 @@ const MyImageGallery = ({ imagesLink }: { imagesLink: string[] }) => {
   );
 };
 
-export default MyImageGallery;
+export default React.memo(MyImageGallery);

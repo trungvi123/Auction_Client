@@ -3,18 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { addMinutes } from "date-fns";
 import Form from "react-bootstrap/Form";
-
 import categoryApi from "../../api/categoryApi";
-import productApi from "../../api/productApi";
 import { IRootState } from "../../interface";
 import TextEditor from "../TextEditor";
 import DropImages from "../DropImages";
 import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
 import "../ProductForm/ProductForm.css";
-import { useNavigate } from "react-router-dom";
 import freeProductApi from "../../api/freeProduct";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { setFreeProductPermission } from "../../redux/authSlice";
@@ -27,14 +23,17 @@ const initialStateData = {
 };
 const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
-  const next = useNavigate();
   const queryClient = useQueryClient();
 
   const [resetImgs, setResetImgs] = useState<boolean>(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imgsEdit, setImgsEdit] = useState([]);
   const [dataEdit, setDataEdit] = useState(initialStateData);
-
+  const [oldCategory, setOldCategory] = useState({
+    link: "",
+    name: "",
+    _id: "",
+  });
   const prodDescription = useSelector(
     (e: IRootState) => e.utils.prodDescription
   );
@@ -61,6 +60,11 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             category: "",
             description: "",
           };
+          setOldCategory({
+            name: result.data.category.name,
+            link: result.data.category.link,
+            _id: result.data.category._id,
+          });
           setDataEdit(data);
           reset(data);
           setImgsEdit(result.data.images);
@@ -77,7 +81,6 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     // Nhận dữ liệu ảnh từ DropImages và cập nhật state của Form
     setUploadedImages(images);
   };
-
 
   const caterogyQuery = useQuery({
     queryKey: ["category"],
@@ -97,13 +100,14 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     };
     formData.append("name", data.name);
     formData.append("description", prodDescription);
-    formData.append("category", data.category);
+    // formData.append("category", data.category);
     formData.append("owner", idOwner);
     for (let i = 0; i < uploadedImages.length; i++) {
       formData.append("images", uploadedImages[i]);
     }
 
     if (type !== "edit") {
+      formData.append("category", data.category);
       const createFreeProd = async () => {
         const result: any = await freeProductApi.createfreeProduct(
           formData,
@@ -124,6 +128,11 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       };
       createFreeProd();
     } else {
+      if (data.category === "") {
+        formData.append("category", oldCategory._id);
+      } else {
+        formData.append("category", data.category);
+      }
       const KeepImgs: string[] = [...imgsEdit];
       for (let i = 0; i < KeepImgs.length; i++) {
         formData.append("keepImgs", KeepImgs[i]);
@@ -173,20 +182,25 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
         <Form.Group as={Col} md="6" controlId="validationCustom0333">
           <Form.Label>Loại sản phẩm</Form.Label>
           <Form.Select
-            // aria-label="Chọn loại sản phẩm"
-            {...register("category", { required: true })}
+            aria-label="Chọn loại sản phẩm"
+            {...register("category", {
+              required: type !== "edit" ? true : false,
+            })}
           >
-            <option value="">Chọn loại sản phẩm</option>
-            {
-              caterogyQuery?.data?.category?.map((item:any) => {
-                return (
+            <option value={""}>
+              {type !== "edit" ? "Chọn loại sản phẩm" : oldCategory.name}
+            </option>
+            {caterogyQuery?.data?.category?.map((item: any) => {
+              return (
+                item._id !== oldCategory._id && (
                   <option key={item._id} value={item._id}>
                     {item.name}
                   </option>
-                );
-              })}
+                )
+              );
+            })}
           </Form.Select>
-          {errors?.category?.type === "required" && (
+          {type !== "edit" && errors?.category?.type === "required" && (
             <p className="text__invalid">Vui lòng chọn loại sản phẩm</p>
           )}
         </Form.Group>

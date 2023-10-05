@@ -16,7 +16,7 @@
 
 .forgot-logo > img {
     max-width: 100%;
-    width: 45%;
+    width: 280px;
 }
 
 .forgot-main .text-top{
@@ -36,4 +36,23 @@
     font-size: 14px;
     font-weight: 500;
     color: var(--gray-color);
+}
+
+@media only screen and (max-width:1120px) {
+    .side-bar__bg {
+        width: 300px;
+        object-fit: cover;
+    }   
+}
+
+@media only screen and (max-width:750px) {
+    .side-bar__bg {
+        width: 180px;
+    }   
+}
+
+@media only screen and (max-width:500px) {
+    .side-bar__bg {
+        display: none;
+    }   
 }

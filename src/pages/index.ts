@@ -11,6 +11,8 @@ export { default as EditAuction } from "./EditAuction";
 export { default as EditFreeProduct } from "./EditFreeProduct";
 export { default as ReceivedList } from "./ReceivedList";
 export { default as ProductList } from "./ProductList";
+export { default as Search } from "./Search";
+
 
 
 

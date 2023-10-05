@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch } from "react-redux";
+import { Container } from "react-bootstrap";
+import "react-datepicker/dist/react-datepicker.css";
 import ProductForm from "../../components/ProductForm";
 import { setProdDescription } from "../../redux/utilsSlice";
 
@@ -19,11 +19,11 @@ function CreateAuction() {
 
   return (
     <Container>
-      <Row className="w-100 d-flex justify-content-center">
+      <Row className=" d-flex justify-content-center">
         <Col xl={10} lg={8} md={10}>
           <div className="reg__wrapper">
             <div className="reg__title">
-              <h1>Tạo cuộc đấu giá</h1>
+              <h1 className="mb-4">Tạo cuộc đấu giá</h1>
             </div>
 
             <ProductForm type='create'></ProductForm>

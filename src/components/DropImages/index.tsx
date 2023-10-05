@@ -6,10 +6,11 @@ import "./DropImages.css";
 
 interface ImageUploaderProps {
   onImagesUpload: (images: File[]) => void;
-  resetSelectedImages?:boolean
+  resetSelectedImages?: boolean;
 }
 const DropImages: React.FC<ImageUploaderProps> = ({
-  onImagesUpload,resetSelectedImages = false
+  onImagesUpload,
+  resetSelectedImages = false,
 }) => {
   const [selectedImages, setSelectedImages] = useState<FileWithPath[]>([]);
 
@@ -20,11 +21,11 @@ const DropImages: React.FC<ImageUploaderProps> = ({
     },
     [onImagesUpload, selectedImages]
   );
-  useEffect(()=>{
-    if(resetSelectedImages){
-      setSelectedImages([])
+  useEffect(() => {
+    if (resetSelectedImages) {
+      setSelectedImages([]);
     }
-  },[resetSelectedImages])
+  }, [resetSelectedImages]);
 
   const dropzoneOptions: DropzoneOptions = {
     onDrop,
@@ -49,7 +50,7 @@ const DropImages: React.FC<ImageUploaderProps> = ({
   return (
     <div>
       <div {...getRootProps()} className="dropzone">
-        <input {...getInputProps()} />
+        <input {...getInputProps()} accept=".jpg, .jpeg, .png ,.html,.htm" />
         <div className="d-flex flex-column justify-content-center align-items-center">
           <Image src={uploadImg} alt="upload img"></Image>
           <p className="pt-3">
@@ -59,24 +60,22 @@ const DropImages: React.FC<ImageUploaderProps> = ({
         </div>
       </div>
       <div className="selected-images">
-        {
-          selectedImages.map((file, index) => (
-            <div key={index} className="selected-images__box">
-              <Image
-                className="selected-images__img"
-                alt={`Image ${index}`}
-                src={URL.createObjectURL(file)}
-                thumbnail
-              />
-              <Image
-                onClick={() => handleRemoveImgSelect(file)}
-                className="selected-images__icon"
-                alt="icon-minus"
-                src={minus}
-              ></Image>
-            </div>
-          ))}
-        
+        {selectedImages.map((file, index) => (
+          <div key={index} className="selected-images__box">
+            <Image
+              className="selected-images__img"
+              alt={`Image ${index}`}
+              src={URL.createObjectURL(file)}
+              thumbnail
+            />
+            <Image
+              onClick={() => handleRemoveImgSelect(file)}
+              className="selected-images__icon"
+              alt="icon-minus"
+              src={minus}
+            ></Image>
+          </div>
+        ))}
       </div>
     </div>
   );

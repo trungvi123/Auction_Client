@@ -24,11 +24,13 @@ interface IProTable {
     src: string;
     idProduct: string;
   };
+  statusPayment: string;
   status: string;
   handle: {
     _id: string;
     name: string;
     status: string;
+    statusPaymentSlug: string;
   };
 }
 
@@ -254,10 +256,12 @@ function ProductsTable({
             idProduct: item._id,
           },
           status: item.status,
+          statusPayment: item.statusPayment,
           handle: {
             _id: item._id,
             name: item.name,
             status: item.status,
+            statusPaymentSlug: item.statusPaymentSlug,
           },
         };
       });
@@ -309,7 +313,8 @@ function ProductsTable({
       },
       {
         header: "Trạng thái",
-        accessorKey: "status",
+        accessorKey:
+          typeList === "win" || typeList === "buy" ? "statusPayment" : "status",
         id: "status",
       },
       {
@@ -320,10 +325,12 @@ function ProductsTable({
             _id: string;
             status: string;
             name: string;
+            statusPaymentSlug: string;
           } = cell.getValue<{
             _id: string;
             name: string;
             status: string;
+            statusPaymentSlug: string;
           }>();
           return (
             <>
@@ -378,6 +385,13 @@ function ProductsTable({
                       </span>
                     </div>
                   )}
+
+                  {(typeList === "win" || typeList === "buy") &&
+                    data.statusPaymentSlug === "chua-thanh-toan" && (
+                      <Link to={`/thanh-toan/${data._id}`} className="btn-11">
+                        <span className="btn-11__content">Thanh toán</span>
+                      </Link>
+                    )}
 
                   <div
                     className="btn-11 mt-2"

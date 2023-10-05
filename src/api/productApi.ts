@@ -10,6 +10,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/status`;
     return axiosClient.post(url, payload);
   },
+  search: (payload: { keyword: string }) => {
+    const url = apiConfig.baseUrl + `product/search`;
+    return axiosClientJWT.post(url, payload);
+  },
   getCurrentPriceById: (id: string) => {
     const url = apiConfig.baseUrl + `product/price/${id}`;
     return axiosClient.get(url);

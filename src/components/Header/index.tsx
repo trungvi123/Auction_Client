@@ -21,6 +21,7 @@ import "./Header.css";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import categoryApi from "../../api/categoryApi";
+import TemporaryDrawer from "../Drawer";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -79,12 +80,16 @@ const Header = () => {
 
   return (
     <div className={`header ${isScrolled ? "isScrolled" : ""}`}>
-      <Navbar>
-        <Container>
+      <Navbar className="h-100">
+        <Container className="header-container">
+          <div className="temporaryDrawer">
+          <TemporaryDrawer></TemporaryDrawer>
+          </div>
+
           <Navbar.Brand as={Link} to="/">
             <img className="head__logo" src={logo} alt="" />
           </Navbar.Brand>
-          <Nav>
+          <Nav className="nav-container">
             <div className="NavLink-box">
               <Nav.Link>
                 Tài sản đấu giá
@@ -110,7 +115,7 @@ const Header = () => {
                 </ul>
               </div>
             </div>
-           
+
             <div className="NavLink-box">
               <Nav.Link>
                 Tin tức
@@ -137,11 +142,10 @@ const Header = () => {
               Liên hệ
             </Nav.Link>
           </Nav>
-
           <div className="head-right">
             <CurrentTime></CurrentTime>
 
-            <div onClick={openSearchModal} className="search__circle">
+            <div onClick={openSearchModal} className="search__circle search">
               <BiSearch className="search__icon"></BiSearch>
             </div>
             {!lastName ? (

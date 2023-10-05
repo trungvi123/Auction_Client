@@ -13,7 +13,7 @@ interface IProps {
 const MySlider = ({ type, data }: IProps) => {
   const settings = {
     className: "section-outstanding__slider",
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
     infinite: true,
@@ -25,7 +25,7 @@ const MySlider = ({ type, data }: IProps) => {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
-          rows: 2,
+          rows: 1,
         },
       },
       {

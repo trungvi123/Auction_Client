@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import { auction } from "../../asset/images";
 import { IProduct } from "../../interface";
 import formatDateTime from "../../utils/formatDay";
+import formatMoney from "../../utils/formatMoney";
 import "./ProductCard.css";
+import { auctionType } from "../../constant";
+import React from "react";
 
 const ProductCard = ({ data }: { data: IProduct }) => {
   return (
@@ -19,12 +22,15 @@ const ProductCard = ({ data }: { data: IProduct }) => {
             alt="product-img"
           />
         </div>
-        <p className="card-name">{data.name}</p>
+        <Link to={`/chi-tiet-dau-gia/${data?._id}`}>
+          <p className="card-name">{data?.name}</p>
+        </Link>
+        <p>{auctionType[data?.auctionTypeSlug]}</p>
         <p>
           Giá khởi điểm:
           <span className="card-price">
             {" "}
-            {data?.basePrice?.$numberDecimal} VND
+            {formatMoney(data?.basePrice?.$numberDecimal)}
           </span>
         </p>
         <div className="card-more">
@@ -43,4 +49,4 @@ const ProductCard = ({ data }: { data: IProduct }) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard) ;

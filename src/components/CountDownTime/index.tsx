@@ -18,10 +18,11 @@ const CountDownTime = ({ time, bidsTime, stop = false }: IProps) => {
   const [downLoop, setDownLoop] = useState(false);
 
   useEffect(() => {
-    if (!downLoop || stop) {
+    
+    if (!downLoop && !stop) {
       const clockInterval = setInterval(() => {
         // Tính khoảng thời gian giữa thời gian hiện tại và thời gian cụ thể
-        const countTime = new Date(time.time).getTime() - new Date().getTime();
+        const countTime = new Date(time?.time).getTime() - new Date().getTime();
 
         //   const secondsLocal = Math.floor((countTime % (1000 * 60)) / 1000);
         //   const minutesLocal = Math.floor(
@@ -48,6 +49,9 @@ const CountDownTime = ({ time, bidsTime, stop = false }: IProps) => {
       return () => {
         clearInterval(clockInterval);
       };
+    }
+    else {
+      bidsTime(false, "");
     }
   }, [bidsTime, downLoop, stop, time]);
 

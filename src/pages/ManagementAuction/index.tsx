@@ -8,8 +8,8 @@ import { IRootState } from "../../interface";
 
 const ManagementAuction = () => {
   const idOwner = useSelector((e: IRootState) => e.auth._id);
-  const [typeList, setTypeList] = useState("create");
-  const [typeFreeList, setTypeFreeList] = useState("create");
+  const [typeList, setTypeList] = useState("win");
+  const [typeFreeList, setTypeFreeList] = useState("received");
 
   const auction_list = useQuery({
     queryKey: ["auction-list__user", { typeList }],
@@ -58,10 +58,10 @@ const ManagementAuction = () => {
               onChange={(e: any) => setTypeList(e.target.value)}
               aria-label="Default select example"
             >
-              <option value="create">Cuộc đấu giá đã tạo</option>
-              <option value="join">Cuộc đấu giá đã tham gia</option>
-              <option value="buy">Sản phẩm được mua ngay</option>
               <option value="win">Sản phẩm đấu giá thành công</option>
+              <option value="buy">Sản phẩm được bạn mua ngay</option>
+              <option value="join">Cuộc đấu giá bạn đã tham gia</option>
+              <option value="create">Cuộc đấu giá bạn đã tạo</option>
               <option value="refuse">Sản phẩm đấu giá bị từ chối</option>
             </Form.Select>
           </Col>
@@ -78,9 +78,9 @@ const ManagementAuction = () => {
               onChange={(e: any) => setTypeFreeList(e.target.value)}
               aria-label="Default select example"
             >
-              <option value="create">Sản phẩm đã chia sẻ</option>
-              <option value="participate">Sản phẩm đã đăng ký nhận</option>
               <option value="received">Sản phẩm đã nhận</option>
+              <option value="participate">Sản phẩm đã đăng ký nhận</option>
+              <option value="create">Sản phẩm đã chia sẻ</option>
               <option value="refuse">Sản phẩm chia sẻ đã bị từ chối</option>
 
             </Form.Select>
