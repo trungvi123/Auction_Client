@@ -50,6 +50,44 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/${id}`;
     return axiosClient.get(url);
   },
+  getAllUser: () => {
+    const url = apiConfig.baseUrl + `user/all`;
+    return axiosClient.get(url);
+  },
+  createReport: (payload: {
+    type: string[];
+    accuserId: string;
+    accusedId: string;
+    productId: string;
+  }) => {
+    const url = apiConfig.baseUrl + `user/createReport`;
+    return axiosClientJWT.post(url, payload);
+  },
+  getReports: () => {
+    const url = apiConfig.baseUrl + `user/reports`;
+    return axiosClientJWT.get(url);
+  },
+  handleFinishTransaction: (payload: { id: string }) => {
+    const url =
+      apiConfig.baseUrl + `user/handleFinishTransaction/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
+  approveReport: (id: string) => {
+    const url = apiConfig.baseUrl + `user/approveReport/${id}`;
+    return axiosClientJWT.patch(url);
+  },
+  deleteReport: (id: string) => {
+    const url = apiConfig.baseUrl + `user/deleteReport/${id}`;
+    return axiosClientJWT.delete(url);
+  },
+  updateBlockUserById: (id: string) => {
+    const url = apiConfig.baseUrl + `user/updateBlockUserById/${id}`;
+    return axiosClientJWT.post(url);
+  },
+  updateWarnUserById: (id: string) => {
+    const url = apiConfig.baseUrl + `user/updateWarnUserById/${id}`;
+    return axiosClientJWT.post(url);
+  },
   refreshToken: () => {
     const url = apiConfig.baseUrl + "token/refresh";
     return axiosClient.post(url, {});
@@ -93,6 +131,10 @@ const userApi = {
   getFreeProductsByOwner: (id: string) => {
     const url = apiConfig.baseUrl + `user/owner/freeProduct/${id}`;
     return axiosClientJWT.get(url);
+  },
+  sendMailToUser: (payload: any) => {
+    const url = apiConfig.baseUrl + `user/sendMailToUser/`;
+    return axiosClientJWT.post(url, payload);
   },
   deleteProductHistory: (payload: {
     idOwner: string;

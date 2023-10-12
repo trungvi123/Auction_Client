@@ -1,36 +1,52 @@
 import { MaterialReactTable } from "material-react-table";
 import { type MRT_ColumnDef } from "material-react-table";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Image } from "react-bootstrap";
-
-import { auction } from "../../asset/images";
-import { Link, useNavigate } from "react-router-dom";
-import productApi from "../../api/productApi";
+import { IconButton, Tooltip } from "@mui/material";
+import { Autorenew, LocalShipping, MonetizationOn } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import userApi from "../../api/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import { IRootState } from "../../interface";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
+import { auction } from "../../asset/images";
+import productApi from "../../api/productApi";
+import userApi from "../../api/userApi";
+import { IRootState } from "../../interface";
 import {
   setFreeProductPermission,
   setProductPermission,
 } from "../../redux/authSlice";
+import { checkoutType } from "../../constant/index";
 
 interface IProTable {
-  name: string;
+  name: {
+    name: string;
+    paid: boolean;
+    shipping: boolean;
+  };
   images: {
     src: string;
     idProduct: string;
   };
-  statusPayment: string;
-  status: string;
+  status: {
+    statusPayment: string;
+    status: string;
+    checkoutTypeSlug: string;
+  };
   handle: {
     _id: string;
+    paid: boolean;
     name: string;
     status: string;
+    auctionStarted: boolean;
+    checkoutTypeSlug: string;
+    seller: string;
+    buyer: string;
+    shipping: boolean;
     statusPaymentSlug: string;
+    successfulTransaction: boolean;
   };
 }
 
@@ -50,6 +66,12 @@ function ProductsTable({
     variable: "",
     id: "",
   });
+  const [reportMode, setReportMode] = useState<boolean>(false);
+  const [reportReason, setReportReason] = useState<string[]>([]);
+  const [reportId, setReportId] = useState({
+    buyer: "",
+    seller: "",
+  });
   const prodPer: any = useSelector((e: IRootState) => e.auth.productPermission);
   const freeProdPer: any = useSelector(
     (e: IRootState) => e.auth.freeProductPermission
@@ -62,175 +84,172 @@ function ProductsTable({
     setShowModal(true);
   };
 
-  const handleApprove = (id: string) => {
-    const approveApi = async () => {
-      const res: any = await productApi.approveProduct({
-        id,
-        isFree: freeProduct,
-      });
-      if (res?.status === "success") {
-        toast.success("Duyệt cuộc đấu giá thành công!");
-        if (freeProduct) {
-          queryClient.invalidateQueries({
-            queryKey: ["freeProduct-list__admin", { statusAuction }],
-          });
-          queryClient.invalidateQueries({
-            queryKey: [
-              "freeProduct-list__admin",
-              { statusAuction: "Đã được duyệt" },
-            ],
-          });
-        } else {
-          queryClient.invalidateQueries({
-            queryKey: ["auction-list__admin", { statusAuction }],
-          });
-          queryClient.invalidateQueries({
-            queryKey: [
-              "auction-list__admin",
-              { statusAuction: "Đã được duyệt" },
-            ],
-          });
-        }
-
-        // thêm api gửi mail
+  const handleApprove = async (id: string) => {
+    const res: any = await productApi.approveProduct({
+      id,
+      isFree: freeProduct,
+    });
+    if (res?.status === "success") {
+      toast.success("Duyệt cuộc đấu giá thành công!");
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "freeProduct-list__admin",
+            { statusFreeAuction: statusAuction },
+          ],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "freeProduct-list__admin",
+            { statusFreeAuction: "Đã được duyệt" },
+          ],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__admin", { statusAuction }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__admin", { statusAuction: "Đã được duyệt" }],
+        });
       }
-    };
-    approveApi();
+
+      // thêm api gửi mail
+    }
   };
 
-  const handleRefuse = (id: string) => {
-    const refuseApi = async () => {
-      const res: any = await productApi.refuseProduct({
-        id,
-        isFree: freeProduct,
-      });
-      if (res?.status === "success") {
-        toast.success("Đã từ chối cuộc đấu giá thành công!");
-        // thêm api gửi mail
-        if (freeProduct) {
-          queryClient.invalidateQueries({
-            queryKey: ["freeProduct-list__admin", { statusAuction }],
-          });
-          queryClient.invalidateQueries({
-            queryKey: [
-              "freeProduct-list__admin",
-              { statusAuction: "Đã từ chối" },
-            ],
-          });
-        } else {
-          queryClient.invalidateQueries({
-            queryKey: ["auction-list__admin", { statusAuction }],
-          });
-
-          queryClient.invalidateQueries({
-            queryKey: ["auction-list__admin", { statusAuction: "Đã từ chối" }],
-          });
-        }
-      }
-    };
-    refuseApi();
-  };
-
-  const handleApproveAgain = (id: string) => {
-    const againApi = async () => {
-      const res: any = await productApi.approveAgainProduct({
-        id,
-        isFree: freeProduct,
-      });
-      if (res?.status === "success") {
-        toast.success("Đã kiến nghị duyệt lại cuộc đấu giá thành công!");
+  const handleRefuse = async (id: string) => {
+    const res: any = await productApi.refuseProduct({
+      id,
+      isFree: freeProduct,
+    });
+    if (res?.status === "success") {
+      toast.success("Đã từ chối cuộc đấu giá thành công!");
+      // thêm api gửi mail
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "freeProduct-list__admin",
+            { statusFreeAuction: statusAuction },
+          ],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "freeProduct-list__admin",
+            { statusFreeAuction: "Đã từ chối" },
+          ],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__admin", { statusAuction }],
+        });
 
         queryClient.invalidateQueries({
-          queryKey: ["auction-list__user", { typeList }],
+          queryKey: ["auction-list__admin", { statusAuction: "Đã từ chối" }],
         });
-        // thêm api gửi mail
       }
-    };
-    againApi();
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const delApi = async () => {
-      let result: any;
-      const payload = {
-        idProd: id,
-        idOwner,
-        isFree: freeProduct,
-      };
-      if (typeList === "create" || typeList === "refuse") {
-        // xóa bên bảng các sản phẩm đã tạo hoac bi tu choi
-        result = await productApi.deleteProductById(payload);
-      } else {
-        const pl = {
-          ...payload,
-          type: typeList,
-        };
-        result = await userApi.deleteProductHistory(pl);
-      }
-      if (result?.status === "success") {
-        if (freeProduct) {
-          dispatch(setFreeProductPermission([...freeProdPer, result._id]));
-        } else {
-          dispatch(setProductPermission([...prodPer, result._id]));
-        }
-        toast.success("Đã xóa thành công!");
-        if (handleByAdmin) {
-          if (freeProduct) {
-            queryClient.invalidateQueries({
-              queryKey: ["freeProduct-list__admin", { statusAuction }],
-            });
-          } else {
-            queryClient.invalidateQueries({
-              queryKey: ["auction-list__admin", { statusAuction }],
-            });
-          }
-        } else {
-          if (freeProduct) {
-            if (typeList === "create") {
-              // khi xoa o create thi cap nhat lai luon cache cua refuse
-              queryClient.invalidateQueries({
-                queryKey: [
-                  "freeProduct-list__user",
-                  { typeFreeList: "refuse" },
-                ],
-              });
-            }
-            if (typeList === "refuse") {
-              // khi xoa o refuse thi cap nhat lai luon cache cua create
-              queryClient.invalidateQueries({
-                queryKey: [
-                  "freeProduct-list__user",
-                  { typeFreeList: "create" },
-                ],
-              });
-            }
-            // cap nhat cache san pham mien phi
-            queryClient.invalidateQueries({
-              queryKey: ["freeProduct-list__user", { typeFreeList: typeList }],
-            });
-          } else {
-            if (typeList === "create") {
-              // khi xoa o create thi cap nhat lai luon cache cua refuse
-              queryClient.invalidateQueries({
-                queryKey: ["auction-list__user", { typeList: "refuse" }],
-              });
-            }
-            if (typeList === "refuse") {
-              // khi xoa o refuse thi cap nhat lai luon cade cua create
-              queryClient.invalidateQueries({
-                queryKey: ["auction-list__user", { typeList: "create" }],
-              });
-            }
-            queryClient.invalidateQueries({
-              queryKey: ["auction-list__user", { typeList }],
-            });
-          }
-        }
-      } else {
-        toast.error("Đã xóa sản phẩm thất bại!");
-      }
+  const handleApproveAgain = async (id: string) => {
+    const res: any = await productApi.approveAgainProduct({
+      id,
+      isFree: freeProduct,
+    });
+    if (res?.status === "success") {
+      toast.success("Đã kiến nghị duyệt lại cuộc đấu giá thành công!");
+
+      queryClient.invalidateQueries({
+        queryKey: ["auction-list__user", { typeList }],
+      });
+      // thêm api gửi mail
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    let result: any;
+    const payload = {
+      idProd: id,
+      idOwner,
+      isFree: freeProduct,
     };
-    delApi();
+    if (typeList === "create" || typeList === "refuse") {
+      // xóa bên bảng các sản phẩm đã tạo hoac bi tu choi
+      result = await productApi.deleteProductById(payload);
+    } else {
+      const pl = {
+        ...payload,
+        type: typeList,
+      };
+      result = await userApi.deleteProductHistory(pl);
+    }
+    if (result?.status === "success") {
+      if (freeProduct) {
+        dispatch(setFreeProductPermission([...freeProdPer, result._id]));
+      } else {
+        dispatch(setProductPermission([...prodPer, result._id]));
+      }
+      toast.success("Đã xóa thành công!");
+      if (handleByAdmin) {
+        if (freeProduct) {
+          queryClient.invalidateQueries({
+            queryKey: [
+              "freeProduct-list__admin",
+              { statusFreeAuction: statusAuction },
+            ],
+          });
+        } else {
+          queryClient.invalidateQueries({
+            queryKey: ["auction-list__admin", { statusAuction }],
+          });
+        }
+      } else {
+        if (freeProduct) {
+          if (typeList === "create") {
+            // khi xoa o create thi cap nhat lai luon cache cua refuse
+            queryClient.invalidateQueries({
+              queryKey: ["freeProduct-list__user", { typeFreeList: "refuse" }],
+            });
+          }
+          if (typeList === "refuse") {
+            // khi xoa o refuse thi cap nhat lai luon cache cua create
+            queryClient.invalidateQueries({
+              queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
+            });
+          }
+          // cap nhat cache san pham mien phi
+          queryClient.invalidateQueries({
+            queryKey: ["freeProduct-list__user", { typeFreeList: typeList }],
+          });
+        } else {
+          if (typeList === "create") {
+            // khi xoa o create thi cap nhat lai luon cache cua refuse
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__user", { typeList: "refuse" }],
+            });
+          }
+          if (typeList === "refuse") {
+            // khi xoa o refuse thi cap nhat lai luon cade cua create
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__user", { typeList: "create" }],
+            });
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["auction-list__user", { typeList }],
+          });
+        }
+      }
+    } else {
+      toast.error("Đã xóa sản phẩm thất bại!");
+    }
+  };
+
+  const handleShipping = async (id: string) => {
+    const res: any = await productApi.updateShipping({ id });
+    if (res?.status === "success") {
+      queryClient.invalidateQueries({
+        queryKey: ["auction-list__user", { typeList }],
+      });
+    }
   };
 
   const runFunc = (infor: { variable: string; id: string }) => {
@@ -240,6 +259,12 @@ function ProductsTable({
       handleRefuse(infor.id);
     } else if (infor.variable === "approveAgain") {
       handleApproveAgain(infor.id);
+    } else if (infor.variable === "updateShipping") {
+      handleShipping(infor.id);
+    } else if (infor.variable === "report") {
+      handleReport(infor.id);
+    } else if (infor.variable === "finishTransaction") {
+      handleFinishTransaction(infor.id);
     } else {
       handleDelete(infor.id);
     }
@@ -250,16 +275,30 @@ function ProductsTable({
     if (data.length > 0) {
       dataLocal.current = data?.map((item: any) => {
         return {
-          name: item.name,
+          name: {
+            name: item.name,
+            paid: item.paid,
+            shipping: item.shipping,
+          },
           images: {
             src: item.images[0] ? item.images[0] : auction,
             idProduct: item._id,
           },
-          status: item.status,
-          statusPayment: item.statusPayment,
+          status: {
+            status: item.status,
+            checkoutTypeSlug: item.checkoutTypeSlug,
+            statusPayment: item.statusPayment,
+          },
           handle: {
             _id: item._id,
             name: item.name,
+            paid: item.paid,
+            successfulTransaction: item.successfulTransaction,
+            shipping: item.shipping,
+            auctionStarted: item.auctionStarted,
+            seller: item.owner,
+            checkoutTypeSlug: item.checkoutTypeSlug,
+            buyer: item.winner || item.purchasedBy,
             status: item.status,
             statusPaymentSlug: item.statusPaymentSlug,
           },
@@ -310,12 +349,81 @@ function ProductsTable({
         header: "Tên tài sản",
         accessorKey: "name",
         id: "name",
+        Cell: ({ cell }) => {
+          const data: {
+            name: string;
+            paid: boolean;
+            shipping: boolean;
+          } = cell.getValue<{
+            name: string;
+            paid: boolean;
+            shipping: boolean;
+          }>();
+
+          return (
+            <div>
+              {!handleByAdmin && (
+                <Tooltip
+                  placement="top"
+                  title={
+                    typeList === "create"
+                      ? data.paid
+                        ? "Đã được thanh toán"
+                        : "Chưa được thanh toán"
+                      : data.shipping
+                      ? "Đang giao hàng"
+                      : "Chưa giao hàng"
+                  }
+                >
+                  <IconButton>
+                    {typeList === "create" && (
+                      <MonetizationOn color={data.paid ? "success" : "error"} />
+                    )}
+                    {(typeList === "win" || typeList === "buy") && (
+                      <LocalShipping
+                        color={data.shipping ? "success" : "error"}
+                      />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              )}
+
+              {data.name}
+            </div>
+          );
+        },
       },
       {
         header: "Trạng thái",
-        accessorKey:
-          typeList === "win" || typeList === "buy" ? "statusPayment" : "status",
+        accessorKey: "status",
         id: "status",
+        Cell: ({ cell }) => {
+          const data: {
+            status: string;
+            checkoutTypeSlug: string;
+            statusPayment: string;
+          } = cell.getValue<{
+            status: string;
+            checkoutTypeSlug: string;
+            statusPayment: string;
+          }>();
+
+          return (
+            <div>
+              {typeList === "win" || typeList === "buy" ? (
+                <>
+                  <p>{data.statusPayment}</p>
+                  <p>({checkoutType[data.checkoutTypeSlug]})</p>
+                </>
+              ) : (
+                <>
+                  <p>{data.status}</p>
+                  <p>({checkoutType[data.checkoutTypeSlug]})</p>
+                </>
+              )}
+            </div>
+          );
+        },
       },
       {
         header: "Xử lí",
@@ -325,17 +433,32 @@ function ProductsTable({
             _id: string;
             status: string;
             name: string;
+            seller: string;
+            buyer: string;
+            shipping: boolean;
+            auctionStarted: boolean;
+            successfulTransaction: boolean;
+            paid: boolean;
+            checkoutTypeSlug: string;
             statusPaymentSlug: string;
           } = cell.getValue<{
             _id: string;
             name: string;
             status: string;
+            shipping: boolean;
+            successfulTransaction: boolean;
+            paid: boolean;
+            auctionStarted: boolean;
+            checkoutTypeSlug: string;
+            seller: string;
+            buyer: string;
             statusPaymentSlug: string;
           }>();
           return (
             <>
               {!handleByAdmin ? ( // xử lí của user
                 <div>
+                  {/* Nút sửa khi sản phẩm chưa được duyệt và chưa bất đầu */}
                   {typeList === "create" &&
                     data.status === "Đang chờ duyệt" && (
                       <Link
@@ -349,27 +472,166 @@ function ProductsTable({
                         <span className="btn-11__content">Sửa</span>
                       </Link>
                     )}
+
+                  {/* Nút xem sản phẩm đã được duyệt và đã bất đầu*/}
                   {typeList === "create" &&
-                    data.status === "Đã được duyệt" &&
-                    !freeProduct && (
-                      <div className="btn-11 disable">
-                        <span className="btn-11__content">Sửa</span>
+                    !data.auctionStarted &&
+                    (data.paid || data.checkoutTypeSlug === "cod") &&
+                    data.status === "Đã được duyệt" && (
+                      <Link
+                        to={`/chi-tiet-dau-gia/${data._id}`}
+                        className="btn-11"
+                      >
+                        <span className="btn-11__content">Chi tiết</span>
+                      </Link>
+                    )}
+
+                  {/* Nút xác nhận gửi hàng của người bán*/}
+                  {typeList === "create" &&
+                    data.auctionStarted &&
+                    (data.paid || data.checkoutTypeSlug === "cod") &&
+                    data.status === "Đã được duyệt" && (
+                      <div
+                        className={`btn-11 ${
+                          data.checkoutTypeSlug === "cod" && data.shipping
+                            ? "d-none"
+                            : ""
+                        } ${data.shipping ? "disable" : ""}`}
+                        onClick={() => {
+                          if (!data.shipping) {
+                            setReportMode(false);
+                            setMsgModal(
+                              "Xác nhận cho người mua biết rằng bạn đã gửi hàng!"
+                            );
+                            handleShow();
+                            setInforHanle({
+                              variable: "updateShipping",
+                              id: data._id,
+                            });
+                          }
+                        }}
+                      >
+                        <span className="btn-11__content">
+                          {data.shipping ? "Đã xác nhận" : "Xác nhận"}
+                        </span>
                       </div>
                     )}
+
+                  {/* Nút khiếu nại của người bán trong trường hợp COD*/}
                   {typeList === "create" &&
-                    data.status === "Đã được duyệt" &&
-                    freeProduct && (
+                    data.checkoutTypeSlug === "cod" &&
+                    data.shipping &&
+                    !data.paid &&
+                    data.status === "Đã được duyệt" && (
+                      <div
+                        className={`btn-11 `}
+                        onClick={() => {
+                          setReportMode(true);
+                          setMsgModal(
+                            "Hãy cho chúng tôi biết lí do bạn muốn khiếu nại!"
+                          );
+                          setReportId({
+                            seller: data.seller,
+                            buyer: data.buyer,
+                          });
+                          setInforHanle({
+                            variable: "report",
+                            id: data._id,
+                          });
+                          handleShow();
+                        }}
+                      >
+                        <span className="btn-11__content">Khiếu nại</span>
+                      </div>
+                    )}
+
+                  {/* Nút khiếu nại của người bán khi sản phẩm chưa được thanh toán */}
+                  {/* Không áp dụng trường hợp vận chuyện COD */}
+                  {typeList === "create" &&
+                    !data.paid &&
+                    data.checkoutTypeSlug !== "cod" &&
+                    data.status === "Đã được duyệt" && (
                       <div
                         className="btn-11"
-                        onClick={() => handleViewReceivedList(data._id)}
+                        onClick={() => {
+                          setReportMode(true);
+                          setMsgModal(
+                            "Hãy cho chúng tôi biết lí do bạn muốn khiếu nại!"
+                          );
+                          setReportId({
+                            seller: data.seller,
+                            buyer: data.buyer,
+                          });
+                          setInforHanle({
+                            variable: "report",
+                            id: data._id,
+                          });
+                          handleShow();
+                        }}
                       >
-                        <span className="btn-11__content">Xem danh sách</span>
+                        <span className="btn-11__content">Khiếu nại</span>
                       </div>
                     )}
+
+                  {/* Nút khiếu nại của người mua khi chưa nhận được sản phẩm */}
+                  {(typeList === "win" || typeList === "buy") &&
+                    ((data.checkoutTypeSlug !== "cod" &&
+                      data.statusPaymentSlug === "da-thanh-toan") ||
+                      (data.checkoutTypeSlug === "cod" &&
+                        data.statusPaymentSlug === "chua-thanh-toan")) &&
+                    !data.successfulTransaction && (
+                      <div
+                        className="btn-11"
+                        onClick={() => {
+                          setReportMode(true);
+                          setReportId({
+                            seller: data.seller,
+                            buyer: data.buyer,
+                          });
+                          setInforHanle({
+                            variable: "report",
+                            id: data._id,
+                          });
+                          setMsgModal(
+                            "Hãy cho chúng tôi biết lí do bạn muốn khiếu nại!"
+                          );
+                          handleShow();
+                        }}
+                      >
+                        <span className="btn-11__content">Khiếu nại</span>
+                      </div>
+                    )}
+
+                  {/* Nút xác nhận của người mua khi nhận được sản phẩm */}
+                  {(typeList === "win" || typeList === "buy") &&
+                    data.statusPaymentSlug === "da-thanh-toan" &&
+                    data.shipping &&
+                    !data.successfulTransaction && (
+                      <div
+                        className="btn-11 mt-2"
+                        onClick={() => {
+                          setReportMode(false);
+
+                          setInforHanle({
+                            variable: "finishTransaction",
+                            id: data._id,
+                          });
+                          setMsgModal(
+                            "Xác nhận rằng bạn đã nhận được sản phẩm!"
+                          );
+                          handleShow();
+                        }}
+                      >
+                        <span className="btn-11__content">Đã nhận hàng</span>
+                      </div>
+                    )}
+
+                  {/* Nút kiến nghị để admin duyệt lại */}
                   {typeList === "refuse" && data.status === "Đã bị từ chối" && (
                     <div
                       className="btn-11"
                       onClick={() => {
+                        setReportMode(false);
                         setMsgModal(
                           "Bạn có chắc muốn kiến nghị duyệt một lần nữa cho cuộc đấu giá này?"
                         );
@@ -386,16 +648,54 @@ function ProductsTable({
                     </div>
                   )}
 
+                  {/* Nút thanh toán */}
                   {(typeList === "win" || typeList === "buy") &&
-                    data.statusPaymentSlug === "chua-thanh-toan" && (
+                    data.statusPaymentSlug === "chua-thanh-toan" &&
+                    data.checkoutTypeSlug !== "cod" && (
                       <Link to={`/thanh-toan/${data._id}`} className="btn-11">
                         <span className="btn-11__content">Thanh toán</span>
                       </Link>
                     )}
 
+                  {/* Nút xác nhận của người mua khi nhận được hàng bằng hình thức COD */}
+                  {(typeList === "win" || typeList === "buy") &&
+                    data.statusPaymentSlug === "chua-thanh-toan" &&
+                    data.checkoutTypeSlug === "cod" && (
+                      <div
+                        onClick={() => {
+                          setReportMode(false);
+                          setMsgModal(
+                            "Xác nhận với người bán rằng bạn đã nhận được hàng!"
+                          );
+                          setInforHanle({
+                            variable: "finishTransaction",
+                            id: data._id,
+                          });
+                          handleShow();
+                        }}
+                        className="btn-11 mt-2"
+                      >
+                        <span className="btn-11__content">Đã nhận hàng</span>
+                      </div>
+                    )}
+
+                  {/* Nút xem danh sách người nhận sản phẩm */}
+                  {typeList === "create" &&
+                    data.status === "Đã được duyệt" &&
+                    freeProduct && (
+                      <div
+                        className="btn-11"
+                        onClick={() => handleViewReceivedList(data._id)}
+                      >
+                        <span className="btn-11__content">Xem danh sách</span>
+                      </div>
+                    )}
+
+                  {/* Nút xóa sản phẩm */}
                   <div
                     className="btn-11 mt-2"
                     onClick={() => {
+                      setReportMode(false);
                       setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                       setInforHanle({
                         variable: "delete",
@@ -415,6 +715,7 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
+                          setReportMode(false);
                           setMsgModal(
                             "Bạn có chắc muốn duyệt cuộc đấu giá này?"
                           );
@@ -430,6 +731,7 @@ function ProductsTable({
                       <div
                         className="btn-11 mt-2"
                         onClick={() => {
+                          setReportMode(false);
                           setMsgModal(
                             "Bạn có chắc muốn từ chối cuộc đấu giá này?"
                           );
@@ -449,6 +751,8 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
+                          setReportMode(false);
+
                           setMsgModal(
                             "Bạn có chắc muốn duyệt lại cuộc đấu giá này?"
                           );
@@ -464,6 +768,8 @@ function ProductsTable({
                       <div
                         className="btn-11 mt-2"
                         onClick={() => {
+                          setReportMode(false);
+
                           setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                           setInforHanle({
                             variable: "delete",
@@ -481,6 +787,7 @@ function ProductsTable({
                     <div
                       className="btn-11 mt-2"
                       onClick={() => {
+                        setReportMode(false);
                         setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                         setInforHanle({
                           variable: "delete",
@@ -502,6 +809,87 @@ function ProductsTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [next, freeProduct, handleByAdmin, typeList, statusAuction]
   );
+
+  const handleSelectReport = (checked: boolean, value: string) => {
+    if (checked) {
+      setReportReason([...reportReason, value]);
+    } else {
+      const newArr = reportReason.filter((e) => e !== value);
+      setReportReason(newArr);
+    }
+  };
+
+  const handleReport = async (id: string) => {
+    let data: {
+      type: string[];
+      accuserId: string; // id người tố cáo
+      accusedId: string; // id người bị tố cáo
+      productId: string;
+    };
+    if (typeList === "create") {
+      // người bán khiểu nại người mua
+      data = {
+        type: reportReason,
+        accuserId: reportId.seller, // id người tố cáo
+        accusedId: reportId.buyer, // id người bị tố cáo
+        productId: id,
+      };
+    } else {
+      // người mua khiếu nại người bán
+      data = {
+        type: reportReason,
+        accuserId: reportId.buyer, // id người tố cáo
+        accusedId: reportId.seller, // id người bị tố cáo
+        productId: id,
+      };
+    }
+    const res: any = await userApi.createReport(data);
+    if (res?.status === "success") {
+      toast.success("Khiếu nại thành công!");
+    } else {
+      toast.error("Khiếu nại không thành công!");
+    }
+  };
+
+  const handleFinishTransaction = async (id: string) => {
+    const res: any = await userApi.handleFinishTransaction({ id });
+    if (res?.status === "success") {
+      toast.success("Xác nhận thành công!");
+      queryClient.invalidateQueries({
+        queryKey: ["auction-list__user", { typeList }],
+      });
+    } else {
+      toast.error("Xác nhận không thành công!");
+    }
+  };
+
+  const handleRefreshList = (a: any) => {
+    if (handleByAdmin) {
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "freeProduct-list__admin",
+            { statusFreeAuction: statusAuction },
+          ],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__admin", { statusAuction }],
+        });
+      }
+    } else {
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: ["freeProduct-list__user", { typeFreeList: typeList }],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList }],
+        });
+      }
+    }
+  };
+
   return (
     <>
       <>
@@ -514,7 +902,67 @@ function ProductsTable({
           <Modal.Header closeButton>
             <Modal.Title>Thông báo</Modal.Title>
           </Modal.Header>
-          <Modal.Body>{msgModal}</Modal.Body>
+          <Modal.Body>
+            {msgModal}
+            {reportMode && (
+              <div className="mt-4">
+                <label
+                  className="containerCheckbox"
+                  htmlFor={"qua-han-thanh-toan"}
+                >
+                  Người dùng không thanh toán sau 3 ngày!
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      handleSelectReport(e.target.checked, "qua-han-thanh-toan")
+                    }
+                    id={"qua-han-thanh-toan"}
+                    className="status-checkall"
+                    name="checkbox-status"
+                    value="0"
+                  ></input>
+                  <span className="checkmark"></span>
+                </label>
+                <label
+                  className="containerCheckbox"
+                  htmlFor={"khong-nhan-hang"}
+                >
+                  Người đấu giá không nhận hàng
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      handleSelectReport(e.target.checked, "khong-nhan-hang")
+                    }
+                    id={"khong-nhan-hang"}
+                    className="status-checkall"
+                    name="checkbox-status"
+                    value="0"
+                  ></input>
+                  <span className="checkmark"></span>
+                </label>
+                <label
+                  className="containerCheckbox"
+                  htmlFor={"khong-nhan-duoc-hang"}
+                >
+                  Không nhận được hàng
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      handleSelectReport(
+                        e.target.checked,
+                        "khong-nhan-duoc-hang"
+                      )
+                    }
+                    id={"khong-nhan-duoc-hang"}
+                    className="status-checkall"
+                    name="checkbox-status"
+                    value="0"
+                  ></input>
+                  <span className="checkmark"></span>
+                </label>
+              </div>
+            )}
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Hủy
@@ -530,6 +978,12 @@ function ProductsTable({
         data={dataLocal.current}
         enableColumnOrdering
         enableGlobalFilter={true} //turn off a feature
+        renderTopToolbarCustomActions={() => (
+          <IconButton onClick={handleRefreshList}>
+            <Autorenew></Autorenew>
+          </IconButton>
+        )}
+       
       />
     </>
   );

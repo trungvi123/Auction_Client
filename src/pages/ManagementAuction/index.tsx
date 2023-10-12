@@ -58,7 +58,7 @@ const ManagementAuction = () => {
               onChange={(e: any) => setTypeList(e.target.value)}
               aria-label="Default select example"
             >
-              <option value="win">Sản phẩm đấu giá thành công</option>
+              <option value="win">Sản phẩm được bạn đấu giá thành công</option>
               <option value="buy">Sản phẩm được bạn mua ngay</option>
               <option value="join">Cuộc đấu giá bạn đã tham gia</option>
               <option value="create">Cuộc đấu giá bạn đã tạo</option>

@@ -1,7 +1,0 @@
-.ad-header {
-    /* background-color: aqua; */
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--gray-color);
-}

@@ -1,27 +1,29 @@
 import { Col, Container, Row } from "react-bootstrap";
-import UserTable from "../../../components/UserTable";
 import userApi from "../../../api/userApi";
 import { useQuery } from "@tanstack/react-query";
+import ReportTable from "../../../components/Admin/ReportTable";
 
-const UsersManagerment = () => {
-  const user_list = useQuery({
-    queryKey: ["user-list__admin"],
+const ReportManagerment = () => {
+  const report_list = useQuery({
+    queryKey: ["reports"],
     queryFn: async () => {
-      const res = await userApi.getAllUser();
+      const res = await userApi.getReports();
       return res;
     },
     staleTime: 240 * 1000,
   });
 
+   
+
   return (
     <Container>
       <Row>
         <Col>
-          <UserTable data={user_list?.data?.data || []}></UserTable>
+          <ReportTable data={report_list?.data?.data || []}></ReportTable>
         </Col>
       </Row>
     </Container>
   );
 };
 
-export default UsersManagerment;
+export default ReportManagerment;

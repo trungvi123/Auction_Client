@@ -23,7 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import categoryApi from "../../api/categoryApi";
 import TemporaryDrawer from "../Drawer";
 
-const Header = () => {
+const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
@@ -83,13 +83,43 @@ const Header = () => {
       <Navbar className="h-100">
         <Container className="header-container">
           <div className="temporaryDrawer">
-          <TemporaryDrawer></TemporaryDrawer>
+            <TemporaryDrawer isAdmin={isAdmin}></TemporaryDrawer>
           </div>
 
           <Navbar.Brand as={Link} to="/">
             <img className="head__logo" src={logo} alt="" />
           </Navbar.Brand>
           <Nav className="nav-container">
+            {isAdmin && (
+              <div className="NavLink-box">
+                <Nav.Link>
+                  Quản lí
+                  <div className="arrow-icon__box">
+                    <BiChevronDown className="arrow-icon"></BiChevronDown>
+                  </div>
+                </Nav.Link>
+                <div className="head-menu-child">
+                  <ul>
+                    <li className="head-link">
+                      <Link to={"/admin/dashboard"}>Dashboard</Link>
+                    </li>
+                    <li className="head-link">
+                      <Link to={"/admin/auction"}>Quản lí cuộc đấu giá</Link>
+                    </li>
+                    <li className="head-link">
+                      <Link to={"/admin/users"}>Quản lí người dùng</Link>
+                    </li>
+                    <li className="head-link">
+                      <Link to={"/admin/reports"}>Quản lí khiếu nại</Link>
+                    </li>
+                    <li className="head-link">
+                      <Link to={"/admin/users"}>Quản lí giao diện</Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
             <div className="NavLink-box">
               <Nav.Link>
                 Tài sản đấu giá

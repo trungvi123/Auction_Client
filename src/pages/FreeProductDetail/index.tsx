@@ -50,12 +50,13 @@ const FreeProductDetail = () => {
         if (result) {
           setProduct(result.data);
           setTitle(result.data.name);
-          console.log(result.data);
-
+          console.log(result);
+          setOwner(result.data.owner)
+          setCate(result.data.category.name)
           setImgData(result.data.images);
           setType("Chi tiết chia sẻ");
           setAccepterCount(result.data.accepterList.length);
-          if (result.data.status === "Đã được duyệt") {
+          if (result.data?.status === "Đã được duyệt") {
             setDisableBtn({
               status: "Đã được duyệt",
               alreadyJoin: false,
@@ -69,28 +70,6 @@ const FreeProductDetail = () => {
               }
             });
           }
-
-          //getuser
-          const fetchUser = async () => {
-            const resUser: any = await userApi.getUser(result.data.owner);
-            if (resUser.status === "success") {
-              setOwner(resUser.user);
-            }
-          };
-
-          //getcategory
-          const fetchcate = async () => {
-            const resCate: any = await categoryApi.getCategoryById(
-              result.data.category
-            );
-
-            if (resCate.status === "success") {
-              setCate(resCate.category);
-            }
-          };
-
-          fetchUser();
-          fetchcate();
         }
       };
       fectProduct();
@@ -107,7 +86,7 @@ const FreeProductDetail = () => {
 
     const res: any = await freeProductApi.signUpToReceive(payload);
     handleClose();
-    if (res.status === "success") {
+    if (res?.status === "success") {
       toast.success("Đăng ký tham gia nhận sản phẩm thành công!");
       setDisableBtn({
         status: "Đã được duyệt",
@@ -151,7 +130,7 @@ const FreeProductDetail = () => {
             <div className="infor-container">
               <div className="infor-row">
                 <p className="infor-row__left">Loại tài sản:</p>
-                <p className="infor-row__right">{cate ? cate.name : ""}</p>
+                <p className="infor-row__right">{cate ? cate : ""}</p>
               </div>
               <div className="infor-row">
                 <p className="infor-row__left">Hình thức:</p>
@@ -182,7 +161,7 @@ const FreeProductDetail = () => {
                 <p className="infor-row__right">{accepterCount} người</p>
               </div>
             </div>
-            {disableBtn.status === "Đã được duyệt" && (
+            {disableBtn?.status === "Đã được duyệt" && (
               <div className="handle-auction">
                 <div
                   className={` btn-11 btn-11__full ${

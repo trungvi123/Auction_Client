@@ -37,6 +37,9 @@ body a:hover {
   color: unset;
 }
 
+.cursorPointer {
+  cursor: pointer;
+}
 .image-gallery-slides {
   background-color: black;
 }
@@ -47,6 +50,11 @@ body a:hover {
 .fullscreen .image-gallery-image {
   height: calc(100vh - 80px);
 }
+
+.css-cveggr-MuiListItemIcon-root {
+  color: var(--primary-color) !important;
+}
+
 /* btn */
 
 .btn-11 {

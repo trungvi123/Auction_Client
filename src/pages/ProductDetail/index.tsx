@@ -45,7 +45,11 @@ const ProductDetail = () => {
     const result: any = await productApi.getProductById(idProduct);
 
     if (result) {
+      if (result.data.auctionTypeSlug === "dau-gia-nguoc") {
+        setCurrentPriceBid(parseFloat(result.data.basePrice.$numberDecimal));
+      }
       setProduct(result.data);
+
       setImgData(result.data.images);
       setTimeCountDown({
         time: result.data.startTime,
@@ -183,9 +187,17 @@ const ProductDetail = () => {
     }
   };
 
+  console.log(auctionPrice, currentPriceBid);
+
   useEffect(() => {
     socket.on("respone_bid_price", (data) => {
       setCurrentPriceBid(parseFloat(data.price.$numberDecimal));
+    });
+
+    socket.on("respone_buy_now", (data: { buyNow: boolean }) => {
+      if (data.buyNow) {
+        setTopCountDown(true);
+      }
     });
   }, [idProduct]);
 
@@ -201,6 +213,9 @@ const ProductDetail = () => {
         handleClose();
       }
     };
+    socket.emit("buy_now", {
+      buyNow: true,
+    });
     fectProduct();
   };
 

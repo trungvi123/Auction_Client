@@ -7,6 +7,8 @@ import ProductsTable from "../../../components/ProductsTable";
 
 const AuctionManagement = () => {
   const [statusAuction, setStatusAuction] = useState("Đang chờ duyệt");
+  const [statusFreeAuction, setStatusFreeAuction] = useState("Đang chờ duyệt");
+
   const auction_list = useQuery({
     queryKey: ["auction-list__admin", { statusAuction }],
     queryFn: async () => {
@@ -21,10 +23,10 @@ const AuctionManagement = () => {
   });
 
   const freeProduct_list = useQuery({
-    queryKey: ["freeProduct-list__admin", { statusAuction }],
+    queryKey: ["freeProduct-list__admin", { statusFreeAuction }],
     queryFn: async () => {
       const payload = {
-        status: statusAuction,
+        status: statusFreeAuction,
       };
       const res = await freeProductApi.getProductByStatus(payload);
 
@@ -60,7 +62,7 @@ const AuctionManagement = () => {
       <Row className="mt-5 justify-content-end">
         <Col sm={4} className={"my-4"}>
           <Form.Select
-            onChange={(e: any) => setStatusAuction(e.target.value)}
+            onChange={(e: any) => setStatusFreeAuction(e.target.value)}
             aria-label="Default select example"
           >
             <option value="Đang chờ duyệt">Sản phẩm chia sẻ chưa được duyệt</option>

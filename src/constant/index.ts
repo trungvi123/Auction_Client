@@ -5,7 +5,12 @@ const auctionType: any = {
 const checkoutType: any = {
   cod: "Thanh toán khi nhận hàng",
   payment: "Chuyển khoản qua Paypal",
-  all: "Thanh toán trước hoặc thanh toán khi nhận hàng",
 };
 
-export { auctionType, checkoutType };
+const reportType: any = {
+  "qua-han-thanh-toan": "Quá hạn thanh toán",
+  "khong-nhan-hang": "Người mua không nhận hàng",
+  "khong-nhan-duoc-hang": "Người bán không gửi hàng",
+};
+
+export { auctionType, checkoutType,reportType };

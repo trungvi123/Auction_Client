@@ -128,9 +128,9 @@ axiosClientJWT.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const refreshResponse: any = await userApi.refreshToken();
-  
+
         if (refreshResponse.status === "failure") {
-          alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!")
+          alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!");
           window.location.replace("/");
           localStorage.removeItem("token");
           localStorage.removeItem("reduxState");
@@ -143,6 +143,13 @@ axiosClientJWT.interceptors.response.use(
       } catch (refreshError) {
         return Promise.reject(refreshError);
       }
+    }
+
+    if (error.response?.status === 400) {
+      toast.error(
+        error.response?.data?.msg ? error.response.data?.msg : "Có lỗi xảy ra!!"
+      );
+      return null;
     }
     return Promise.reject(error);
   }

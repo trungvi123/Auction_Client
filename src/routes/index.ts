@@ -11,12 +11,13 @@ const routes = {
   productList: "/danh-muc-tai-san/:cate?",
   createFreeProduct: "/chia-se-vat-pham",
   checkOut: "/thanh-toan/:type?/:id",
-  search:'/tim-kiem',
+  search: "/tim-kiem",
   managementAuction: "/quan-li-dau-gia",
   editAuction: "/chinh-sua-dau-gia/:id",
   editFreeProduct: "/chinh-sua-chia-se/:id",
 
   dashboard: "/admin/dashboard",
+  reports: "/admin/reports",
   AdUsers: "/admin/users",
   AdAuction: "/admin/auction",
 };

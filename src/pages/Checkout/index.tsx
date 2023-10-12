@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, Container, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -14,6 +14,7 @@ import formatDay from "../../utils/formatDay";
 
 const Checkout = () => {
   const params = useParams();
+  const queryClient = useQueryClient();
   const [idProduct, setIdProduct] = useState<string | undefined>("");
 
   const CLIENT_ID =
@@ -29,13 +30,13 @@ const Checkout = () => {
 
   const createOrder = async () => {
     const result: any = await productApi.getProductById(params.id || "");
-    let price
-    if(result.data.purchasedBy){
-      price = Number(result.data.price.$numberDecimal) / 24000
-    }else {
-      price = Number(result.data.currentPrice.$numberDecimal) / 24000
+    let price;
+    if (result.data.purchasedBy) {
+      price = Number(result.data.price.$numberDecimal) / 24000;
+    } else {
+      price = Number(result.data.currentPrice.$numberDecimal) / 24000;
     }
-    
+
     const payload = {
       price: price.toFixed(2).toString(),
     };
@@ -47,17 +48,28 @@ const Checkout = () => {
 
   const onApprove = async (data: any) => {
     // Order is captured on the server and the response is returned to the browser
-    if (!idProduct) {
+    if (!params.id) {
       toast.error("Thanh toán thất bại!");
-    }
+    } else {
+      const payload = {
+        orderID: data.orderID,
+        productId: params.id,
+      };
+      const result: any = await paymentApi.captureOrderPayPal(payload);
+      if (result?.status === "COMPLETED") {
+        toast.success("Đã thanh toán thành công!");
 
-    const payload = {
-      orderID: data.orderID,
-      productId: idProduct,
-    };
-    const result: any = await paymentApi.captureOrderPayPal(payload);
-    if (result?.status === "COMPLETED") {
-      toast.success("Đã thanh toán thành công!");
+        queryClient.invalidateQueries({
+          queryKey: ["product-checkout", params.id],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList: "buy" }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList: "win" }],
+        });
+      }
     }
   };
 

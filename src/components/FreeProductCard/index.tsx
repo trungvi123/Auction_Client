@@ -1,9 +1,9 @@
 import React from "react";
 import { BiSolidShareAlt } from "react-icons/bi";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 
 import { auction } from "../../asset/images";
-import { IProduct } from "../../interface";
 import formatDateTime from "../../utils/formatDay";
 // import "./FreeProductCard.css";
 
@@ -22,10 +22,13 @@ const FreeProductCard = ({ data }: { data: IProps }) => {
         <p className="card-time1">Thời gian có thể tham gia</p>
         <p className="card-time2">{formatDateTime(data.createdAt)}</p>
         <div className="card-img-box">
-          <img
-            className="card-img"
-            src={data.images[0] ? data.images[0] : auction}
+          
+          <LazyLoadImage
             alt="product-img"
+            className="card-img"
+            width='1000'
+            height='1000'
+            src={data?.images[0] ? data.images[0] : auction} // use normal <img> attributes as props
           />
         </div>
         <p className="card-name">{data.name}</p>

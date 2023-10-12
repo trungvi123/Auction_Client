@@ -1,16 +1,13 @@
-import AdminHeader from "../../components/Admin/AdminHeader";
 import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 import "./AdminDefaultLayout.css";
 
 const AdminDefaultLayout: any = ({ children }: any) => {
   return (
-
-    <div className="d-flex h-100">
-      <div className="ad-content">
-        <AdminHeader></AdminHeader>
-        {children}
-        <Footer></Footer>
-      </div>
+    <div>
+      <Header isAdmin={true}></Header>
+      {children}
+      <Footer></Footer>
     </div>
   );
 };

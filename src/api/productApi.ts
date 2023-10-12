@@ -18,6 +18,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/price/${id}`;
     return axiosClient.get(url);
   },
+  getPrepareToStart:()=>{
+    const url = apiConfig.baseUrl + `product/prepareToStart`;
+    return axiosClient.get(url);
+  },
   getQuatityProduct: () => {
     const url = apiConfig.baseUrl + `product/quatityProduct`;
     return axiosClient.get(url);
@@ -56,6 +60,10 @@ const productApi = {
   },
   approveProduct: (payload: any) => {
     const url = apiConfig.baseUrl + `product/edit/approveProduct/${payload.id}`;
+    return axiosClientJWT.patch(url, payload);
+  },
+  updateShipping: (payload: { id: string }) => {
+    const url = apiConfig.baseUrl + `product/edit/shipping/${payload.id}`;
     return axiosClientJWT.patch(url, payload);
   },
   refuseProduct: (payload: any) => {

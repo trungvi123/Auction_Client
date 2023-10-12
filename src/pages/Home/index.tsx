@@ -18,8 +18,8 @@ const Home = () => {
   const page = 1;
 
   const productsQuery = useQuery({
-    queryKey: ["products", page],
-    queryFn: () => productApi.getProducts(),
+    queryKey: ["products"],
+    queryFn: () => productApi.getPrepareToStart(),
     staleTime:1000*600
   });
 
@@ -141,7 +141,7 @@ const Home = () => {
                 <Row>
                   {freeProductsQuery?.data?.data?.map((item: any) => {
                     return (
-                      <Col md={5} lg={3} sm={2} key={item._id}>
+                      <Col md={6} lg={4} sm={12} key={item._id}>
                         <FreeProductCard data={item}></FreeProductCard>
                       </Col>
                     );

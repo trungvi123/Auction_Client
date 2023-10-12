@@ -19,6 +19,7 @@ import {
   ReceivedList,
   ProductList,
   Search,
+  ReportManagement,
 } from "../pages";
 
 interface IRoute {
@@ -59,6 +60,11 @@ export const publicRoute: IRoute[] = [
   {
     path: routes.AdUsers,
     element: UsersManagement,
+    layout: "AdminDefaultLayout",
+  },
+  {
+    path: routes.reports,
+    element: ReportManagement,
     layout: "AdminDefaultLayout",
   },
 ];

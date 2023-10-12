@@ -1,5 +1,7 @@
 import { BiSolidShareAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import React from "react";
 
 import { auction } from "../../asset/images";
 import { IProduct } from "../../interface";
@@ -7,7 +9,6 @@ import formatDateTime from "../../utils/formatDay";
 import formatMoney from "../../utils/formatMoney";
 import "./ProductCard.css";
 import { auctionType } from "../../constant";
-import React from "react";
 
 const ProductCard = ({ data }: { data: IProduct }) => {
   return (
@@ -16,10 +17,12 @@ const ProductCard = ({ data }: { data: IProduct }) => {
         <p className="card-time1">Thời gian đấu giá</p>
         <p className="card-time2">{formatDateTime(data?.startTime)}</p>
         <div className="card-img-box">
-          <img
-            className="card-img"
-            src={data?.images[0] ? data.images[0] : auction}
+          <LazyLoadImage
             alt="product-img"
+            className="card-img"
+            width={292}
+            height={225}
+            src={data?.images[0] ? data.images[0] : auction} // use normal <img> attributes as props
           />
         </div>
         <Link to={`/chi-tiet-dau-gia/${data?._id}`}>
@@ -49,4 +52,4 @@ const ProductCard = ({ data }: { data: IProduct }) => {
   );
 };
 
-export default React.memo(ProductCard) ;
+export default React.memo(ProductCard);

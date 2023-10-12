@@ -37,7 +37,7 @@ function SearchModal({ name, placement }: { name: string; placement: any }) {
         </Offcanvas.Body>
         <div className="d-flex w-100 justify-content-center">
           <div
-            className="w-25"
+            style={{width:'200px'}}
             onClick={() => {
               setKeyWord("");
               handleClose();

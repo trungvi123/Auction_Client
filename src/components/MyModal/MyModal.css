@@ -1,89 +1,89 @@
 /* custom modal */
 .myModal.offcanvas.offcanvas-top {
-    top: 10%;
-    left: 25%;
-    width: 50%;
-    height: max-content;
-    max-height: 100%;
-    border-bottom: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
+  top: 10%;
+  left: 25%;
+  width: 50%;
+  height: max-content;
+  max-height: 100%;
+  border-bottom: var(--bs-offcanvas-border-width) solid
+    var(--bs-offcanvas-border-color);
 }
 
 .login__head {
-    position: relative;
-    display: flex;
-    justify-content: center;
-
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 .login__close {
-    position: absolute;
-    content: '';
-    width: 40px;
-    height: 40px;
-    top: 0;
-    right: 0;
-    background: url('../../asset/images/icon/close2.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-    cursor: pointer;
+  position: absolute;
+  content: "";
+  width: 40px;
+  height: 40px;
+  top: 0;
+  right: 0;
+  background: url("../../asset/images/icon/close2.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
 }
 
 .login__logo {
-    width: 250px;
+  width: 250px;
 }
 
 .login__text {
-    font-size: 20px;
-    font-weight: 400;
-    text-align: center;
-    margin-top: 10px;
+  font-size: 20px;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .login__text a {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .forgot__link {
-    font-weight: 500;
-    margin: 10px 0;
-    display: block;
-    width: 150px;
+  font-weight: 500;
+  margin: 10px 0;
+  display: block;
+  width: 150px;
 }
 
 .forgot__link:hover {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .myAlert__btn {
-    display: flex;
-    gap: 20px;
-    margin-top: 50px;
-    justify-content: end;
-    align-items: flex-end;
+  display: flex;
+  gap: 20px;
+  margin-top: 50px;
+  justify-content: end;
+  align-items: flex-end;
 }
 
 .myAlert__btn > .btn-11 {
-    flex: 1;
+  flex: 1;
 }
 
-@media only screen and (max-width:992px){
-    .myModal.offcanvas.offcanvas-top {
-        left: 10%;
-        width: 80%;
-    } 
-    .login__logo {
-        width: 200px;
-    }
+@media only screen and (max-width: 992px) {
+  .myModal.offcanvas.offcanvas-top {
+    left: 10%;
+    width: 80%;
+  }
+  .login__logo {
+    width: 200px;
+  }
 }
 
-@media only screen and (max-width:450px){
+@media only screen and (max-width: 450px) {
   .login-container {
-      padding: 10px !important;
+    padding: 10px !important;
   }
 
   .myModal.offcanvas.offcanvas-top {
-      top: 3%;
+    top: 3%;
     left: 5%;
     width: 90%;
-} 
+  }
 }
