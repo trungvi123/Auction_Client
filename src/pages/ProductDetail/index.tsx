@@ -240,7 +240,7 @@ const ProductDetail = () => {
         />
         <meta property="og:title" content={product?.name} />
         <meta property="og:type" content={product?.category.name} />
-        <meta property="og:image" content={product?.images[0] || auction} />
+        <meta property="og:image" content={product?.images[0] || 'https://auction-server-wuf4.onrender.com/default/auction.png'} />
         <meta
           property="og:url"
           content={`${baseUrl}/chi-tiet-dau-gia/${product?._id}`}

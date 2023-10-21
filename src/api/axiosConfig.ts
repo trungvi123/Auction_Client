@@ -1,5 +1,5 @@
 const apiConfig = {
-    baseUrl : 'http://localhost:5000/',
+    baseUrl : 'https://auction-server-wuf4.onrender.com/',
 }
 
 export default apiConfig
