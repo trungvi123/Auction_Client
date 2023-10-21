@@ -15,8 +15,10 @@ const routes = {
   managementAuction: "/quan-li-dau-gia",
   editAuction: "/chinh-sua-dau-gia/:id",
   editFreeProduct: "/chinh-sua-chia-se/:id",
+  profile: "/profile",
 
   dashboard: "/admin/dashboard",
+  ui: "/admin/ui",
   reports: "/admin/reports",
   AdUsers: "/admin/users",
   AdAuction: "/admin/auction",

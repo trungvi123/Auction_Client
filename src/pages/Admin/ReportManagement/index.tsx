@@ -17,7 +17,7 @@ const ReportManagerment = () => {
 
   return (
     <Container>
-      <Row>
+      <Row style={{minHeight:'450px'}} className="mt-5">
         <Col>
           <ReportTable data={report_list?.data?.data || []}></ReportTable>
         </Col>

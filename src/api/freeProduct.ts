@@ -14,8 +14,11 @@ const freeProductApi = {
     const url = apiConfig.baseUrl + `freeProduct/page/${page}`;
     return axiosClient.get(url);
   },
-  getAllFreeProducts: () => {
-    const url = apiConfig.baseUrl + `freeProduct/all/`;
+  getAllFreeProducts: (limit?: Number) => {
+    let url = apiConfig.baseUrl + `freeProduct/all`;
+    if (limit) {
+      url = apiConfig.baseUrl + `freeProduct/all/${limit}`;
+    }
     return axiosClient.get(url);
   },
   editFreeProduct: (payload: any, config: any) => {

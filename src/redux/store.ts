@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authSlice";
 import myModalSlice from "./myModalSlice";
 import searchModalSlice from "./searchModalSlice";
+import uiSlice from "./uiSlice";
 import utilsSlice from "./utilsSlice";
 
 // Khôi phục state từ localStorage (nếu có)
@@ -15,6 +16,7 @@ export const store = configureStore({
     myModal: myModalSlice,
     searchModal: searchModalSlice,
     utils: utilsSlice,
+    ui: uiSlice,
   },
   preloadedState: initialState,
 });

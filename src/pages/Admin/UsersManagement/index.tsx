@@ -14,8 +14,8 @@ const UsersManagerment = () => {
   });
 
   return (
-    <Container>
-      <Row>
+    <Container >
+      <Row style={{minHeight:'450px'}} className="mt-5">
         <Col>
           <UserTable data={user_list?.data?.data || []}></UserTable>
         </Col>

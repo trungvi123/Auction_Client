@@ -7,6 +7,8 @@ interface IPaypalOrder {
 
 interface IPaypalCapture {
   orderID: string;
+  productId: string;
+  userId: string;
 }
 
 const paymentApi = {

@@ -4,8 +4,14 @@ export interface IMyModal {
 }
 
 export interface IUi {
-  menuSidebarCollapsed: boolean;
-  controlSidebarCollapsed: boolean;
+  fireworks: boolean;
+  changeTheme: boolean;
+  images: {
+    short_intro: string;
+    logo: string;
+    mini_logo: string;
+    breadcrum: string;
+  };
 }
 
 export interface IUtils {
@@ -15,6 +21,7 @@ export interface IUtils {
 
 export interface IAuth {
   email: string;
+  emailPaypal: string;
   _id: any;
   lastName: string;
   basicUser: boolean;

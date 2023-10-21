@@ -6,11 +6,10 @@ export interface ISignUpPayload {
   firstName: String;
   lastName: String;
   email: String;
+  emailPaypal: String;
   phoneNumber: String;
   password: String;
   idCard: String;
-  bankNumber: String;
-  bankName: String;
   address: String;
 }
 
@@ -48,11 +47,7 @@ const userApi = {
   },
   getUser: (id: string) => {
     const url = apiConfig.baseUrl + `user/${id}`;
-    return axiosClient.get(url);
-  },
-  getAllUser: () => {
-    const url = apiConfig.baseUrl + `user/all`;
-    return axiosClient.get(url);
+    return axiosClientJWT.get(url);
   },
   createReport: (payload: {
     type: string[];
@@ -63,26 +58,10 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/createReport`;
     return axiosClientJWT.post(url, payload);
   },
-  getReports: () => {
-    const url = apiConfig.baseUrl + `user/reports`;
-    return axiosClientJWT.get(url);
-  },
-  handleFinishTransaction: (payload: { id: string }) => {
+  handleFinishTransaction: (payload: { id: string; userId: string }) => {
     const url =
       apiConfig.baseUrl + `user/handleFinishTransaction/${payload.id}`;
     return axiosClientJWT.post(url, payload);
-  },
-  approveReport: (id: string) => {
-    const url = apiConfig.baseUrl + `user/approveReport/${id}`;
-    return axiosClientJWT.patch(url);
-  },
-  deleteReport: (id: string) => {
-    const url = apiConfig.baseUrl + `user/deleteReport/${id}`;
-    return axiosClientJWT.delete(url);
-  },
-  updateBlockUserById: (id: string) => {
-    const url = apiConfig.baseUrl + `user/updateBlockUserById/${id}`;
-    return axiosClientJWT.post(url);
   },
   updateWarnUserById: (id: string) => {
     const url = apiConfig.baseUrl + `user/updateWarnUserById/${id}`;
@@ -132,8 +111,30 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/owner/freeProduct/${id}`;
     return axiosClientJWT.get(url);
   },
-  sendMailToUser: (payload: any) => {
-    const url = apiConfig.baseUrl + `user/sendMailToUser/`;
+  getNotifications: (userId: string) => {
+    const url = apiConfig.baseUrl + `user/notifications/${userId}`;
+    return axiosClientJWT.get(url);
+  },
+  updateNotifications: (userId: string) => {
+    const url = apiConfig.baseUrl + `user/updateNotifications/${userId}`;
+    return axiosClientJWT.patch(url);
+  },
+  updateProfile: (payload: {
+    birthday: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    userId: string;
+    phoneNumber: string;
+    idCard: string;
+    address: string;
+    emailPaypal: string;
+  }) => {
+    const url = apiConfig.baseUrl + `user/updateProfile/`;
+    return axiosClientJWT.patch(url, payload);
+  },
+  deleteNotification: (payload: { id: string; userId: string }) => {
+    const url = apiConfig.baseUrl + `user/deleteNotification/${payload.id}`;
     return axiosClientJWT.post(url, payload);
   },
   deleteProductHistory: (payload: {
@@ -143,6 +144,83 @@ const userApi = {
   }) => {
     const url =
       apiConfig.baseUrl + `user/deleteProductHistory/${payload.idOwner}`;
+    return axiosClientJWT.post(url, payload);
+  },
+  getAllUser: () => {
+    const url = apiConfig.baseUrl + `admin/getAllUser`;
+    return axiosClientJWT.get(url);
+  },
+  approveReport: (id: string) => {
+    const url = apiConfig.baseUrl + `admin/approveReport/${id}`;
+    return axiosClientJWT.patch(url);
+  },
+  deleteReport: (id: string) => {
+    const url = apiConfig.baseUrl + `admin/deleteReport/${id}`;
+    return axiosClientJWT.delete(url);
+  },
+  deleteStatistic: (year: string) => {
+    const url = apiConfig.baseUrl + `admin/deleteStatistic/${year}`;
+    return axiosClientJWT.delete(url);
+  },
+  deleteTemplate: (id: string) => {
+    const url = apiConfig.baseUrl + `admin/deleteTemplate/${id}`;
+    return axiosClientJWT.delete(url);
+  },
+  getReports: () => {
+    const url = apiConfig.baseUrl + `admin/reports`;
+    return axiosClientJWT.get(url);
+  },
+  getTemplateActive: () => {
+    const url = apiConfig.baseUrl + `user/getTemplateActive`;
+    return axiosClient.get(url);
+  },
+  getAllStatistic: () => {
+    const url = apiConfig.baseUrl + `admin/getAllStatistic`;
+    return axiosClientJWT.get(url);
+  },
+  getStatisticByYear: (year: string) => {
+    const url = apiConfig.baseUrl + `admin/getStatisticByYear/${year}`;
+    return axiosClientJWT.get(url);
+  },
+  updateBlockUserById: (payload: { id: string; type: string }) => {
+    const url = apiConfig.baseUrl + `admin/updateBlockUserById/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
+  createStatistic: (payload: { year: string }) => {
+    const url = apiConfig.baseUrl + `admin/createStatistic`;
+    return axiosClientJWT.post(url, payload);
+  },
+  sendMailToUser: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/sendMailToUser/`;
+    return axiosClientJWT.post(url, payload);
+  },
+  createTemplate: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/createTemplate/`;
+    return axiosClientJWT.post(url, payload);
+  },
+  updateTemplate: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/updateTemplate`;
+    return axiosClientJWT.post(url, payload);
+  },
+  updateImgTemplate: (payload: any, config: any) => {
+    const url = apiConfig.baseUrl + `admin/updateImgTemplate`;
+    return axiosClientJWT.post(url, payload, config);
+  },
+  getTemplates: () => {
+    const url = apiConfig.baseUrl + `admin/getTemplates`;
+    return axiosClientJWT.get(url);
+  },
+  activeTemplate: (id: string) => {
+    const url = apiConfig.baseUrl + `admin/activeTemplate/${id}`;
+    return axiosClientJWT.patch(url);
+  },
+
+  payouts: (payload: {
+    productId: string;
+    emailPaypal: string;
+    value: string;
+  }) => {
+    const url = apiConfig.baseUrl + `admin/payouts/`;
     return axiosClientJWT.post(url, payload);
   },
 };

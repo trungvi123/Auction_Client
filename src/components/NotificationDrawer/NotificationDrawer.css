@@ -1,0 +1,93 @@
+.notification-item {
+  display: flex;
+  gap: 10px;
+  position: relative;
+}
+
+.ureadNotification {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: deepskyblue;
+  position: absolute;
+  right: 0;
+  top: 14px;
+}
+
+.notification-circle {
+  height: 60px;
+  width: 60px;
+  background-color: brown;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.notification-item::before {
+  content: "";
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  top: 34px;
+  left: 30px;
+  /* background-color: aquamarine; */
+  z-index: 10;
+}
+
+.notification-item.success::before {
+  background-image: url("../../asset/images/icon/check.png");
+}
+
+.notification-item.infor::before {
+  background-image: url("../../asset/images/icon/information.png");
+}
+
+.notification-item.warning::before {
+  background-image: url("../../asset/images/icon/warning.png");
+}
+
+.notification-circle > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.notification-content {
+  font-size: 15px;
+  flex: 1;
+}
+
+.actions {
+  position: relative;
+}
+
+.action-item {
+  position: absolute;
+  width: 60px;
+  height: 40px;
+  top: 40px;
+  right: 10px;
+  background-color: white;
+  z-index: 100;
+  font-size: 15px;
+  display: flex;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all ease-in 0.3s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.action-item:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.action-btn:hover ~ .action-item {
+  opacity: 1;
+  visibility: visible;
+}

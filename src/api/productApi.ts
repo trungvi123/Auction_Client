@@ -18,7 +18,7 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/price/${id}`;
     return axiosClient.get(url);
   },
-  getPrepareToStart:()=>{
+  getPrepareToStart: () => {
     const url = apiConfig.baseUrl + `product/prepareToStart`;
     return axiosClient.get(url);
   },
@@ -46,10 +46,6 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/create`;
     return axiosClientJWT.post(url, payload, config);
   },
-  editProducts: (payload: any, config: any) => {
-    const url = apiConfig.baseUrl + `product/edit`;
-    return axiosClientJWT.patch(url, payload, config);
-  },
   updateAuctionStarted: (id: string) => {
     const url = apiConfig.baseUrl + `product/edit/auctionStarted/${id}`;
     return axiosClientJWT.get(url);
@@ -58,21 +54,26 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/edit/auctionEnded/${payload.id}`;
     return axiosClientJWT.post(url, payload);
   },
-  approveProduct: (payload: any) => {
-    const url = apiConfig.baseUrl + `product/edit/approveProduct/${payload.id}`;
-    return axiosClientJWT.patch(url, payload);
-  },
+
   updateShipping: (payload: { id: string }) => {
     const url = apiConfig.baseUrl + `product/edit/shipping/${payload.id}`;
     return axiosClientJWT.patch(url, payload);
   },
+  editProducts: (payload: any, config: any) => {
+    const url = apiConfig.baseUrl + `product/edit`;
+    return axiosClientJWT.patch(url, payload, config);
+  },
   refuseProduct: (payload: any) => {
-    const url = apiConfig.baseUrl + `product/edit/refuseProduct/${payload.id}`;
+    const url = apiConfig.baseUrl + `admin/edit/refuseProduct/${payload.id}`;
     return axiosClientJWT.patch(url, payload);
   },
   approveAgainProduct: (payload: any) => {
     const url =
-      apiConfig.baseUrl + `product/edit/approveAgainProduct/${payload.id}`;
+      apiConfig.baseUrl + `admin/edit/approveAgainProduct/${payload.id}`;
+    return axiosClientJWT.patch(url, payload);
+  },
+  approveProduct: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/edit/approveProduct/${payload.id}`;
     return axiosClientJWT.patch(url, payload);
   },
 };

@@ -1,3 +1,5 @@
+const baseUrl = 'http://localhost:3000'
+
 const auctionType: any = {
   "dau-gia-xuoi": "Đấu giá xuôi (trả giá lên)",
   "dau-gia-nguoc": "Đấu giá ngược (trả giá xuống)",
@@ -13,4 +15,4 @@ const reportType: any = {
   "khong-nhan-duoc-hang": "Người bán không gửi hàng",
 };
 
-export { auctionType, checkoutType,reportType };
+export { auctionType,baseUrl, checkoutType,reportType };

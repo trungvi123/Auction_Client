@@ -25,6 +25,7 @@ interface IProTable {
     name: string;
     paid: boolean;
     shipping: boolean;
+    successfulTransaction: boolean;
   };
   images: {
     src: string;
@@ -279,6 +280,7 @@ function ProductsTable({
             name: item.name,
             paid: item.paid,
             shipping: item.shipping,
+            successfulTransaction: item.successfulTransaction,
           },
           images: {
             src: item.images[0] ? item.images[0] : auction,
@@ -354,34 +356,46 @@ function ProductsTable({
             name: string;
             paid: boolean;
             shipping: boolean;
+            successfulTransaction: boolean;
           } = cell.getValue<{
             name: string;
             paid: boolean;
             shipping: boolean;
+            successfulTransaction: boolean;
           }>();
-
+          let statusShipping = "";
+          if (typeList === "create") {
+            if (data.paid) {
+              statusShipping = "Đã được thanh toán";
+            } else {
+              statusShipping = "Chưa được thanh toán";
+            }
+          } else {
+            if (data.shipping && !data.successfulTransaction) {
+              statusShipping = "Đang giao hàng";
+            } else if (data.shipping && data.successfulTransaction) {
+              statusShipping = "Đã giao hàng";
+            } else {
+              statusShipping = "Chưa giao hàng";
+            }
+          }
           return (
             <div>
               {!handleByAdmin && (
-                <Tooltip
-                  placement="top"
-                  title={
-                    typeList === "create"
-                      ? data.paid
-                        ? "Đã được thanh toán"
-                        : "Chưa được thanh toán"
-                      : data.shipping
-                      ? "Đang giao hàng"
-                      : "Chưa giao hàng"
-                  }
-                >
+                <Tooltip placement="top" title={statusShipping}>
                   <IconButton>
                     {typeList === "create" && (
                       <MonetizationOn color={data.paid ? "success" : "error"} />
                     )}
                     {(typeList === "win" || typeList === "buy") && (
                       <LocalShipping
-                        color={data.shipping ? "success" : "error"}
+                        color={
+                          data.shipping
+                            ? data.successfulTransaction
+                              ? "success"
+                              : "warning"
+                            : "error"
+                        }
                       />
                     )}
                   </IconButton>
@@ -418,7 +432,9 @@ function ProductsTable({
               ) : (
                 <>
                   <p>{data.status}</p>
-                  <p>({checkoutType[data.checkoutTypeSlug]})</p>
+                  {!freeProduct && (
+                    <p>({checkoutType[data.checkoutTypeSlug]})</p>
+                  )}
                 </>
               )}
             </div>
@@ -549,6 +565,7 @@ function ProductsTable({
                   {/* Không áp dụng trường hợp vận chuyện COD */}
                   {typeList === "create" &&
                     !data.paid &&
+                    !freeProduct &&
                     data.checkoutTypeSlug !== "cod" &&
                     data.status === "Đã được duyệt" && (
                       <div
@@ -852,7 +869,10 @@ function ProductsTable({
   };
 
   const handleFinishTransaction = async (id: string) => {
-    const res: any = await userApi.handleFinishTransaction({ id });
+    const res: any = await userApi.handleFinishTransaction({
+      id,
+      userId: idOwner,
+    });
     if (res?.status === "success") {
       toast.success("Xác nhận thành công!");
       queryClient.invalidateQueries({
@@ -983,7 +1003,6 @@ function ProductsTable({
             <Autorenew></Autorenew>
           </IconButton>
         )}
-       
       />
     </>
   );

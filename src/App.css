@@ -5,8 +5,18 @@
 }
 
 html {
-  --primary-color: #b41712;
+  /* --primary-color: #b41712;
   --second-color: #121212;
+
+  --gray-color: #787878;
+  --border-color: #e0e0e0;
+  --gray-text: #696969;
+
+  --font-size-14: 14px;
+  --font-size-16: 16px; */
+
+  /* --primary-color: #b41712;
+  --second-color: #121212; */
 
   --gray-color: #787878;
   --border-color: #e0e0e0;
@@ -19,7 +29,7 @@ html {
 body {
   font-family: "Montserrat", sans-serif !important;
   /* background-color: white; */
-  height: 10000px;
+  /* height: 10000px; */
 }
 
 body ul {
@@ -226,6 +236,7 @@ body a:hover {
   content: "";
   top: 50%;
   left: 50%;
+  width: 90%;
   transform: translate(-50%, -50%);
   z-index: 2;
 }
@@ -278,9 +289,19 @@ body a:hover {
   animation-direction: alternate;
 }
 
-/* @media only screen and (max-width: 750px) {
-  .row > * {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .container,
+  .container-md,
+  .container-sm {
+    max-width: 840px !important;
   }
-} */
+}
+
+@media (min-width:576px ) and (max-width: 768px) {
+  .container,
+  .container-md,
+  .container-sm {
+    max-width: 680px !important;
+  }
+}

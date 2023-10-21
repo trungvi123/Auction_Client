@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   email: "",
+  emailPaypal: "",
   _id: "",
   lastName: "",
   basicUser: true,
@@ -19,11 +20,14 @@ const authSlice = createSlice({
     setIdUser: (state, action) => {
       state._id = action.payload;
     },
+    setEmailPaypal: (state, action) => {
+      state.emailPaypal = action.payload;
+    },
     setLastName: (state, action) => {
       state.lastName = action.payload;
     },
-    setBasicUser: (state) => {
-      state.basicUser = false;
+    setBasicUser: (state, action) => {
+      state.basicUser = action.payload;
     },
     setProductPermission: (state, action) => {
       state.productPermission = action.payload;
@@ -40,6 +44,7 @@ export const {
   setLastName,
   setBasicUser,
   setProductPermission,
+  setEmailPaypal,
   setFreeProductPermission,
 } = authSlice.actions;
 

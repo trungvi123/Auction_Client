@@ -1,33 +1,54 @@
 import { Container } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
-import {
-  BiCheckShield,
-  BiChevronDown,
-  BiLogOut,
-  BiSearch,
-  BiUser,
-} from "react-icons/bi";
+import { BiChevronDown, BiSearch, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import * as io from "socket.io-client";
+import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@mui/material";
 
-import { logo } from "../../asset/images";
 import CurrentTime from "../CurrentTime";
 import { setShow, setStatus } from "../../redux/myModalSlice";
 import { setShowSearch } from "../../redux/searchModalSlice";
 import { IRootState } from "../../interface";
-import { setEmail, setIdUser, setLastName } from "../../redux/authSlice";
+import {
+  setBasicUser,
+  setEmail,
+  setIdUser,
+  setLastName,
+} from "../../redux/authSlice";
 import "./Header.css";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import categoryApi from "../../api/categoryApi";
 import TemporaryDrawer from "../Drawer";
+import {
+  AccountCircle,
+  ExitToApp,
+  Gavel,
+  Notifications,
+  Password,
+  VolunteerActivism,
+  Widgets,
+} from "@mui/icons-material";
+import NotificationDrawer from "../NotificationDrawer";
+import apiConfig from "../../api/axiosConfig";
+const socket = io.connect(apiConfig.baseUrl);
 
-const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
+const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
+  const clientId = useSelector((e: IRootState) => e.auth._id);
+  const logo = useSelector((e: IRootState) => e.ui.images.logo);
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
-  const [isScrolled, setIsScrolled] = useState(false);
+
+
+  const [loadNotifications, setLoadNotifications] = useState<boolean>(false);
+
+  const [unreadNotifications, setUnreadNotifications] = useState<ReactNode>(0);
+
+  const [openNotificationDrawer, setOpenNotificationDrawer] =
+    useState<boolean>(false);
 
   const caterogyQuery = useQuery({
     queryKey: ["category"],
@@ -55,42 +76,49 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     localStorage.removeItem("reduxState");
     dispatch(setEmail(""));
     dispatch(setLastName(""));
+    dispatch(setBasicUser(true));
     dispatch(setIdUser(""));
     window.location.replace("/");
   };
 
-  const handleScroll = () => {
-    // Kiểm tra vị trí cuộn chuột để xác định có thêm class hay không
-    if (window.scrollY > 30) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  };
-
-  useEffect(() => {
-    // Thêm sự kiện lắng nghe sự kiện cuộn chuột
-    window.addEventListener("scroll", handleScroll);
-
-    // Xóa sự kiện khi component unmount
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+  const handleOpenNotificationDrawer = useCallback((state: boolean) => {
+    setOpenNotificationDrawer(state);
   }, []);
 
+  const handleSetUnreadNotifications = useCallback((state:ReactNode)=>{
+    setUnreadNotifications(state)
+  },[])
+
+  useEffect(() => {
+    socket.emit("join_Notification_Room", clientId);
+    socket.on("new_notification", () => {
+      setLoadNotifications(!loadNotifications);
+    });
+  }, [clientId, loadNotifications]);
+
   return (
-    <div className={`header ${isScrolled ? "isScrolled" : ""}`}>
+    <div className={`header`}>
       <Navbar className="h-100">
         <Container className="header-container">
           <div className="temporaryDrawer">
-            <TemporaryDrawer isAdmin={isAdmin}></TemporaryDrawer>
+            <TemporaryDrawer isAdmin={!basicUser}></TemporaryDrawer>
+          </div>
+
+          <div>
+            <NotificationDrawer
+              handleOpenNotificationDrawer={handleOpenNotificationDrawer}
+              handleSetUnreadNotifications={handleSetUnreadNotifications}
+              open={openNotificationDrawer}
+              clientId={clientId}
+              loadNotifications={loadNotifications}
+            ></NotificationDrawer>
           </div>
 
           <Navbar.Brand as={Link} to="/">
             <img className="head__logo" src={logo} alt="" />
           </Navbar.Brand>
           <Nav className="nav-container">
-            {isAdmin && (
+            {!basicUser && (
               <div className="NavLink-box">
                 <Nav.Link>
                   Quản lí
@@ -104,16 +132,16 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                       <Link to={"/admin/dashboard"}>Dashboard</Link>
                     </li>
                     <li className="head-link">
-                      <Link to={"/admin/auction"}>Quản lí cuộc đấu giá</Link>
+                      <Link to={"/admin/auction"}>Quản lý cuộc đấu giá</Link>
                     </li>
                     <li className="head-link">
-                      <Link to={"/admin/users"}>Quản lí người dùng</Link>
+                      <Link to={"/admin/users"}>Quản lý người dùng</Link>
                     </li>
                     <li className="head-link">
-                      <Link to={"/admin/reports"}>Quản lí khiếu nại</Link>
+                      <Link to={"/admin/reports"}>Quản lý khiếu nại</Link>
                     </li>
                     <li className="head-link">
-                      <Link to={"/admin/users"}>Quản lí giao diện</Link>
+                      <Link to={"/admin/ui"}>Quản lý giao diện</Link>
                     </li>
                   </ul>
                 </div>
@@ -188,24 +216,40 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                 <div className="head-menu-child head-menu-child-user">
                   <h6 className="lastName">{lastName}</h6>
                   <ul>
-                    {!basicUser && (
-                      <li>
-                        <Link
-                          to="/admin/dashboard"
-                          className="head-link d-flex align-items-center head-menu-child-item"
-                        >
-                          <BiCheckShield size={18}></BiCheckShield>
-                          <span className="px-2 d-block">DashBoard</span>
-                        </Link>
-                      </li>
-                    )}
+                    <li>
+                      <Link
+                        to="/profile"
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <AccountCircle></AccountCircle>
+                        <span className="px-2 d-block head-link-span">
+                          Hồ sơ
+                        </span>
+                      </Link>
+                    </li>
+                    <li>
+                      <div
+                        onClick={() => setOpenNotificationDrawer(true)}
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <Badge badgeContent={unreadNotifications} color="error">
+                          <Notifications></Notifications>
+                        </Badge>
+
+                        <span className="px-2 d-block head-link-span">
+                          Thông báo
+                        </span>
+                      </div>
+                    </li>
                     <li>
                       <Link
                         to="/tao-dau-gia"
                         className="head-link d-flex align-items-center head-menu-child-item"
                       >
-                        <BiCheckShield size={18}></BiCheckShield>
-                        <span className="px-2 d-block">Tạo cuộc đấu giá</span>
+                        <Gavel></Gavel>
+                        <span className="px-2 d-block head-link-span">
+                          Tạo cuộc đấu giá
+                        </span>
                       </Link>
                     </li>
                     <li>
@@ -213,8 +257,8 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                         to="/chia-se-vat-pham"
                         className="head-link d-flex align-items-center head-menu-child-item"
                       >
-                        <BiCheckShield size={18}></BiCheckShield>
-                        <span className="px-2 d-block">
+                        <VolunteerActivism></VolunteerActivism>
+                        <span className="px-2 d-block head-link-span">
                           Tặng / chia sẻ vật phẩm
                         </span>
                       </Link>
@@ -224,26 +268,30 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
                         to="/quan-li-dau-gia"
                         className="head-link d-flex align-items-center head-menu-child-item"
                       >
-                        <BiCheckShield size={18}></BiCheckShield>
-                        <span className="px-2 d-block">
+                        <Widgets></Widgets>
+                        <span className="px-2 d-block head-link-span">
                           Quản lí cuộc đấu giá
                         </span>
                       </Link>
                     </li>
-
+                    <hr className="my-0" />
                     <li
                       onClick={handleChangePass}
                       className="head-link d-flex align-items-center head-menu-child-item"
                     >
-                      <BiCheckShield size={18}></BiCheckShield>
-                      <span className="px-2 d-block">Đổi mật khẩu</span>
+                      <Password></Password>
+                      <span className="px-2 d-block head-link-span">
+                        Đổi mật khẩu
+                      </span>
                     </li>
                     <li
                       onClick={handleLogout}
                       className="head-link d-flex align-items-center head-menu-child-item"
                     >
-                      <BiLogOut size={18}></BiLogOut>
-                      <span className="px-2 d-block">Đăng xuất</span>
+                      <ExitToApp></ExitToApp>
+                      <span className="px-2 d-block head-link-span">
+                        Đăng xuất
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -257,3 +305,4 @@ const Header = ({ isAdmin = false }: { isAdmin?: boolean }) => {
 };
 
 export default React.memo(Header);
+export { socket };

@@ -2,7 +2,6 @@ import { Pagination, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { BiFilterAlt } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
@@ -20,29 +19,27 @@ interface IFilter {
   typeProduct: any[];
   typeAuction: any[];
 }
+const initialFilter = {
+  status: [],
+  category: [],
+  typeProduct: [],
+  typeAuction: [],
+};
+const status = [
+  {
+    name: "Sắp diễn ra",
+    slug: "sap-dien-ra",
+  },
+  {
+    name: "Đang diễn ra",
+    slug: "dang-dien-ra",
+  },
+  {
+    name: "Đã kết thúc",
+    slug: "da-ket-thuc",
+  },
+];
 const ProductList = () => {
-  const initialFilter = {
-    status: [],
-    category: [],
-    typeProduct: [],
-    typeAuction: [],
-  };
-
-  const status = [
-    {
-      name: "Sắp diễn ra",
-      slug: "sap-dien-ra",
-    },
-    {
-      name: "Đang diễn ra",
-      slug: "dang-dien-ra",
-    },
-    {
-      name: "Đã kết thúc",
-      slug: "da-ket-thuc",
-    },
-  ];
-
   const params = useParams();
 
   const [filter, setFilter] = useState<IFilter>(initialFilter);
@@ -91,10 +88,14 @@ const ProductList = () => {
 
   useEffect(() => {
     if (params.cate) {
-      setFilter({ ...filter, category: [params.cate] });
+      setFilter({
+        ...initialFilter,
+        category: [params?.cate],
+      });
+    } else {
+      setFilter(initialFilter);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.cate]);
+  }, [params]);
 
   const filterSelect = useCallback(
     (type: string, check: boolean, item: any) => {
@@ -188,17 +189,15 @@ const ProductList = () => {
     setProductRender(productTemp);
   }, [
     filter?.category,
-    filter.status,
+    filter?.status,
     filter?.typeAuction,
     filter.typeProduct,
     freeProductsQuery.data?.data,
     productsQuery.data?.data,
   ]);
 
-  console.log("render");
-
   return (
-    <Container>
+    <Container className="productList">
       <Breadcrumbs
         title={"Danh mục tài sản"}
         type={"danh mục tài sản"}

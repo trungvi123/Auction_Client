@@ -1,23 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  menuSidebarCollapsed: false,
-  controlSidebarCollapsed: false,
+  fireworks: false,
+  changeTheme: false,
+  images: {
+    short_intro: "",
+    logo: "",
+    mini_logo: "",
+    breadcrum: "",
+  },
 };
 
 const utilsSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    toggleSidebarMenu: (state) => {
-      state.menuSidebarCollapsed = !state.menuSidebarCollapsed;
+    toggleFireworks: (state, actions) => {
+      state.fireworks = actions.payload;
     },
-    toggleControlSidebar: (state) => {
-      state.controlSidebarCollapsed = !state.controlSidebarCollapsed;
+    setChangeTheme: (state, actions) => {
+      state.changeTheme = actions.payload;
+    },
+    setImages: (state, actions) => {
+      state.images = actions.payload;
     },
   },
 });
 
-export const { toggleSidebarMenu, toggleControlSidebar } = utilsSlice.actions;
+export const { toggleFireworks,setImages, setChangeTheme } = utilsSlice.actions;
 
 export default utilsSlice.reducer;

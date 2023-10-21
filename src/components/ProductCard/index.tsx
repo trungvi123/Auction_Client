@@ -1,5 +1,5 @@
 import { BiSolidShareAlt } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import React from "react";
 
@@ -10,7 +10,13 @@ import formatMoney from "../../utils/formatMoney";
 import "./ProductCard.css";
 import { auctionType } from "../../constant";
 
+import { FacebookShareButton } from "react-share";
+import { FacebookIcon } from "react-share";
+import {baseUrl} from '../../constant'
+
+
 const ProductCard = ({ data }: { data: IProduct }) => {
+
   return (
     <div className="card-container">
       <div className="card-content">
@@ -45,6 +51,18 @@ const ProductCard = ({ data }: { data: IProduct }) => {
           </Link>
           <div className="card-more__share">
             <BiSolidShareAlt></BiSolidShareAlt>
+            <div className="share-list">
+              <FacebookShareButton
+                url={`${baseUrl}/chi-tiet-dau-gia/${data?._id}`}
+                quote={"sadsadsadsa"}
+                hashtag={"#citauction"}
+              
+                // description={"aiueo"}
+                className="Demo__some-network__share-button"
+              >
+                <FacebookIcon size={34} round />
+              </FacebookShareButton>
+            </div>
           </div>
         </div>
       </div>

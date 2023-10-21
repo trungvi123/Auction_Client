@@ -126,7 +126,7 @@ export default function TemporaryDrawer({
               <ListItemText primary={"Quản lí người dùng"} />
             </ListItemButton>
           </Link>
-          <Link to={`/admin/users`}>
+          <Link to={`/admin/ui`}>
             <ListItemButton onClick={toggleDrawer(false)}>
               <ListItemIcon>
                 <Web />

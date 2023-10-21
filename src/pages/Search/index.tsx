@@ -36,7 +36,7 @@ const Search = () => {
               {
                 searchQuery.data?.map((item: any, index: number) => {
                   return (
-                    <Col md={3} key={index}>
+                    <Col md={6} lg={4} sm={12} key={index}>
                       {item?.isFree ? (
                         <FreeProductCard data={item}></FreeProductCard>
                       ) : (

@@ -1,27 +1,26 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { breadcrumbs } from "../../asset/images";
 import { useLocation } from "react-router-dom";
 import MyImageGallery from "../../components/MyImageGallery";
-import "../ProductDetail/ProductDetail.css";
 import InforTabs from "../../components/InforTabs";
 import formatDay from "../../utils/formatDay";
-
 import { IFreeProduct, IRootState } from "../../interface";
-import userApi from "../../api/userApi";
-import categoryApi from "../../api/categoryApi";
-
-import toast from "react-hot-toast";
 import freeProductApi from "../../api/freeProduct";
+import "../ProductDetail/ProductDetail.css";
+import { setShow, setStatus } from "../../redux/myModalSlice";
 
 const FreeProductDetail = () => {
   const location = useLocation();
   let url = location.pathname;
   const idProduct = url.split("/")[2].trim();
   const auth = useSelector((e: IRootState) => e.auth);
+  const modal = useSelector((e: IRootState) => e.myModal);
+  const dispatch = useDispatch();
 
   const [title, setTitle] = useState<string>();
   const [type, setType] = useState<string>();
@@ -50,9 +49,8 @@ const FreeProductDetail = () => {
         if (result) {
           setProduct(result.data);
           setTitle(result.data.name);
-          console.log(result);
-          setOwner(result.data.owner)
-          setCate(result.data.category.name)
+          setOwner(result.data.owner);
+          setCate(result.data.category.name);
           setImgData(result.data.images);
           setType("Chi tiết chia sẻ");
           setAccepterCount(result.data.accepterList.length);
@@ -167,10 +165,19 @@ const FreeProductDetail = () => {
                   className={` btn-11 btn-11__full ${
                     disableBtn.alreadyJoin ? "disable" : ""
                   }`}
-                  onClick={handleShow}
+                  onClick={() => {
+                    if (auth.email && auth._id) {
+                      handleShow();
+                    } else {
+                      dispatch(setStatus("login"));
+                      dispatch(setShow());
+                    }
+                  }}
                 >
                   <span className="btn-11__content">
-                    {disableBtn.alreadyJoin ? "Đã đăng ký nhận" : "Đăng ký nhận"}
+                    {disableBtn.alreadyJoin
+                      ? "Đã đăng ký nhận"
+                      : "Đăng ký nhận"}
                   </span>
                 </div>
               </div>

@@ -39,6 +39,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     (e: IRootState) => e.auth.productPermission
   );
   const idOwner = useSelector((e: IRootState) => e.auth._id);
+  const emailPaypal = useSelector((e: IRootState) => e.auth.emailPaypal);
+
   const prodDescription = useSelector(
     (e: IRootState) => e.utils.prodDescription
   );
@@ -137,107 +139,117 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const submit = (data: any) => {
     // phòng trường hợp người dùng k click vào thay đổi thì sẽ không vào được hàm handleStartDateChange
     const checkTime = handleStartDateChange(startDate);
+    let check: boolean = true;
+
+    if (data.checkoutTypeSlug === "payment" && !emailPaypal) {
+      toast.error(
+        "Bạn nên cập nhật thông tin paypal của mình để sử dụng hình thức thanh toán này!"
+      );
+      check = false;
+    }
+
     if (
       data.auctionTypeSlug === "dau-gia-nguoc" &&
       data.stepPrice >= data.basePrice
     ) {
-      // kiểm tra stepprice khi đấu giá ngược
       setCheckStepPrice(false);
-    } else {
-      if (!checkTime) {
-        setInvalidDate(true);
-      } else {
-        const formData = new FormData();
-        const auctionEndTime = addMinutes(startDate, data.duration);
-        const config = {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        };
+      check = false;
+    }
 
-        formData.append("name", data.name);
-        formData.append("description", prodDescription);
-        formData.append("basePrice", data.basePrice);
-        formData.append("price", data.price);
-        formData.append("stepPrice", data.stepPrice);
-        formData.append("owner", idOwner);
-        formData.append("duration", data.duration);
-        formData.append("startTime", startDate.toLocaleString());
-        formData.append("endTime", auctionEndTime.toLocaleString());
+    if (!checkTime) {
+      setInvalidDate(true);
+      check = false;
+    }
+    if (check) {
+      const formData = new FormData();
+      const auctionEndTime = addMinutes(startDate, data.duration);
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
 
-        for (let i = 0; i < uploadedImages.length; i++) {
-          formData.append("images", uploadedImages[i]);
-        }
+      formData.append("name", data.name);
+      formData.append("description", prodDescription);
+      formData.append("basePrice", data.basePrice);
+      formData.append("price", data.price);
+      formData.append("stepPrice", data.stepPrice);
+      formData.append("owner", idOwner);
+      formData.append("duration", data.duration);
+      formData.append("startTime", startDate.toLocaleString());
+      formData.append("endTime", auctionEndTime.toLocaleString());
 
-        if (type !== "edit") {
-          formData.append("category", data.category);
-          formData.append("auctionTypeSlug", data.auctionTypeSlug);
-          formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
+      for (let i = 0; i < uploadedImages.length; i++) {
+        formData.append("images", uploadedImages[i]);
+      }
 
-          const createProd = async () => {
-            const result: any = await productApi.createProducts(
-              formData,
-              config
+      if (type !== "edit") {
+        formData.append("category", data.category);
+        formData.append("auctionTypeSlug", data.auctionTypeSlug);
+        formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
+
+        const createProd = async () => {
+          const result: any = await productApi.createProducts(formData, config);
+          if (result?.status === "success") {
+            dispatch(
+              setProductPermission([...productsPerrmission, result._id])
             );
-            if (result?.status === "success") {
-              dispatch(
-                setProductPermission([...productsPerrmission, result._id])
-              );
-              queryClient.invalidateQueries({
-                queryKey: ["auction-list__user", { typeList: "create" }],
-              });
-              toast.success("Tạo cuộc đấu giá thành công!");
-              toast.success(
-                "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
-              );
-              // dispatch(setProdDescription(""));
-              // reset(initialStateData);
-              // setResetImgs(true)
-            }
-          };
-          createProd();
+            queryClient.invalidateQueries({
+              queryKey: ["auction-list__user", { typeList: "create" }],
+            });
+            toast.success("Tạo cuộc đấu giá thành công!");
+            toast.success(
+              "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
+            );
+            // dispatch(setProdDescription(""));
+            // reset(initialStateData);
+            // setResetImgs(true)
+          }
+        };
+        createProd();
+      } else {
+
+        
+        if (data.category === "") {
+          formData.append("category", oldCategory._id);
         } else {
-          if (data.category === "") {
-            formData.append("category", oldCategory._id);
-          } else {
-            formData.append("category", data.category);
-          }
-
-          if (data.auctionTypeSlug === "") {
-            formData.append("auctionTypeSlug", dataEdit.auctionTypeSlug);
-          } else {
-            formData.append("auctionTypeSlug", data.auctionTypeSlug);
-          }
-
-          if (data.checkoutTypeSlug === "") {
-            formData.append("checkoutTypeSlug", dataEdit.checkoutTypeSlug);
-          } else {
-            formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
-          }
-
-          const KeepImgs: string[] = [...imgsEdit];
-          for (let i = 0; i < KeepImgs.length; i++) {
-            formData.append("keepImgs", KeepImgs[i]);
-          } // giữ lại những hình cũ
-
-          formData.append("id", id);
-
-          formData.append("oldCategory", oldCategory._id);
-
-          const editProd = async () => {
-            const result: any = await productApi.editProducts(formData, config);
-            if (result?.status === "success") {
-              toast.success("Sửa cuộc đấu giá thành công!");
-              toast.success(
-                "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
-              );
-              // setResetImgs(true)
-              // reset(initialStateData);
-              // dispatch(setProdDescription(""));
-            }
-          };
-          editProd();
+          formData.append("category", data.category);
         }
+
+        if (data.auctionTypeSlug === "") {
+          formData.append("auctionTypeSlug", dataEdit.auctionTypeSlug);
+        } else {
+          formData.append("auctionTypeSlug", data.auctionTypeSlug);
+        }
+
+        if (data.checkoutTypeSlug === "") {
+          formData.append("checkoutTypeSlug", dataEdit.checkoutTypeSlug);
+        } else {
+          formData.append("checkoutTypeSlug", data.checkoutTypeSlug);
+        }
+
+        const KeepImgs: string[] = [...imgsEdit];
+        for (let i = 0; i < KeepImgs.length; i++) {
+          formData.append("keepImgs", KeepImgs[i]);
+        } // giữ lại những hình cũ
+
+        formData.append("id", id);
+
+        formData.append("oldCategory", oldCategory._id);
+
+        const editProd = async () => {
+          const result: any = await productApi.editProducts(formData, config);
+          if (result?.status === "success") {
+            toast.success("Sửa cuộc đấu giá thành công!");
+            toast.success(
+              "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
+            );
+            // setResetImgs(true)
+            // reset(initialStateData);
+            // dispatch(setProdDescription(""));
+          }
+        };
+        editProd();
       }
     }
   };

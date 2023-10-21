@@ -5,7 +5,7 @@ import "./AdminDefaultLayout.css";
 const AdminDefaultLayout: any = ({ children }: any) => {
   return (
     <div>
-      <Header isAdmin={true}></Header>
+      <Header></Header>
       {children}
       <Footer></Footer>
     </div>

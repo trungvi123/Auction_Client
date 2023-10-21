@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import productApi from "../../api/productApi";
 
 import "./CountDownTime.css";
 
@@ -7,35 +8,53 @@ interface IProps {
     time: any;
     type: string;
   };
+  productId: string;
+  idClient: string;
   stop: boolean;
-  bidsTime: (notify: any, type: string) => any;
+  refreshProductCb: (state: string) => void;
 }
 
-const CountDownTime = ({ time, bidsTime, stop = false }: IProps) => {
+const CountDownTime = ({
+  time,
+  stop = false,
+  productId,
+  idClient,
+  refreshProductCb,
+}: IProps) => {
   const [hour, setHour]: any = useState();
   const [minute, setMinute]: any = useState();
   const [second, setSecond]: any = useState();
   const [downLoop, setDownLoop] = useState(false);
 
   useEffect(() => {
-    
     if (!downLoop && !stop) {
       const clockInterval = setInterval(() => {
         // Tính khoảng thời gian giữa thời gian hiện tại và thời gian cụ thể
         const countTime = new Date(time?.time).getTime() - new Date().getTime();
 
-        //   const secondsLocal = Math.floor((countTime % (1000 * 60)) / 1000);
-        //   const minutesLocal = Math.floor(
-        //     (countTime % (1000 * 60 * 60)) / (1000 * 60)
-        //   );
-        //   const hoursLocal = Math.floor(
-        //     (countTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        //   );
         if (countTime <= 0 && time.type === "start") {
-          bidsTime(true, "start");
+          const fectProduct = async () => {
+            const result: any = await productApi.updateAuctionStarted(
+              productId
+            );
+            if (result?.status === "success") {
+              refreshProductCb("finishStart");
+            }
+          };
+          fectProduct();
         } else if (countTime <= 0 && time.type === "end") {
-          bidsTime(true, "end");
-          setDownLoop(true);
+          const fectProduct = async () => {
+            const result: any = await productApi.updateAuctionEnded({
+              id: productId,
+              idUser: idClient,
+              type: "bid",
+            });
+            if (result?.status === "success") {
+              refreshProductCb("finishEnd");
+              setDownLoop(true);
+            }
+          };
+          fectProduct();
         } else {
           const secondsLocal = Math.floor((countTime % 60000) / 1000);
           const minutesLocal = Math.floor((countTime % 3600000) / 60000);
@@ -50,14 +69,11 @@ const CountDownTime = ({ time, bidsTime, stop = false }: IProps) => {
         clearInterval(clockInterval);
       };
     }
-    else {
-      bidsTime(false, "");
-    }
-  }, [bidsTime, downLoop, stop, time]);
+  }, [downLoop, idClient, productId, refreshProductCb, stop, time]);
 
   return (
     <>
-      {!downLoop && (
+      {!downLoop && time?.time && (
         <div className="countdown-time-box">
           <div className="countdown-time-item">
             <span id="countdown-time-hour" className="countdown-time">

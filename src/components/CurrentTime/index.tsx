@@ -11,12 +11,12 @@ const CurrentTime = () => {
 
     const hours = `0${date.getHours()}`.slice(-2);
     const minutes = `0${date.getMinutes()}`.slice(-2);
-    const seconds = `0${date.getSeconds()}`.slice(-2);
+    const seconds = `0${date.getSeconds() + 1}`.slice(-2);
     const d = date.getDay();
     const m = date.getMonth() + 1;
     const y = date.getFullYear();
 
-    var dn: string[] = [
+    const dn: string[] = [
       "Chủ nhật",
       "Thứ 2",
       "Thứ 3",
@@ -25,7 +25,7 @@ const CurrentTime = () => {
       "Thứ 6",
       "Thứ 7",
     ];
-    var date_pro =
+    let date_pro =
       dn[d] +
       ", " +
       (date.getDate() < 10 ? "0" : "") +

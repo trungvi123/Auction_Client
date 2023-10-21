@@ -16,11 +16,13 @@ import {
   setBasicUser,
   setProductPermission,
   setFreeProductPermission,
+  setEmailPaypal,
 } from "../../redux/authSlice";
 
 interface IToken {
   _id: any;
   email: String;
+  emailPaypal: string;
   lastName: String;
   role: String;
   productPermission: string[];
@@ -64,12 +66,12 @@ function FormLogin(props: IPropsForm) {
 
           const data: IToken = jwtDecode(result.accessToken);
           if (data.role !== "user") {
-            dispatch(setBasicUser());
+            dispatch(setBasicUser(false));
           }
-          console.log(data);
 
           dispatch(setStatus("changePass"));
           dispatch(setClose());
+          dispatch(setEmailPaypal(data.emailPaypal));
           dispatch(setEmail(data.email));
           dispatch(setLastName(data.lastName));
           dispatch(setIdUser(data._id));

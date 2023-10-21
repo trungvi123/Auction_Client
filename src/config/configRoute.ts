@@ -20,6 +20,8 @@ import {
   ProductList,
   Search,
   ReportManagement,
+  Profile,
+  UiManagement,
 } from "../pages";
 
 interface IRoute {
@@ -44,13 +46,12 @@ export const publicRoute: IRoute[] = [
   { path: routes.receivedList, element: ReceivedList },
   { path: routes.productList, element: ProductList },
   { path: routes.search, element: Search },
+  { path: routes.profile, element: Profile },
+];
 
-
-
-
-
-  //test , khi test xong để vào private
-
+export const privateRoute: IRoute[] = [
+  { path: routes.management, element: Management },
+  { path: routes.ui, element: UiManagement },
   { path: routes.dashboard, element: Dashboard, layout: "AdminDefaultLayout" },
   {
     path: routes.AdAuction,
@@ -67,8 +68,4 @@ export const publicRoute: IRoute[] = [
     element: ReportManagement,
     layout: "AdminDefaultLayout",
   },
-];
-
-export const privateRoute: IRoute[] = [
-  { path: routes.management, element: Management },
 ];

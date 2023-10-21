@@ -44,21 +44,34 @@ function InforTabs({
     <>
       {!freeProduct ? (
         <Tabs
-          defaultActiveKey="detail"
+          defaultActiveKey="description"
           id="fill-tab-example"
           className="mb-3"
           fill
         >
           <Tab eventKey="description" title="Mô tả tài sản">
-            <div
-              className="tabs-content"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(data?.description),
-              }}
-            ></div>
-          </Tab>
-          <Tab eventKey="profile" title="Thông tin đấu giá">
-            <div className="tabs-content">Tab content for Profile</div>
+            <div className="tabs-content">
+              <p>
+                Tên tài sản đấu giá: <b>{data?.name}</b>
+              </p>
+              <p>
+                Tên chủ tài sản:{" "}
+                <b>{data?.owner.firstName + "" + data?.owner.lastName}</b>{" "}
+              </p>
+              <p>
+                Email chủ tài sản: <b>{data?.owner.email}</b>
+              </p>
+              {data?.description && (
+                <>
+                  <hr></hr>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(data?.description),
+                    }}
+                  ></div>
+                </>
+              )}
+            </div>
           </Tab>
           <Tab eventKey="detail" title="Chi tiết đấu giá">
             {joined ? (
@@ -101,16 +114,30 @@ function InforTabs({
             fill
           >
             <Tab eventKey="description" title="Mô tả tài sản">
-              <div
-                className="tabs-content"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(data?.description),
-                }}
-              ></div>
+            <div className="tabs-content">
+              <p>
+                Tên tài sản đấu giá: <b>{data?.name}</b>
+              </p>
+              <p>
+                Tên chủ tài sản:{" "}
+                <b>{data?.owner.firstName + "" + data?.owner.lastName}</b>{" "}
+              </p>
+              <p>
+                Email chủ tài sản: <b>{data?.owner.email}</b>
+              </p>
+              {data?.description && (
+                <>
+                  <hr></hr>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(data?.description),
+                    }}
+                  ></div>
+                </>
+              )}
+            </div>
             </Tab>
-            <Tab eventKey="profile" title="Thông tin người tặng">
-              <div className="tabs-content">Tab content for Profile</div>
-            </Tab>
+           
           </Tabs>
         </div>
       )}

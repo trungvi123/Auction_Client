@@ -11,19 +11,19 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import MyImageGallery from "../../components/MyImageGallery";
 import formatMoney from "../../utils/formatMoney";
 import formatDay from "../../utils/formatDay";
+import { useSelector } from "react-redux";
+import { IRootState } from "../../interface";
 
 const Checkout = () => {
   const params = useParams();
   const queryClient = useQueryClient();
-  const [idProduct, setIdProduct] = useState<string | undefined>("");
-
+  const userId = useSelector((e: IRootState) => e.auth._id);
   const CLIENT_ID =
     "ASQVRgiZX9e6DoA1pR1a-sXte8xdUWJqQeOc7QZKzNkGJM4MSia2CTiLuqxMOgehqeufbCwRwaQ40Gns";
   const productQuery = useQuery({
     queryKey: ["product-checkout", params.id],
     queryFn: async () => {
       const result: any = await productApi.getProductById(params.id || "");
-      setIdProduct(params.id);
       return result.data;
     },
   });
@@ -54,7 +54,9 @@ const Checkout = () => {
       const payload = {
         orderID: data.orderID,
         productId: params.id,
+        userId
       };
+      
       const result: any = await paymentApi.captureOrderPayPal(payload);
       if (result?.status === "COMPLETED") {
         toast.success("Đã thanh toán thành công!");

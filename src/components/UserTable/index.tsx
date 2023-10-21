@@ -1,29 +1,31 @@
 import { useQueryClient } from "@tanstack/react-query";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import toast from "react-hot-toast";
-import freeProductApi from "../../api/freeProduct";
-import formatDateTime from "../../utils/formatDay";
+import userApi from "../../api/userApi";
 
 interface IProTable {
   name: string;
   email: string;
-  warnLevel:number;
+  warnLevel: number;
   handle: {
     idUser: string;
+    block: boolean;
     email: string;
   };
 }
 
-function UserTable({
-  data,
-}: {
-  data: any;
-}) {
+function UserTable({ data }: { data: any }) {
   const [showModal, setShowModal] = useState(false);
   const [msgModal, setMsgModal] = useState("");
-  const [idHandle, setIdhandle] = useState("");
+  const [inforFunc, setInforFunc] = useState<{
+    variant: string;
+    idUser: string;
+  }>({
+    variant: "",
+    idUser: "",
+  });
   const dataLocal = useRef<IProTable[]>([]);
   const queryClient = useQueryClient();
   const handleClose = () => setShowModal(false);
@@ -39,8 +41,9 @@ function UserTable({
           email: item.email,
           warnLevel: item.warnLevel,
           handle: {
-            idUser: item.user,
+            idUser: item._id,
             email: item.email,
+            block: item.block,
           },
         };
       });
@@ -49,28 +52,21 @@ function UserTable({
     }
   }, [data]);
 
-  
-
-//   const handleReceived = async () => {
-//     const payload = {
-//       idUser: idHandle,
-//       owner: productInfor.owner,
-//       idProduct: productInfor._id,
-//       type: "idUser",
-//     };
-
-//     const res: any = await freeProductApi.confirmSharingProduct(payload);
-//     if (res.status === "success") {
-//       toast.success("Tặng sản phẩm thành công!");
-//       handleClose()
-//       queryClient.invalidateQueries({
-//         queryKey: ["participationList", { idProduct: productInfor._id }],
-//       });
-//     } else {
-//       toast.error("Tặng sản phẩm thất bại!");
-//       handleClose()
-//     }
-//   };
+  const runFunc = async () => {
+    const res: any = await userApi.updateBlockUserById({
+      id: inforFunc.idUser,
+      type: inforFunc.variant,
+    });
+    if (res?.status === "success") {
+      if (inforFunc.variant === "block") {
+        toast.success("Khóa tài khoản người dùng thành công!");
+      } else {
+        toast.success("Mở khóa tài khoản người dùng thành công!");
+      }
+      queryClient.invalidateQueries({ queryKey: ["user-list__admin"] });
+    }
+    handleClose();
+  };
 
   const columns = useMemo<MRT_ColumnDef<IProTable>[]>(
     () => [
@@ -93,19 +89,38 @@ function UserTable({
         header: "Xử lí",
         accessorKey: "handle",
         Cell: ({ cell }) => {
-          const data: { email: string; idUser: string } = cell.getValue<{
-            email: string;
-            idUser: string;
-          }>();
+          const data: { email: string; idUser: string; block: string } =
+            cell.getValue<{
+              email: string;
+              idUser: string;
+              block: string;
+            }>();
           return (
             <>
               <div
                 className={`btn-11`}
                 onClick={() => {
-                  
+                  if (data.block) {
+                    setMsgModal(
+                      "Xác nhận rằng bạn muốn mở khóa cho tài khoản này!"
+                    );
+                    setInforFunc({
+                      variant: "unblock",
+                      idUser: data.idUser,
+                    });
+                  } else {
+                    setInforFunc({
+                      variant: "block",
+                      idUser: data.idUser,
+                    });
+                    setMsgModal("Xác nhận rằng bạn muốn khóa tài khoản này!");
+                  }
+                  handleShow();
                 }}
               >
-                <span className="btn-11__content">Khóa</span>
+                <span className="btn-11__content">
+                  {data.block ? "Mở khóa" : "Khóa"}
+                </span>
               </div>
             </>
           );
@@ -131,7 +146,7 @@ function UserTable({
             <Button variant="secondary" onClick={handleClose}>
               Hủy
             </Button>
-            <Button variant="danger" >
+            <Button variant="danger" onClick={runFunc}>
               Tiếp tục
             </Button>
           </Modal.Footer>
