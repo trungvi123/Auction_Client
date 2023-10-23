@@ -193,10 +193,10 @@ const Header = () => {
               </div>
             </div>
 
-            <Nav.Link as={Link} to="/news">
+            <Nav.Link as={Link} to="/gioi-thieu">
               Giới thiệu
             </Nav.Link>
-            <Nav.Link as={Link} to="/news">
+            <Nav.Link as={Link} to="/lien-he">
               Liên hệ
             </Nav.Link>
           </Nav>

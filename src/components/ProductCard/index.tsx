@@ -50,10 +50,11 @@ const ProductCard = ({ data }: { data: IProduct }) => {
             <span className="btn-11__content">Chi tiết</span>
           </Link>
           <div className="card-more__share">
-            <BiSolidShareAlt></BiSolidShareAlt>
+        
             <div className="share-list">
+            <BiSolidShareAlt></BiSolidShareAlt>
               <FacebookShareButton
-                url={`${baseUrl}/chi-tiet-dau-gia/${data?._id}`}
+                url={`https://cit-auction.web.app/chi-tiet-dau-gia/${data?._id}`}
                 quote={"sadsadsadsa"}
                 hashtag={"#citauction"}
               

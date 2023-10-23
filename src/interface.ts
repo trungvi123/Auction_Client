@@ -12,10 +12,18 @@ export interface IUi {
     mini_logo: string;
     breadcrum: string;
   };
+  inforPage : {
+    shortIntro: string,
+    longIntro: string,
+    address: string,
+    phoneNumber: string,
+    email: string,
+    map: string,
+    mst: string,
+  }
 }
 
 export interface IUtils {
-  prodDescription: string;
   prodName: string;
 }
 

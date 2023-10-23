@@ -1,4 +1,6 @@
 const baseUrl = 'http://localhost:3000'
+// const baseUrl = 'https://auction-server-wuf4.onrender.com'
+
 
 const auctionType: any = {
   "dau-gia-xuoi": "Đấu giá xuôi (trả giá lên)",

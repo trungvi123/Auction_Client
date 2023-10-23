@@ -994,6 +994,8 @@ function ProductsTable({
         </Modal>
       </>
       <MaterialReactTable
+
+      
         columns={columns}
         data={dataLocal.current}
         enableColumnOrdering

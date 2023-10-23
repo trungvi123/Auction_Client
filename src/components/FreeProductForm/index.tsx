@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -8,7 +8,6 @@ import categoryApi from "../../api/categoryApi";
 import { IRootState } from "../../interface";
 import TextEditor from "../TextEditor";
 import DropImages from "../DropImages";
-import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
 import "../ProductForm/ProductForm.css";
 import freeProductApi from "../../api/freeProduct";
@@ -24,6 +23,7 @@ const initialStateData = {
 const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [description, setDescription] = useState<string>("");
 
   const [resetImgs, setResetImgs] = useState<boolean>(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -34,9 +34,7 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     name: "",
     _id: "",
   });
-  const prodDescription = useSelector(
-    (e: IRootState) => e.utils.prodDescription
-  );
+
   const idOwner = useSelector((e: IRootState) => e.auth._id);
   const freeProductsPerrmission = useSelector(
     (e: IRootState) => e.auth.freeProductPermission
@@ -58,8 +56,10 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             name: result.data.name,
             oldCategory: result.data.category,
             category: "",
-            description: "",
+            description: result.data.description,
           };
+
+          setDescription(result.data.description)
           setOldCategory({
             name: result.data.category.name,
             link: result.data.category.link,
@@ -68,9 +68,8 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           setDataEdit(data);
           reset(data);
           setImgsEdit(result.data.images);
-          // setUploadedImages(result.data.images);
+          setUploadedImages(result.data.images);
 
-          dispatch(setProdDescription(result.data.description));
         }
       };
       fetchProd();
@@ -99,7 +98,7 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       },
     };
     formData.append("name", data.name);
-    formData.append("description", prodDescription);
+    formData.append("description", description);
     // formData.append("category", data.category);
     formData.append("owner", idOwner);
     for (let i = 0; i < uploadedImages.length; i++) {
@@ -121,9 +120,8 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
           });
           toast.success("Chia sẻ thành công!");
-          // dispatch(setProdDescription(""));
-          // reset(initialStateData);
-          // setResetImgs(true);
+          reset(initialStateData);
+          setResetImgs(true);
         }
       };
       createFreeProd();
@@ -152,19 +150,23 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           queryClient.invalidateQueries({
             queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
           });
-          // dispatch(setProdDescription(""));
-          // reset(initialStateData);
-          // setResetImgs(true);
+          reset(initialStateData);
+          setResetImgs(true);
         }
       };
       editProd();
     }
   };
 
-  const deleteImgsEdit = (item: any) => {
+  const deleteImgsEdit = useCallback((item: any) => {
     const result = imgsEdit.filter((e) => e !== item);
     setImgsEdit(result);
-  };
+  }, [imgsEdit]);
+
+  const handlerodDescription = useCallback((state: string) => {
+    setDescription(state);
+  }, []);
+
   return (
     <Form>
       <Row className="mb-3">
@@ -209,7 +211,10 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       <Row className="mb-3">
         <Col sm={12}>
           <Form.Label>Mô tả sản phẩm</Form.Label>
-          <TextEditor></TextEditor>
+          <TextEditor
+            description={description}
+            handlerodDescription={handlerodDescription}
+          ></TextEditor>
         </Col>
       </Row>
 

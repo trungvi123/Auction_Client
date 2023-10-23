@@ -32,8 +32,8 @@ import { Link } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import { useQuery } from "@tanstack/react-query";
 import { setShowSearch } from "../../redux/searchModalSlice";
-import { useDispatch } from "react-redux";
-import { logo } from "../../asset/images";
+import { useDispatch, useSelector } from "react-redux";
+import { IRootState } from "../../interface";
 
 const icons: any = {
   "quan-ao": <Checkroom></Checkroom>,
@@ -50,6 +50,8 @@ export default function TemporaryDrawer({
   isAdmin?: boolean;
 }) {
   const [show, setShow] = React.useState(false);
+  const logo = useSelector((e:IRootState)=>e.ui.images.logo)
+
   const [openCate, setOpenCate] = React.useState(isAdmin ? false : true);
   const [openNews, setOpenNews] = React.useState(isAdmin ? false : true);
   const dispatch = useDispatch();
@@ -204,18 +206,22 @@ export default function TemporaryDrawer({
             </Link>
           </List>
         </Collapse>
-        <ListItemButton onClick={toggleDrawer(false)}>
-          <ListItemIcon>
-            <Badge />
-          </ListItemIcon>
-          <ListItemText primary="Giới thiệu" />
-        </ListItemButton>
-        <ListItemButton onClick={toggleDrawer(false)}>
-          <ListItemIcon>
-            <ContactPhone />
-          </ListItemIcon>
-          <ListItemText primary="Liên hệ" />
-        </ListItemButton>
+       <Link to={`/gioi-thieu`}>
+          <ListItemButton onClick={toggleDrawer(false)}>
+            <ListItemIcon>
+              <Badge />
+            </ListItemIcon>
+            <ListItemText primary="Giới thiệu" />
+          </ListItemButton>
+       </Link>
+        <Link to={`/lien-he`}>
+          <ListItemButton onClick={toggleDrawer(false)}>
+            <ListItemIcon>
+              <ContactPhone />
+            </ListItemIcon>
+            <ListItemText primary="Liên hệ" />
+          </ListItemButton>
+        </Link>
       </List>
     </Box>
   );

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 import Breadcrumbs from "../../components/Breadcrumbs";
-import { breadcrumbs } from "../../asset/images";
 import { useLocation } from "react-router-dom";
 import MyImageGallery from "../../components/MyImageGallery";
 import InforTabs from "../../components/InforTabs";
@@ -19,7 +18,6 @@ const FreeProductDetail = () => {
   let url = location.pathname;
   const idProduct = url.split("/")[2].trim();
   const auth = useSelector((e: IRootState) => e.auth);
-  const modal = useSelector((e: IRootState) => e.myModal);
   const dispatch = useDispatch();
 
   const [title, setTitle] = useState<string>();
@@ -119,7 +117,7 @@ const FreeProductDetail = () => {
         </Modal.Footer>
       </Modal>
       <Container>
-        <Breadcrumbs title={title} type={type} img={breadcrumbs}></Breadcrumbs>
+        <Breadcrumbs title={title} type={type}></Breadcrumbs>
         <Row className="pt-5">
           <Col md={7}>
             <MyImageGallery imagesLink={imgData}></MyImageGallery>

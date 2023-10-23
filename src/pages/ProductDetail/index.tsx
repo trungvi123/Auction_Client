@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { Helmet } from "react-helmet";
 
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { auction, breadcrumbs } from "../../asset/images";
@@ -20,6 +19,8 @@ import { setShow, setStatus } from "../../redux/myModalSlice";
 import { auctionType, checkoutType, baseUrl } from "../../constant";
 import { socket } from "../../components/Header";
 import { toggleFireworks } from "../../redux/uiSlice";
+import { FacebookIcon, FacebookShareButton } from "react-share";
+import SEO from "../../components/SEO";
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -228,25 +229,16 @@ const ProductDetail = () => {
     setShowModal(false);
     setShowModalForWinner(false);
   };
-  
+
   return (
     <div>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>{product?.name}</title>
-        <link
-          rel="canonical"
-          href={`${baseUrl}/chi-tiet-dau-gia/${product?._id}`}
-        />
-        <meta property="og:title" content={product?.name} />
-        <meta property="og:type" content={product?.category.name} />
-        <meta property="og:image" content={product?.images[0] || 'https://auction-server-wuf4.onrender.com/default/auction.png'} />
-        <meta
-          property="og:url"
-          content={`${baseUrl}/chi-tiet-dau-gia/${product?._id}`}
-        />
-        <meta property="og:description" content={product?.description} />
-      </Helmet>
+      <SEO
+        title={product?.name}
+        type={"product"}
+        image={product?.images[0]}
+        url={`${baseUrl}/chi-tiet-dau-gia/${product?._id}`}
+        description={product?.description}
+      ></SEO>
       <Modal
         show={showModal}
         onHide={handleClose}
@@ -401,6 +393,20 @@ const ProductDetail = () => {
                     ? "cao nhất hiện tại"
                     : "thấp nhất hiện tại"}
                 </p>
+              </div>
+              <div className="infor-row">
+                <p className="infor-row__left mb-0">Chia sẻ:</p>
+                <div className="infor-row__right">
+                  <FacebookShareButton
+                    url={`https://cit-auction.web.app/chi-tiet-dau-gia/${product?._id}`}
+                    quote={"sadsadsadsa"}
+                    hashtag={"#citauction"}
+                    // description={"aiueo"}
+                    className="Demo__some-network__share-button"
+                  >
+                    <FacebookIcon size={28} round />
+                  </FacebookShareButton>
+                </div>
               </div>
             </div>
             {product?.stateSlug === "dang-dien-ra" && (

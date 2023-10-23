@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Image } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ import productApi from "../../api/productApi";
 import { IRootState } from "../../interface";
 import TextEditor from "../TextEditor";
 import DropImages from "../DropImages";
-import { setProdDescription } from "../../redux/utilsSlice";
 import { minus } from "../../asset/images";
 import { setProductPermission } from "../../redux/authSlice";
 import "./ProductForm.css";
@@ -40,11 +39,6 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   );
   const idOwner = useSelector((e: IRootState) => e.auth._id);
   const emailPaypal = useSelector((e: IRootState) => e.auth.emailPaypal);
-
-  const prodDescription = useSelector(
-    (e: IRootState) => e.utils.prodDescription
-  );
-
   const queryClient = useQueryClient();
 
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -54,6 +48,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
   const [checkStepPrice, setCheckStepPrice] = useState<boolean>(true);
   const [resetImgs, setResetImgs] = useState<boolean>(false);
   const [dataEdit, setDataEdit] = useState(initialStateData);
+  const [description, setDescription] = useState<string>("");
+
   const [oldCategory, setOldCategory] = useState({
     link: "",
     name: "",
@@ -83,20 +79,20 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             auctionTypeSlug: result.data.auctionTypeSlug,
             checkoutTypeSlug: result.data.checkoutTypeSlug,
             category: "",
-            description: "",
+            description: result.data.description,
           };
           setOldCategory({
             name: result.data.category.name,
             link: result.data.category.link,
             _id: result.data.category._id,
           });
+          setDescription(result.data.description);
           setDataEdit(data);
           setStartDate(new Date(data.startTime));
           reset(data);
           setImgsEdit(result.data.images);
-          // setUploadedImages(result.data.images);
+          setUploadedImages(result.data.images);
 
-          dispatch(setProdDescription(result.data.description));
         }
       };
       fetchProd();
@@ -122,10 +118,10 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     return true;
   };
 
-  const handleImageUpload = (images: File[]) => {
+  const handleImageUpload = useCallback((images: File[]) => {
     // Nhận dữ liệu ảnh từ DropImages và cập nhật state của Form
     setUploadedImages(images);
-  };
+  }, []);
 
   const caterogyQuery = useQuery({
     queryKey: ["category"],
@@ -170,7 +166,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       };
 
       formData.append("name", data.name);
-      formData.append("description", prodDescription);
+      formData.append("description", description);
       formData.append("basePrice", data.basePrice);
       formData.append("price", data.price);
       formData.append("stepPrice", data.stepPrice);
@@ -201,15 +197,12 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            // dispatch(setProdDescription(""));
-            // reset(initialStateData);
-            // setResetImgs(true)
+            reset(initialStateData);
+            setResetImgs(true);
           }
         };
         createProd();
       } else {
-
-        
         if (data.category === "") {
           formData.append("category", oldCategory._id);
         } else {
@@ -244,9 +237,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            // setResetImgs(true)
-            // reset(initialStateData);
-            // dispatch(setProdDescription(""));
+            setResetImgs(true);
+            reset(initialStateData);
           }
         };
         editProd();
@@ -258,6 +250,10 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     const result = imgsEdit.filter((e) => e !== item);
     setImgsEdit(result);
   };
+
+  const handlerodDescription = useCallback((state: string) => {
+    setDescription(state);
+  }, []);
 
   return (
     <Form>
@@ -518,7 +514,10 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
       <Row>
         <Col className="mb-3" sm={12}>
           <Form.Label>Mô tả sản phẩm</Form.Label>
-          <TextEditor></TextEditor>
+          <TextEditor
+            description={description}
+            handlerodDescription={handlerodDescription}
+          ></TextEditor>
         </Col>
       </Row>
       <Row>

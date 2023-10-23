@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Col, Container, Form, Image, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import userApi from "../../../api/userApi";
 import { uploadImg } from "../../../asset/images";
 import "../../../components/DropImages/DropImages.css";
+import TextEditor from "../../../components/TextEditor";
 import { IRootState } from "../../../interface";
 import { setChangeTheme } from "../../../redux/uiSlice";
 
@@ -14,11 +15,11 @@ const initialStateData = {
   color_primary: "",
   color_secondary: "",
   email: "",
-  long_intro: "",
   mst: "",
   phoneNumber: "",
-  short_intro: "",
   configName: "",
+  long_intro: "",
+  short_intro: "",
 };
 
 const UiManagement = () => {
@@ -32,6 +33,10 @@ const UiManagement = () => {
   const [tempalte, setTempalte] = useState<string>("");
   const [refresh, setRefresh] = useState<boolean>();
   const [isActive, setIsActive] = useState<boolean>();
+
+  const [longIntro, setLongIntro] = useState<string>();
+  const [shortIntro, setShortIntro] = useState<string>();
+
   const [imgEdit, setImgEdit] = useState<any>({
     0: "",
     1: "",
@@ -76,7 +81,8 @@ const UiManagement = () => {
         short_intro: dataEdit.short_intro,
         configName: dataEdit.configName,
       };
-
+      setShortIntro(dataEdit.short_intro);
+      setLongIntro(dataEdit.long_intro);
       setIsActive(dataEdit.isActive);
 
       setImgEdit({
@@ -97,10 +103,10 @@ const UiManagement = () => {
       color_primary: data.color_primary,
       color_secondary: data.color_secondary,
       email: data.email,
-      long_intro: data.long_intro,
+      long_intro: longIntro,
       mst: data.mst,
       phoneNumber: data.phoneNumber,
-      short_intro: data.short_intro,
+      short_intro: shortIntro,
       configName: data.configName,
     };
 
@@ -159,7 +165,6 @@ const UiManagement = () => {
       toast.success("Sử dụng giao diện thành công!");
       dispatch(setChangeTheme(!changeTheme));
       setRefresh(!refresh);
-
     }
   };
 
@@ -171,6 +176,13 @@ const UiManagement = () => {
       setRefresh(!refresh);
     }
   };
+
+  const hanleLongIntro = useCallback((state: string) => {
+    setLongIntro(state);
+  }, []);
+  const hanleShortIntro = useCallback((state: string) => {
+    setShortIntro(state);
+  }, []);
 
   return (
     <Container>
@@ -286,7 +298,7 @@ const UiManagement = () => {
             controlId="validationCustom03"
           >
             <Form.Label>Giới thiệu ngắn:</Form.Label>
-            <Form.Control
+            {/* <Form.Control
               type="text"
               as="textarea"
               placeholder="Giới thiệu ngắn..."
@@ -294,7 +306,11 @@ const UiManagement = () => {
             />
             {errors?.short_intro?.type === "required" && (
               <p className="text__invalid">Vui lòng nhập một đoạn giới thiệu</p>
-            )}
+            )} */}
+            <TextEditor
+              description={shortIntro}
+              handlerodDescription={hanleShortIntro}
+            ></TextEditor>
           </Form.Group>
           <Form.Group
             className="mb-3"
@@ -303,7 +319,7 @@ const UiManagement = () => {
             controlId="validationCustom03"
           >
             <Form.Label>Giới thiệu dài:</Form.Label>
-            <Form.Control
+            {/* <Form.Control
               type="text"
               as="textarea"
               placeholder="Giới thiệu dài..."
@@ -311,7 +327,11 @@ const UiManagement = () => {
             />
             {errors?.long_intro?.type === "required" && (
               <p className="text__invalid">Vui lòng nhập một đoạn giới thiệu</p>
-            )}
+            )} */}
+             <TextEditor
+              description={longIntro}
+              handlerodDescription={hanleLongIntro}
+            ></TextEditor>
           </Form.Group>
         </Row>
         <Row>

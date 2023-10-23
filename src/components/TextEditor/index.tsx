@@ -1,14 +1,9 @@
 import Editor from "ckeditor5-custom-build/build/ckeditor";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setProdDescription } from "../../redux/utilsSlice";
-import { IRootState } from "../../interface";
 
-const TextEditor = () => {
-  const dispatch = useDispatch();
-  const dataText = useSelector((e: IRootState) => e.utils.prodDescription);
 
+const TextEditor = ({ description, handlerodDescription }: any) => {
   const editorConfiguration = {
     toolbar: {
       items: [
@@ -61,12 +56,10 @@ const TextEditor = () => {
       <CKEditor
         editor={Editor}
         config={editorConfiguration}
-        data={dataText}
+        data={description}
         onChange={(event, editor) => {
           const data = editor.getData();
-          dispatch(setProdDescription(data));
-
-          
+          handlerodDescription(data);
         }}
       ></CKEditor>
     </div>

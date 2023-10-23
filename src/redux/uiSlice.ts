@@ -9,6 +9,15 @@ const initialState = {
     mini_logo: "",
     breadcrum: "",
   },
+  inforPage: {
+    shortIntro: "",
+    longIntro: "",
+    address: "",
+    phoneNumber: "",
+    email: "",
+    map: "",
+    mst: "",
+  },
 };
 
 const utilsSlice = createSlice({
@@ -24,9 +33,26 @@ const utilsSlice = createSlice({
     setImages: (state, actions) => {
       state.images = actions.payload;
     },
+    setInforPage: (state, actions) => {
+      state.inforPage = actions.payload;
+    },
+
+    // setLongIntro: (state, actions) => {
+    //   state.longIntro = actions.payload;
+    // },
+    // setShortIntro: (state, actions) => {
+    //   state.shortIntro = actions.payload;
+    // },
   },
 });
 
-export const { toggleFireworks,setImages, setChangeTheme } = utilsSlice.actions;
+export const {
+  toggleFireworks,
+  setInforPage,
+  // setLongIntro,
+  // setShortIntro,
+  setImages,
+  setChangeTheme,
+} = utilsSlice.actions;
 
 export default utilsSlice.reducer;

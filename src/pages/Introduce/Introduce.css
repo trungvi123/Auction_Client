@@ -1,0 +1,116 @@
+.statistics-container {
+  padding: 0;
+  background: #f9f7f4;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.statistics-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statistics-item__img {
+  height: 64px;
+}
+
+.statistics-item__count {
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 48px;
+  color: var(--primary-color);
+  margin-bottom: 0;
+  margin-top: 6.45px;
+}
+
+.statistics-item__type {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--second-color);
+  margin: 0;
+  text-align: center;
+}
+
+/*--------------------Contact---------------------- */
+
+.contact-infor__container {
+  position: relative;
+  display: flex;
+  /* align-items: center; */
+  gap: 15px;
+  cursor: pointer;
+  box-shadow: 3px 5px 20px rgba(0, 0, 0, 0.06);
+  padding: 25px;
+  min-height: 146px;
+  /* transition: all 0.4s ease-in; */
+}
+
+.contact-infor__container:hover::before {
+  width: 100%;
+}
+
+.contact-infor__container::before {
+  content: "";
+  width: 0%;
+  height: 2px;
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  background: #b41712;
+  transition: all 0.52s;
+  z-index: -1;
+}
+
+.contact-infor__container:hover .contact-infor__icon-box {
+  background-color: var(--primary-color);
+}
+
+.contact-infor__container:hover .contact-infor__icon {
+  color: white;
+}
+
+.contact-infor__icon-box {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.4s ease-in;
+
+}
+
+.contact-infor__icon {
+  color: var(--primary-color);
+  transition: all 0.4s ease-in;
+
+}
+
+.contact-infor__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-infor__text h5 {
+  font-size: 25px;
+  font-weight: 600;
+  color: #1f2230;
+  margin-bottom: 10px;
+}
+
+.contact-infor__text span,
+.contact-infor__text a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--second-color);
+  margin-bottom: 0;
+  line-height: 28px;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}

@@ -39,6 +39,9 @@ axiosClient.interceptors.response.use(
 const axiosClientJWT = axios.create({
   withCredentials: true,
   baseURL: apiConfig.baseUrl,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 axiosClientJWT.interceptors.request.use(async (config) => {

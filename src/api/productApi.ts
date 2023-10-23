@@ -54,6 +54,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/edit/auctionEnded/${payload.id}`;
     return axiosClientJWT.post(url, payload);
   },
+  shareOnSocial: (payload: any) => {
+    const url = apiConfig.baseUrl + `product/share`;
+    return axiosClient.post(url, payload);
+  },
 
   updateShipping: (payload: { id: string }) => {
     const url = apiConfig.baseUrl + `product/edit/shipping/${payload.id}`;

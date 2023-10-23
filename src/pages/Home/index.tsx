@@ -1,14 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import DOMPurify from "dompurify";
 import { Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import freeProductApi from "../../api/freeProduct";
 import productApi from "../../api/productApi";
-import {
-  home_intro,
-  banner,
-  banner_res,
-  product_bg,
-} from "../../asset/images/";
+import { banner_res, product_bg, home_intro } from "../../asset/images/";
 import FreeProductCard from "../../components/FreeProductCard";
 import MySlider from "../../components/MySlider";
 import ProductCard from "../../components/ProductCard";
@@ -18,7 +14,9 @@ import { IRootState } from "../../interface";
 import "./Home.css";
 const Home = () => {
   const page = 1;
-  const banner_infor = useSelector((e:IRootState)=>e.ui.images.short_intro)
+  const banner_infor = useSelector((e: IRootState) => e.ui.images.short_intro);
+  const intro = useSelector((e: IRootState) => e.ui.inforPage.shortIntro);
+
   const productsQuery = useQuery({
     queryKey: ["products"],
     queryFn: () => productApi.getPrepareToStart(),
@@ -45,13 +43,12 @@ const Home = () => {
               <h1 className="home-intro__left__h1">
                 Nền tảng đấu giá trực tuyến hàng đầu Việt Nam
               </h1>
-              <p className="home-intro__left__text2">
-                Tự hào là một trong những nhà đấu giá lớn nhất tại Việt Nam, CIT
-                Auction luôn là đơn vị tiên phong ứng dụng công nghệ thông tin
-                vào hoạt động đấu giá. CIT Auction là đơn vị tổ chức cuộc đấu
-                giá trực tuyến chính thống đầu tiên tại Việt Nam, vào ngày
-                17/07/2020.
-              </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(intro),
+                }}
+                className="home-intro__left__text2"
+              ></div>
               <div className="btn-11">
                 <span className="btn-11__content">KHÁM PHÁ</span>
               </div>
@@ -59,7 +56,7 @@ const Home = () => {
           </Col>
           <Col xxl={5} xl={6} lg={6}>
             <div className="d-flex align-items-center h-100">
-              <img className="home-banner" src={banner} alt="banner" />
+              <img className="home-banner" src={banner_infor} alt="banner" />
             </div>
           </Col>
         </Row>
@@ -67,7 +64,7 @@ const Home = () => {
       <section className="home-intro__res">
         <img
           className="home-intro__bg home-intro__bg__res"
-          src={banner_infor}
+          src={banner_res}
           alt="background"
         />
         <Row>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { IRootState } from "../../interface";
 import "./Breadcrumbs.css";
 
-const Breadcrumbs = ({ title, type, img }: any) => {
+const Breadcrumbs = ({ title, type }: any) => {
   const breadcrumb_img = useSelector((e:IRootState)=>e.ui.images.breadcrum)
   return (
     <div className="breadcrumbs">

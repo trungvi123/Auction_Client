@@ -22,6 +22,9 @@ import {
   ReportManagement,
   Profile,
   UiManagement,
+  Introduce,
+  Contact,
+  // Share
 } from "../pages";
 
 interface IRoute {
@@ -47,6 +50,11 @@ export const publicRoute: IRoute[] = [
   { path: routes.productList, element: ProductList },
   { path: routes.search, element: Search },
   { path: routes.profile, element: Profile },
+  { path: routes.introduce, element: Introduce },
+  { path: routes.contact, element: Contact },
+  // { path: routes.share, element: Share }
+
+
 ];
 
 export const privateRoute: IRoute[] = [

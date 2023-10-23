@@ -14,18 +14,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "./interface";
 import { Home } from "./pages";
 import userApi from "./api/userApi";
-import { setImages } from "./redux/uiSlice";
-import Favicon from 'react-favicon';
+import { setImages, setInforPage } from "./redux/uiSlice";
+import Favicon from "react-favicon";
 
 function App() {
   const dispatch = useDispatch();
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
   const changeTheme = useSelector((e: IRootState) => e.ui.changeTheme);
-  const [favicon,setFavicon] = useState<string>('')
+  const [favicon, setFavicon] = useState<string>("");
   let totalRoute = publicRoute;
   if (!basicUser) {
     totalRoute = [...publicRoute, ...privateRoute];
-  } 
+  }
   useEffect(() => {
     const fetchTheme = async () => {
       const res: any = await userApi.getTemplateActive();
@@ -40,6 +40,18 @@ function App() {
         );
 
         dispatch(
+          setInforPage({
+            shortIntro: res.data.short_intro,
+            longIntro: res.data.long_intro,
+            address: res.data.address,
+            phoneNumber: res.data.phoneNumber,
+            email: res.data.email,
+            map: res.data.map,
+            mst: res.data.mst,
+          })
+        );
+
+        dispatch(
           setImages({
             short_intro: res.data.images[0].img_intro_homePage,
             logo: res.data.images[0].img_logo,
@@ -47,7 +59,7 @@ function App() {
             breadcrum: res.data.images[0].img_breadcrum,
           })
         );
-        setFavicon(res.data.images[0].img_mini_logo)
+        setFavicon(res.data.images[0].img_mini_logo);
       }
     };
     fetchTheme();

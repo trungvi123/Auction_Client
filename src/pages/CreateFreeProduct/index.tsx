@@ -1,17 +1,8 @@
-import React, { useEffect } from "react";
+
 import { Col, Container, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
 import FreeProductForm from "../../components/FreeProductForm";
-import { setProdDescription } from "../../redux/utilsSlice";
 
 const CreateFreeProduct = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(setProdDescription(""));
-  }, [dispatch]);
-
   
   return (
     <Container>

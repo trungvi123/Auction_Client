@@ -1,10 +1,14 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { IRootState } from "../../interface";
 
 import './Footer.css'
 
 const Footer = () => {
+  const inforPage = useSelector((e:IRootState)=>e.ui.inforPage)
+
   return (
     <footer className="footer">
       <div className="footer-bg"></div>
@@ -14,10 +18,10 @@ const Footer = () => {
             <div className="footer-item mt-4">
               <h5>Công ty đấu giá hợp danh CIT AUCTION</h5>
               <ul className="footer-list">
-                <li>Mã số thuế: 099999999</li>
-                <li>Địa chỉ: Số 123, đường 3/2, quận Ninh Kiều, TP. Cần Thơ</li>
-                <li><a href="tel:0999.999.999">Điện thoại: 0999.999.999</a> </li>
-                <li><a href="mailTo:jemcovintage@gmail.com">Email: jemcovintage@gmail.com</a> </li>
+                <li>Mã số thuế: {inforPage.mst || '0999.999.999'}</li>
+                <li>Địa chỉ: {inforPage.address}</li>
+                <li><a href={`tel:${inforPage.phoneNumber}`}>Điện thoại: {inforPage.phoneNumber}</a> </li>
+                <li><a href={`mailTo:${inforPage.email}`}>Email: {inforPage.email}</a> </li>
               </ul>
             </div>
           </Col>

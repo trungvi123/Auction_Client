@@ -16,6 +16,10 @@ const routes = {
   editAuction: "/chinh-sua-dau-gia/:id",
   editFreeProduct: "/chinh-sua-chia-se/:id",
   profile: "/profile",
+  introduce: "/gioi-thieu",
+  contact: "/lien-he",
+  // share: "/share/:type/:id",
+
 
   dashboard: "/admin/dashboard",
   ui: "/admin/ui",
