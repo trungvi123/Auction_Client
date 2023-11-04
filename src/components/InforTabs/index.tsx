@@ -7,6 +7,7 @@ import productApi from "../../api/productApi";
 import { BiUser } from "react-icons/bi";
 import formatDateTime from "../../utils/formatDay";
 import formatMoney from "../../utils/formatMoney";
+import { Link } from "react-router-dom";
 
 function InforTabs({
   data,
@@ -61,6 +62,9 @@ function InforTabs({
               <p>
                 Email chủ tài sản: <b>{data?.owner.email}</b>
               </p>
+              <Link className="btn-11" to={`/cua-hang?user=${data?.owner.email}`}>
+                <span className="btn-11__content"> Đi đến cửa hàng </span>
+              </Link>
               {data?.description && (
                 <>
                   <hr></hr>
@@ -122,9 +126,13 @@ function InforTabs({
                 Tên chủ tài sản:{" "}
                 <b>{data?.owner.firstName + "" + data?.owner.lastName}</b>{" "}
               </p>
+              
               <p>
                 Email chủ tài sản: <b>{data?.owner.email}</b>
               </p>
+              <Link className="btn-11" to={`/cua-hang?user=${data?.owner.email}`}>
+                <span className="btn-11__content"> Đi đến cửa hàng </span>
+              </Link>
               {data?.description && (
                 <>
                   <hr></hr>

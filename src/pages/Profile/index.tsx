@@ -1,13 +1,14 @@
 import { Col, Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import FormRegister from "../../components/FormRegister";
-import { IRootState } from "../../interface";
+import SEO from "../../components/SEO";
 
 const Profile = () => {
  
 
   return (
     <Container>
+      <SEO title={'Hồ sơ'}></SEO>
+
       <Row className="w-100 d-flex justify-content-center">
         <Col xl={10} lg={8} md={10}>
           <div className="reg__wrapper">

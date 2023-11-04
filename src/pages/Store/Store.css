@@ -1,0 +1,121 @@
+.left-content {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.left-content__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: brightness(50%);
+}
+
+.left-content__inner .email {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  max-height: 3rem;
+  font-weight: 500;
+  margin-bottom: 0.3125rem;
+  margin-top: 0;
+  word-wrap: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: white;
+}
+
+.left-content__inner__circle {
+  height: 72px;
+  width: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.left-content__inner__circle > img {
+  width: 100%;
+  object-fit: cover;
+  height: 100%;
+}
+
+.follow-btn {
+  margin-top: 10px;
+  border: 1px solid white;
+  width: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* feedback */
+.feedback-item {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback-item__right {
+  flex: 1;
+}
+
+.feedback-item__left {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.feedback-item__left > img {
+  width: 100%;
+  object-fit: cover;
+  height: 100%;
+}
+
+.feedback-item__top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.feedback-item__top .name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.feedback-item__top .star {
+  font-size: 18px;
+}
+
+.feedback-item__top .time {
+  font-size: 13px;
+}
+
+.feedback-item__center p {
+  margin-top: 10px;
+}
+
+.feedback-item__bottom .image-gallery-slide-wrapper{
+  display: none;
+}
+
+.feedback-item__bottom.active .image-gallery-slide-wrapper{
+  display: block;
+  height: 400px;
+}
+
+
+.feedback-item__bottom.active .image-gallery-slide-wrapper .image-gallery-image {
+  height: 400px;
+}
+
+.feedback-item__bottom .image-gallery-thumbnails .image-gallery-thumbnails-container {
+  text-align: left;
+}

@@ -225,7 +225,7 @@ const FreeProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           </Form.Label>
           <DropImages
             resetSelectedImages={resetImgs}
-            onImagesUpload={handleImageUpload}
+            handleImageUpload={handleImageUpload}
           ></DropImages>
           {imgsEdit.length > 0 && (
             <div className="selected-images">

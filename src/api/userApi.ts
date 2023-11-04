@@ -41,6 +41,10 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/resetPass";
     return axiosClientJWT.post(url, payload);
   },
+  chat: (payload:{message:string}) => {
+    const url = "http://127.0.0.1:5001/api/chatbot";
+    return axiosClient.post(url, payload);
+  },
   changePass: (payload: IChangePassPayload) => {
     const url = apiConfig.baseUrl + "user/changePass";
     return axiosClientJWT.post(url, payload);
@@ -49,6 +53,10 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/${id}`;
     return axiosClientJWT.get(url);
   },
+  getUserByEmail: (email: string) => {
+    const url = apiConfig.baseUrl + `user/getUserByEmail/${email}`;
+    return axiosClient.get(url);
+  },
   createReport: (payload: {
     type: string[];
     accuserId: string;
@@ -56,6 +64,42 @@ const userApi = {
     productId: string;
   }) => {
     const url = apiConfig.baseUrl + `user/createReport`;
+    return axiosClientJWT.post(url, payload);
+  },
+  createRate: (payload: any, config: any) => {
+    const url = apiConfig.baseUrl + `user/createRate`;
+    return axiosClientJWT.post(url, payload, config);
+  },
+  addFollow: (payload: { followEmail: string; myId: string }) => {
+    const url = apiConfig.baseUrl + `user/addFollow`;
+    return axiosClientJWT.post(url, payload);
+  },
+  createOTP: () => {
+    const url = apiConfig.baseUrl + `user/createOTP`;
+    return axiosClientJWT.post(url);
+  },
+  verifyAccount: (payload: { OTP: string }) => {
+    const url = apiConfig.baseUrl + `user/verifyAccount`;
+    return axiosClientJWT.post(url,payload);
+  },
+  addFollowProduct: (payload: {
+    productId: string;
+    time: string;
+    type: string;
+  }) => {
+    const url = apiConfig.baseUrl + `user/addFollowProduct`;
+    return axiosClientJWT.post(url, payload);
+  },
+  unFollowProduct: (payload: { productId: string }) => {
+    const url = apiConfig.baseUrl + `user/unFollowProduct`;
+    return axiosClientJWT.post(url, payload);
+  },
+  unFollow: (payload: { followEmail: string; myId: string }) => {
+    const url = apiConfig.baseUrl + `user/unFollow`;
+    return axiosClientJWT.post(url, payload);
+  },
+  replyComment: (payload: any) => {
+    const url = apiConfig.baseUrl + `user/replyComment/${payload.rateId}`;
     return axiosClientJWT.post(url, payload);
   },
   handleFinishTransaction: (payload: { id: string; userId: string }) => {

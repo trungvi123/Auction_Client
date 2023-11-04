@@ -73,7 +73,7 @@ const CountDownTime = ({
 
   return (
     <>
-      {!downLoop && time?.time && (
+      {!downLoop && time?.time && !stop && (
         <div className="countdown-time-box">
           <div className="countdown-time-item">
             <span id="countdown-time-hour" className="countdown-time">

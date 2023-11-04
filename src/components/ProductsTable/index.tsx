@@ -1,7 +1,7 @@
 import { MaterialReactTable } from "material-react-table";
 import { type MRT_ColumnDef } from "material-react-table";
-import { useMemo, useRef, useState } from "react";
-import { Image } from "react-bootstrap";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Col, Form, Image, Row } from "react-bootstrap";
 import { IconButton, Tooltip } from "@mui/material";
 import { Autorenew, LocalShipping, MonetizationOn } from "@mui/icons-material";
 import toast from "react-hot-toast";
@@ -10,6 +10,9 @@ import Modal from "react-bootstrap/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import Rating from "@mui/material/Rating";
+import Typography from "@mui/material/Typography";
+
 import { auction } from "../../asset/images";
 import productApi from "../../api/productApi";
 import userApi from "../../api/userApi";
@@ -19,6 +22,7 @@ import {
   setProductPermission,
 } from "../../redux/authSlice";
 import { checkoutType } from "../../constant/index";
+import DropImages from "../../components/DropImages";
 
 interface IProTable {
   name: {
@@ -67,7 +71,11 @@ function ProductsTable({
     variable: "",
     id: "",
   });
-  const [reportMode, setReportMode] = useState<boolean>(false);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [comment, setComment] = useState<string>("");
+
+  const [star, setStar] = useState<number>(5);
+  const [modalMode, setModalMode] = useState<string>("");
   const [reportReason, setReportReason] = useState<string[]>([]);
   const [reportId, setReportId] = useState({
     buyer: "",
@@ -80,7 +88,9 @@ function ProductsTable({
   const idOwner: any = useSelector((e: IRootState) => e.auth._id);
   const queryClient = useQueryClient();
 
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModal(false);
+  };
   const handleShow = () => {
     setShowModal(true);
   };
@@ -266,6 +276,8 @@ function ProductsTable({
       handleReport(infor.id);
     } else if (infor.variable === "finishTransaction") {
       handleFinishTransaction(infor.id);
+    } else if (infor.variable === "rate") {
+      handleRate(infor.id);
     } else {
       handleDelete(infor.id);
     }
@@ -295,6 +307,7 @@ function ProductsTable({
             _id: item._id,
             name: item.name,
             paid: item.paid,
+            rate: item.rate,
             successfulTransaction: item.successfulTransaction,
             shipping: item.shipping,
             auctionStarted: item.auctionStarted,
@@ -314,6 +327,11 @@ function ProductsTable({
   const handleViewReceivedList = (id: string) => {
     next(`/danh-sach/${id}`);
   };
+
+  const handleImageUpload = useCallback((images: File[]) => {
+    // Nhận dữ liệu ảnh từ DropImages và cập nhật state của Form
+    setUploadedImages(images);
+  }, []);
 
   const columns = useMemo<MRT_ColumnDef<IProTable>[]>(
     () => [
@@ -515,7 +533,7 @@ function ProductsTable({
                         } ${data.shipping ? "disable" : ""}`}
                         onClick={() => {
                           if (!data.shipping) {
-                            setReportMode(false);
+                            setModalMode("");
                             setMsgModal(
                               "Xác nhận cho người mua biết rằng bạn đã gửi hàng!"
                             );
@@ -542,7 +560,7 @@ function ProductsTable({
                       <div
                         className={`btn-11 `}
                         onClick={() => {
-                          setReportMode(true);
+                          setModalMode("report");
                           setMsgModal(
                             "Hãy cho chúng tôi biết lí do bạn muốn khiếu nại!"
                           );
@@ -571,7 +589,7 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
-                          setReportMode(true);
+                          setModalMode("report");
                           setMsgModal(
                             "Hãy cho chúng tôi biết lí do bạn muốn khiếu nại!"
                           );
@@ -600,7 +618,7 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
-                          setReportMode(true);
+                          setModalMode("report");
                           setReportId({
                             seller: data.seller,
                             buyer: data.buyer,
@@ -627,7 +645,7 @@ function ProductsTable({
                       <div
                         className="btn-11 mt-2"
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
 
                           setInforHanle({
                             variable: "finishTransaction",
@@ -648,7 +666,7 @@ function ProductsTable({
                     <div
                       className="btn-11"
                       onClick={() => {
-                        setReportMode(false);
+                        setModalMode("");
                         setMsgModal(
                           "Bạn có chắc muốn kiến nghị duyệt một lần nữa cho cuộc đấu giá này?"
                         );
@@ -680,7 +698,7 @@ function ProductsTable({
                     data.checkoutTypeSlug === "cod" && (
                       <div
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
                           setMsgModal(
                             "Xác nhận với người bán rằng bạn đã nhận được hàng!"
                           );
@@ -707,12 +725,27 @@ function ProductsTable({
                         <span className="btn-11__content">Xem danh sách</span>
                       </div>
                     )}
-
+                  {/* Nút đánh giá sản phẩm */}
+                  {data.successfulTransaction && !freeProduct && typeList !== 'create' &&(
+                    <div
+                      className="btn-11 mt-2"
+                      onClick={() => {
+                        setModalMode("rate");
+                        setInforHanle({
+                          variable: "rate",
+                          id: data._id,
+                        });
+                        handleShow();
+                      }}
+                    >
+                      <span className="btn-11__content">Đánh giá</span>
+                    </div>
+                  )}
                   {/* Nút xóa sản phẩm */}
                   <div
                     className="btn-11 mt-2"
                     onClick={() => {
-                      setReportMode(false);
+                      setModalMode("");
                       setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                       setInforHanle({
                         variable: "delete",
@@ -732,7 +765,7 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
                           setMsgModal(
                             "Bạn có chắc muốn duyệt cuộc đấu giá này?"
                           );
@@ -748,7 +781,7 @@ function ProductsTable({
                       <div
                         className="btn-11 mt-2"
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
                           setMsgModal(
                             "Bạn có chắc muốn từ chối cuộc đấu giá này?"
                           );
@@ -768,7 +801,7 @@ function ProductsTable({
                       <div
                         className="btn-11"
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
 
                           setMsgModal(
                             "Bạn có chắc muốn duyệt lại cuộc đấu giá này?"
@@ -785,7 +818,7 @@ function ProductsTable({
                       <div
                         className="btn-11 mt-2"
                         onClick={() => {
-                          setReportMode(false);
+                          setModalMode("");
 
                           setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                           setInforHanle({
@@ -804,7 +837,7 @@ function ProductsTable({
                     <div
                       className="btn-11 mt-2"
                       onClick={() => {
-                        setReportMode(false);
+                        setModalMode("");
                         setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
                         setInforHanle({
                           variable: "delete",
@@ -910,6 +943,31 @@ function ProductsTable({
     }
   };
 
+  const handleRate = async (id: string) => {
+    console.log('do');
+    
+    const formData = new FormData();
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    formData.append("id", id);
+    formData.append("comment", comment);
+    formData.append("star", star.toString());
+    for (let i = 0; i < uploadedImages.length; i++) {
+      formData.append("images", uploadedImages[i]);
+    }
+
+    const res: any = await userApi.createRate(formData, config);
+    if (res?.status === "success") {
+      toast.success("Đánh giá thành công!");
+    }
+    console.log(res);
+    
+  };
+
   return (
     <>
       <>
@@ -920,11 +978,17 @@ function ProductsTable({
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Thông báo</Modal.Title>
+            <Modal.Title>
+              {modalMode === "report"
+                ? "Khiếu nại"
+                : modalMode === "rate"
+                ? "Đánh giá"
+                : "Thông báo"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {msgModal}
-            {reportMode && (
+            {modalMode === "report" && (
               <div className="mt-4">
                 <label
                   className="containerCheckbox"
@@ -982,6 +1046,42 @@ function ProductsTable({
                 </label>
               </div>
             )}
+
+            {modalMode === "rate" && (
+              <div>
+                <div className="d-flex">
+                  <Typography component="legend">
+                    Chất lượng sản phẩm:
+                  </Typography>
+                  <Rating
+                    name="simple-controlled"
+                    value={star}
+                    onChange={(event, newValue: any) => {
+                      setStar(newValue);
+                    }}
+                  />
+                </div>
+                <Row className="mt-4">
+                  <Form.Group className="mb-3" as={Col} md="12">
+                    <Form.Control
+                      type="text"
+                      as={"textarea"}
+                      value={comment}
+                      placeholder="Nhận xét"
+                      onChange={(e) => setComment(e.target.value)}
+                    />
+                  </Form.Group>
+                </Row>
+                <div className="rate-upload mt-2">
+                  <DropImages
+                    handleImageUpload={handleImageUpload}
+                  ></DropImages>
+                </div>
+                <span style={{ fontSize: "11px" }}>
+                  Lưu ý: chúng tôi chỉ giữ lại 4 ảnh đầu tiên mà bạn chọn!
+                </span>
+              </div>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -994,8 +1094,6 @@ function ProductsTable({
         </Modal>
       </>
       <MaterialReactTable
-
-      
         columns={columns}
         data={dataLocal.current}
         enableColumnOrdering

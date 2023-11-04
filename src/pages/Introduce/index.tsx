@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 import { Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { intro_icon1, long_intro } from "../../asset/images";
+import { intro_icon1, intro_icon2, intro_icon3, intro_icon4, long_intro } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { IRootState } from "../../interface";
 import "./Introduce.css";
@@ -81,7 +81,7 @@ const Introduce = () => {
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
-              <img className="statistics-item__img" src={intro_icon1} alt="" />
+              <img className="statistics-item__img" src={intro_icon2} alt="" />
               <span className="statistics-item__count">200 triệu+</span>
               <span className="statistics-item__type">
                 Giá trị tài sản đã bán
@@ -90,7 +90,7 @@ const Introduce = () => {
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
-              <img className="statistics-item__img" src={intro_icon1} alt="" />
+              <img className="statistics-item__img" src={intro_icon3} alt="" />
               <span className="statistics-item__count">145+</span>
               <span className="statistics-item__type">
                 Tài sản đã đấu giá thành công
@@ -99,7 +99,7 @@ const Introduce = () => {
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
-              <img className="statistics-item__img" src={intro_icon1} alt="" />
+              <img className="statistics-item__img" src={intro_icon4} alt="" />
               <span className="statistics-item__count">150+</span>
               <span className="statistics-item__type">
                 Cuộc đấu giá đã diễn ra

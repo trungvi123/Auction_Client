@@ -1,7 +1,6 @@
 import routes from "../routes";
 import {
   Home,
-  Management,
   News,
   Register,
   ForgotPass,
@@ -24,6 +23,7 @@ import {
   UiManagement,
   Introduce,
   Contact,
+  Store,
   // Share
 } from "../pages";
 
@@ -52,13 +52,14 @@ export const publicRoute: IRoute[] = [
   { path: routes.profile, element: Profile },
   { path: routes.introduce, element: Introduce },
   { path: routes.contact, element: Contact },
+  { path: routes.store, element: Store },
+
   // { path: routes.share, element: Share }
 
 
 ];
 
 export const privateRoute: IRoute[] = [
-  { path: routes.management, element: Management },
   { path: routes.ui, element: UiManagement },
   { path: routes.dashboard, element: Dashboard, layout: "AdminDefaultLayout" },
   {

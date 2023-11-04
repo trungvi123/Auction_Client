@@ -5,11 +5,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import ProductForm from "../../components/ProductForm";
 
 import "./CreateAuction.css";
+import SEO from "../../components/SEO";
 
 function CreateAuction() {
  
   return (
     <Container>
+      <SEO title={'Tạo cuộc đấu giá'}></SEO>
+
       <Row className=" d-flex justify-content-center">
         <Col xl={10} lg={8} md={10}>
           <div className="reg__wrapper">

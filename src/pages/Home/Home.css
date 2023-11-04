@@ -19,7 +19,7 @@
 }
 
 .home-intro__left {
-    padding: 190px 20px;
+    padding: 90px 20px;
     padding-right: 50px;
 }
 
@@ -62,7 +62,7 @@
 
 .under-banner {
     width: 560px;
-    height: 670px;
+    height: 95%;
     background-color: var(--primary-color);
     border-radius: 279px 0 0 279px;
     position: absolute;

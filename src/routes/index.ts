@@ -18,6 +18,8 @@ const routes = {
   profile: "/profile",
   introduce: "/gioi-thieu",
   contact: "/lien-he",
+  store: "/cua-hang",
+
   // share: "/share/:type/:id",
 
 

@@ -11,6 +11,7 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import FilterDrawer from "../../components/FilterDrawer";
 import FreeProductCard from "../../components/FreeProductCard";
 import ProductCard from "../../components/ProductCard";
+import SEO from "../../components/SEO";
 import "./ProductList.css";
 
 interface IFilter {
@@ -197,7 +198,8 @@ const ProductList = () => {
   ]);
 
   return (
-    <Container className="productList">
+    <Container className="productList  special-row">
+      <SEO title={"Danh mục tài sản"}></SEO>
       <Breadcrumbs
         title={"Danh mục tài sản"}
         type={"danh mục tài sản"}

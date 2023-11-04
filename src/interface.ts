@@ -12,15 +12,15 @@ export interface IUi {
     mini_logo: string;
     breadcrum: string;
   };
-  inforPage : {
-    shortIntro: string,
-    longIntro: string,
-    address: string,
-    phoneNumber: string,
-    email: string,
-    map: string,
-    mst: string,
-  }
+  inforPage: {
+    shortIntro: string;
+    longIntro: string;
+    address: string;
+    phoneNumber: string;
+    email: string;
+    map: string;
+    mst: string;
+  };
 }
 
 export interface IUtils {
@@ -61,6 +61,7 @@ export interface IProduct {
   category: any;
   price: any;
   createdAt: string;
+  follower: string[];
   currentPrice: any;
   description: string;
   checkoutTypeSlug: string;

@@ -5,11 +5,11 @@ import { minus, uploadImg } from "../../asset/images";
 import "./DropImages.css";
 
 interface ImageUploaderProps {
-  onImagesUpload: (images: File[]) => void;
+  handleImageUpload: (images: File[]) => void;
   resetSelectedImages?: boolean;
 }
 const DropImages: React.FC<ImageUploaderProps> = ({
-  onImagesUpload,
+  handleImageUpload,
   resetSelectedImages = false,
 }) => {
   const [selectedImages, setSelectedImages] = useState<FileWithPath[]>([]);
@@ -17,10 +17,14 @@ const DropImages: React.FC<ImageUploaderProps> = ({
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       setSelectedImages([...selectedImages, ...acceptedFiles]);
-      onImagesUpload([...selectedImages, ...acceptedFiles]);
     },
-    [onImagesUpload, selectedImages]
+    [selectedImages]
   );
+
+  useEffect(()=>{
+    handleImageUpload(selectedImages)
+  },[handleImageUpload, selectedImages])
+  
   useEffect(() => {
     if (resetSelectedImages) {
       setSelectedImages([]);
@@ -31,6 +35,7 @@ const DropImages: React.FC<ImageUploaderProps> = ({
     onDrop,
     accept: {
       "image/png": [".png"],
+      "image/jfif": [".jfif"],
       "image/jpg": [".jpg"],
       "image/jpeg": [".jpeg"],
       "text/html": [".html", ".htm"],

@@ -1,7 +1,6 @@
 export { default as Home } from "./Home";
 export { default as Introduce } from "./Introduce";
 export { default as Contact } from "./Contact";
-export { default as Management } from "./Management";
 export { default as News } from "./News";
 export { default as Register } from "./Register";
 export { default as ForgotPass } from "./ForgotPass";
@@ -18,6 +17,8 @@ export { default as CreateFreeProduct } from "./CreateFreeProduct";
 export { default as Checkout } from "./Checkout";
 export { default as Profile } from "./Profile";
 export { default as Share } from "./Share";
+export { default as Store } from "./Store";
+
 
 
  

@@ -4,6 +4,7 @@ import { Container, Row, Col, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import userApi from "../../api/userApi";
 import ProductsTable from "../../components/ProductsTable";
+import SEO from "../../components/SEO";
 import { IRootState } from "../../interface";
 
 const ManagementAuction = () => {
@@ -52,6 +53,8 @@ const ManagementAuction = () => {
   return (
     <div>
       <Container>
+      <SEO title={'Quản lí'}></SEO>
+
         <Row className="mt-5 justify-content-end">
           <Col sm={4} className={"my-4"}>
             <Form.Select

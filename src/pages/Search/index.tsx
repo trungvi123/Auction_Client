@@ -6,6 +6,7 @@ import { breadcrumbs } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import FreeProductCard from "../../components/FreeProductCard";
 import ProductCard from "../../components/ProductCard";
+import SEO from "../../components/SEO";
 import normalizeWord from "../../utils/normalizeWord";
 
 const Search = () => {
@@ -24,6 +25,7 @@ const Search = () => {
   
   return (
     <Container>
+      <SEO title={'Tìm kiếm'}></SEO>
       <Breadcrumbs
         title={`Kết quả tìm kiếm từ khóa "${keyword}"`}
         type={"tìm kiếm"}

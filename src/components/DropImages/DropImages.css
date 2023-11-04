@@ -21,6 +21,8 @@
   height: 150px !important;
 }
 
+
+
 .selected-images__box {
   position: relative;
 }
@@ -32,4 +34,19 @@
   color: var(--primary-color);
   top: -5px;
   cursor: pointer;
+}
+
+/* ////////////////////rate///////////////////// */
+.rate-upload .selected-images__img{
+  width: 80px;
+  object-fit: cover;
+  height: 80px !important;
+}
+
+.rate-upload .dropzone img {
+  width: 50px;
+}
+
+.rate-upload .dropzone p {
+  font-size: 13px;
 }

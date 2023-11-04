@@ -5,10 +5,10 @@ import toast from "react-hot-toast";
 import userApi from "./userApi";
 
 const axiosClient = axios.create({
-  withCredentials: true,
+  // withCredentials: true,
   baseURL: apiConfig.baseUrl,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json"
   },
   paramsSerializer: (params) => queryString.stringify({ ...params }),
 });

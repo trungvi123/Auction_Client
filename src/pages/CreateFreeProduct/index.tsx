@@ -1,11 +1,14 @@
 
 import { Col, Container, Row } from "react-bootstrap";
 import FreeProductForm from "../../components/FreeProductForm";
+import SEO from "../../components/SEO";
 
 const CreateFreeProduct = () => {
   
   return (
     <Container>
+      <SEO title={'Tạo vật phẩm chia sẻ'}></SEO>
+
       <Row className="d-flex justify-content-center">
         <Col xl={10} lg={8} md={10}>
           <div className="reg__wrapper">

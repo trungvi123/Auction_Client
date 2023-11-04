@@ -6,7 +6,7 @@ import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import * as io from "socket.io-client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@mui/material";
 
 import CurrentTime from "../CurrentTime";
@@ -24,6 +24,7 @@ import categoryApi from "../../api/categoryApi";
 import TemporaryDrawer from "../Drawer";
 import {
   AccountCircle,
+  Store,
   ExitToApp,
   Gavel,
   Notifications,
@@ -33,22 +34,23 @@ import {
 } from "@mui/icons-material";
 import NotificationDrawer from "../NotificationDrawer";
 import apiConfig from "../../api/axiosConfig";
+import userApi from "../../api/userApi";
 const socket = io.connect(apiConfig.baseUrl);
 
 const Header = () => {
   const dispatch = useDispatch();
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
-  const clientId = useSelector((e: IRootState) => e.auth._id);
+  const clientId: string = useSelector((e: IRootState) => e.auth._id);
+  const crrEmail = useSelector((e: IRootState) => e.auth.email);
   const logo = useSelector((e: IRootState) => e.ui.images.logo);
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
 
-
   const [loadNotifications, setLoadNotifications] = useState<boolean>(false);
-
+  const [milestones, setMilestones] = useState<any[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<ReactNode>(0);
-
   const [openNotificationDrawer, setOpenNotificationDrawer] =
     useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const caterogyQuery = useQuery({
     queryKey: ["category"],
@@ -57,6 +59,21 @@ const Header = () => {
       return res;
     },
     staleTime: 1000 * 600,
+  });
+  
+
+  useQuery({
+    queryKey: ["userNotification"],
+    queryFn: async () => {
+      const res: any = await userApi.getUser(clientId);
+      if (res?.status === "success") {
+        setMilestones([
+          ...res.data.followProductPreEnd,
+          ...res.data.followProductPreStart,
+        ]);
+      }
+      return res.data;
+    },
   });
 
   const openMyModal = () => {
@@ -85,20 +102,23 @@ const Header = () => {
     setOpenNotificationDrawer(state);
   }, []);
 
-  const handleSetUnreadNotifications = useCallback((state:ReactNode)=>{
-    setUnreadNotifications(state)
-  },[])
+  const handleSetUnreadNotifications = useCallback((state: ReactNode) => {
+    setUnreadNotifications(state);
+  }, []);
 
   useEffect(() => {
     socket.emit("join_Notification_Room", clientId);
-    socket.on("new_notification", () => {
+    socket.on("new_notification", (data: any) => {
       setLoadNotifications(!loadNotifications);
+      if (data === "milestone_new") {
+        queryClient.invalidateQueries({ queryKey: ["userNotification"] });
+      }
     });
-  }, [clientId, loadNotifications]);
+  }, [clientId, loadNotifications, queryClient]);
 
   return (
     <div className={`header`}>
-      <Navbar className="h-100">
+      <Navbar className="h-100" style={{ position: "relative" }}>
         <Container className="header-container">
           <div className="temporaryDrawer">
             <TemporaryDrawer isAdmin={!basicUser}></TemporaryDrawer>
@@ -201,7 +221,11 @@ const Header = () => {
             </Nav.Link>
           </Nav>
           <div className="head-right">
-            <CurrentTime></CurrentTime>
+            <CurrentTime
+              clientId={clientId}
+              socket={socket}
+              milestones={milestones}
+            ></CurrentTime>
 
             <div onClick={openSearchModal} className="search__circle search">
               <BiSearch className="search__icon"></BiSearch>
@@ -224,6 +248,17 @@ const Header = () => {
                         <AccountCircle></AccountCircle>
                         <span className="px-2 d-block head-link-span">
                           Hồ sơ
+                        </span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to={`/cua-hang?user=${crrEmail}`}
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <Store></Store>
+                        <span className="px-2 d-block head-link-span">
+                          Cửa hàng
                         </span>
                       </Link>
                     </li>
@@ -263,6 +298,7 @@ const Header = () => {
                         </span>
                       </Link>
                     </li>
+
                     <li>
                       <Link
                         to="/quan-li-dau-gia"

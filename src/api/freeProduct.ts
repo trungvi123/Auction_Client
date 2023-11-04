@@ -10,6 +10,10 @@ const freeProductApi = {
     const url = apiConfig.baseUrl + `freeProduct/status`;
     return axiosClient.post(url, payload);
   },
+  getProductsByEmail: (email:string) => {
+    const url = apiConfig.baseUrl + `freeProduct/getFreeProductsByEmail/${email}`;
+    return axiosClient.get(url);
+  },
   getFreeProducts: (page: Number = 1) => {
     const url = apiConfig.baseUrl + `freeProduct/page/${page}`;
     return axiosClient.get(url);

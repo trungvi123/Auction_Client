@@ -34,6 +34,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/all/`;
     return axiosClient.get(url);
   },
+  getProductsByEmail: (email:string) => {
+    const url = apiConfig.baseUrl + `product/getProductsByEmail/${email}`;
+    return axiosClient.get(url);
+  },
   getBidsById: (id: string) => {
     const url = apiConfig.baseUrl + `product/bids/${id}`;
     return axiosClient.get(url);

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 import React from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -5,6 +6,7 @@ import { BiMap, BiPhoneCall, BiEnvelope } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { long_intro } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
+import SEO from "../../components/SEO";
 import { IRootState } from "../../interface";
 import "../Introduce/Introduce.css";
 
@@ -14,7 +16,6 @@ const Contact = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm();
 
@@ -39,6 +40,8 @@ const Contact = () => {
         alt=""
       />
       <Container>
+        <SEO title={"Liên hệ"}></SEO>
+
         <Breadcrumbs title={"Liên hệ"} type={"Liên hệ"}></Breadcrumbs>
 
         <Row className="justify-content-center">

@@ -12,6 +12,7 @@ import { IFreeProduct, IRootState } from "../../interface";
 import freeProductApi from "../../api/freeProduct";
 import "../ProductDetail/ProductDetail.css";
 import { setShow, setStatus } from "../../redux/myModalSlice";
+import SEO from "../../components/SEO";
 
 const FreeProductDetail = () => {
   const location = useLocation();
@@ -95,6 +96,7 @@ const FreeProductDetail = () => {
 
   return (
     <div>
+      <SEO title={product?.name}></SEO>
       <Modal
         show={showModal}
         onHide={handleClose}

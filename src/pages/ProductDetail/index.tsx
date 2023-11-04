@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { FacebookIcon, FacebookShareButton } from "react-share";
+import { NotificationsActive, NotificationsNone } from "@mui/icons-material";
+import { IconButton, Tooltip } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 
 import Breadcrumbs from "../../components/Breadcrumbs";
-import { auction, breadcrumbs } from "../../asset/images";
+import { breadcrumbs } from "../../asset/images";
 import { useLocation } from "react-router-dom";
 import productApi from "../../api/productApi";
 import MyImageGallery from "../../components/MyImageGallery";
@@ -19,8 +23,8 @@ import { setShow, setStatus } from "../../redux/myModalSlice";
 import { auctionType, checkoutType, baseUrl } from "../../constant";
 import { socket } from "../../components/Header";
 import { toggleFireworks } from "../../redux/uiSlice";
-import { FacebookIcon, FacebookShareButton } from "react-share";
 import SEO from "../../components/SEO";
+import userApi from "../../api/userApi";
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -29,8 +33,8 @@ const ProductDetail = () => {
   const idClient = useSelector((e: IRootState) => e.auth._id);
   const lastName = useSelector((e: IRootState) => e.auth.lastName);
   const emailPaypal = useSelector((e: IRootState) => e.auth.emailPaypal);
-
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const [product, setProduct] = useState<IProduct>();
   const [imgData, setImgData] = useState<string[]>([]);
@@ -41,7 +45,18 @@ const ProductDetail = () => {
   const [timeStep, setTimeStep] = useState<number>(1);
   const [currentPriceBid, setCurrentPriceBid] = useState<number>(0); // giá này là giá sẽ hiển thị khi người dùng liên tục trả giá, mà k cần request lại db
   const [timeCountDown, setTimeCountDown] = useState<any>();
-  const [stopCountDown, setTopCountDown] = useState<boolean>(false);
+  const [stopCountDown, setStopCountDown] = useState<boolean>(false);
+  //notification product
+  const [getNotification, setGetNotification] = useState<string>("");
+  const [typeNotification, setTypeNotification] = useState<string[]>([]);
+  const [inforPreStart, setInforPreStart] = useState<any>({
+    time: "",
+    type: "",
+  });
+  const [inforPreEnd, setInforPreEnd] = useState<any>({
+    time: "",
+    type: "",
+  });
 
   const fectProduct = useCallback(
     async (idProduct: string) => {
@@ -190,7 +205,14 @@ const ProductDetail = () => {
 
     socket.on("respone_buy_now", (data: { buyNow: boolean }) => {
       if (data.buyNow) {
-        setTopCountDown(true);
+        setStopCountDown(true);
+        fectProduct(idProduct);
+      }
+    });
+
+    socket.on("new_notification", (data: any) => {
+      if (data === "milestone_new") {
+        fectProduct(idProduct);
       }
     });
 
@@ -198,27 +220,31 @@ const ProductDetail = () => {
       // Đóng kết nối khi component bị unmount (thường trong componentWillUnmount)
       socket.disconnect();
     };
-  }, [idProduct]);
+  }, [fectProduct, idProduct]);
 
   const confirmBuyNow = () => {
     if (idClient) {
-      const fectProduct = async () => {
+      const update = async () => {
         const result: any = await productApi.updateAuctionEnded({
           id: idProduct,
           idUser: idClient,
           type: "buy",
         });
         if (result.status === "success") {
-          setTopCountDown(true);
+          setStopCountDown(true);
           setShowModalForWinner(true);
           setShowModal(true);
+
+          setProduct(result.data);
+          setImgData(result.data.images);
+
+          socket.emit("buy_now", {
+            buyNow: true,
+          });
         }
       };
-      socket.emit("buy_now", {
-        buyNow: true,
-      });
 
-      fectProduct();
+      update();
     } else {
       dispatch(setShow());
       dispatch(setStatus("login"));
@@ -228,6 +254,50 @@ const ProductDetail = () => {
   const handleClose = () => {
     setShowModal(false);
     setShowModalForWinner(false);
+  };
+
+  const handleGetNotification = async () => {
+    if (!inforPreEnd.time && !inforPreStart.time) {
+      toast.error("Vui lòng điền thông tin để nhận thông báo!");
+    } else {
+      let success = false;
+      if (inforPreEnd.time) {
+        const res1: any = await userApi.addFollowProduct({
+          type: "pre-end",
+          time: inforPreEnd.time,
+          productId: idProduct,
+        });
+        if (res1?.status === "success") {
+          success = true;
+        }
+      }
+      if (inforPreStart.time) {
+        const res2: any = await userApi.addFollowProduct({
+          type: "pre-start",
+          time: inforPreStart.time,
+          productId: idProduct,
+        });
+        if (res2?.status === "success") {
+          success = true;
+        }
+      }
+
+      if (success) {
+        toast.success("Nhận thông báo thành công!");
+        queryClient.invalidateQueries({ queryKey: ["userNotification"] });
+        fectProduct(idProduct);
+        handleClose();
+      }
+    }
+  };
+
+  const handleUnfollowProduct = async () => {
+    const res: any = await userApi.unFollowProduct({ productId: idProduct });
+    if (res?.status === "success") {
+      toast.success("Hủy nhận thông báo thành công!");
+      fectProduct(idProduct);
+      handleClose();
+    }
   };
 
   return (
@@ -249,15 +319,126 @@ const ProductDetail = () => {
           <Modal.Title>Thông báo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {!showModalForWinner ? (
+          {!showModalForWinner && !getNotification && (
             <h6>
               Bạn sẽ mua ngay sản phẩm {product?.name} với giá{" "}
               {product?.price?.$numberDecimal}?
             </h6>
-          ) : (
+          )}
+          {showModalForWinner && (
             <h6>
               Xin chúc mừng bạn đã đấu giá sản phẩm {product?.name} thành công!
             </h6>
+          )}
+
+          {getNotification === "follow" &&
+            (!product?.auctionEnded || !product?.auctionStarted) && (
+              <div>
+                <div>
+                  {!product?.auctionStarted && (
+                    <label className="containerCheckbox" htmlFor={"pre-start"}>
+                      Trước khi bắt đầu
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked === true) {
+                            setTypeNotification([
+                              ...typeNotification,
+                              "pre-start",
+                            ]);
+                          } else {
+                            const newArr = typeNotification.filter(
+                              (item) => item !== "pre-start"
+                            );
+                            setTypeNotification(newArr);
+                            setInforPreStart({});
+                          }
+                        }}
+                        id={"pre-start"}
+                        className="status-checkall"
+                        name="checkbox-status"
+                        value="pre-start"
+                      ></input>
+                      <span className="checkmark"></span>
+                    </label>
+                  )}
+                  {!product?.auctionEnded && (
+                    <label className="containerCheckbox" htmlFor={"pre-end"}>
+                      Trước khi kết thúc
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked === true) {
+                            setTypeNotification([
+                              ...typeNotification,
+                              "pre-end",
+                            ]);
+                          } else {
+                            const newArr = typeNotification.filter(
+                              (item) => item !== "pre-end"
+                            );
+                            setTypeNotification(newArr);
+                            setInforPreEnd({});
+                          }
+                        }}
+                        id={"pre-end"}
+                        className="status-checkall"
+                        name="checkbox-status"
+                        value="pre-end"
+                      ></input>
+                      <span className="checkmark"></span>
+                    </label>
+                  )}
+                </div>
+                <div>
+                  {typeNotification.includes("pre-start") && (
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Label>
+                        Nhận thông báo trước khi bắt đầu khoảng: (PHÚT)
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={inforPreStart.time}
+                        placeholder="VD: 10"
+                        onChange={(e) => {
+                          setInforPreStart({
+                            time: e.target.value,
+                            type: "pre-start",
+                          });
+                        }}
+                      />
+                    </Form.Group>
+                  )}
+                  {typeNotification.includes("pre-end") && (
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Label>
+                        Nhận thông báo trước khi kết thúc khoảng: (PHÚT)
+                      </Form.Label>
+                      <Form.Control
+                        value={inforPreEnd.time}
+                        onChange={(e) => {
+                          setInforPreEnd({
+                            time: e.target.value,
+                            type: "pre-end",
+                          });
+                        }}
+                        type="text"
+                        placeholder="VD: 10"
+                      />
+                    </Form.Group>
+                  )}
+                </div>
+              </div>
+            )}
+
+          {getNotification === "unfollow" && (
+            <div>Bạn có muốn hủy nhận thông báo sản phẩm này?</div>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -266,12 +447,25 @@ const ProductDetail = () => {
             onClick={() => {
               dispatch(toggleFireworks(false));
               handleClose();
+              setTypeNotification([]);
             }}
           >
             Đóng
           </Button>
-          {!showModalForWinner && (
+          {!showModalForWinner && !getNotification && (
             <Button variant="primary" onClick={confirmBuyNow}>
+              Tiếp tục
+            </Button>
+          )}
+
+          {getNotification === "follow" && (
+            <Button variant="primary" onClick={handleGetNotification}>
+              Tiếp tục
+            </Button>
+          )}
+
+          {getNotification === "unfollow" && (
+            <Button variant="primary" onClick={handleUnfollowProduct}>
               Tiếp tục
             </Button>
           )}
@@ -289,16 +483,54 @@ const ProductDetail = () => {
             <MyImageGallery imagesLink={imgData}></MyImageGallery>
           </Col>
           <Col sm={12} md={12} lg={5} className="pt-3">
-            {product?.stateSlug !== "da-ket-thuc" && (
-              <p className="countdown-time-title">
-                {product?.stateSlug === "sap-dien-ra"
-                  ? "Thời gian đếm ngược bắt đầu đấu giá:"
-                  : "Thời gian đếm ngược kết thúc đấu giá:"}
-              </p>
-            )}
-            {product?.stateSlug === "da-ket-thuc" && (
-              <p className="countdown-time-title">Cuộc đấu giá đã kêt thúc</p>
-            )}
+            <div className="d-flex justify-content-between">
+              {product?.stateSlug !== "da-ket-thuc" && (
+                <p className="countdown-time-title">
+                  {product?.stateSlug === "sap-dien-ra"
+                    ? "Thời gian đếm ngược bắt đầu đấu giá:"
+                    : "Thời gian đếm ngược kết thúc đấu giá:"}
+                </p>
+              )}
+              {product?.stateSlug === "da-ket-thuc" && (
+                <p className="countdown-time-title">Cuộc đấu giá đã kêt thúc</p>
+              )}
+              {(!product?.auctionEnded || !product?.auctionStarted) && (
+                <div>
+                  {!product?.follower.includes(idClient) ? (
+                    <Tooltip title="Nhận thông báo" placement="right">
+                      <IconButton
+                        aria-label="more"
+                        style={{ height: "40px" }}
+                        onClick={() => {
+                          setGetNotification("follow");
+                          setShowModalForWinner(false);
+                          setShowModal(true);
+                        }}
+                      >
+                        <NotificationsNone></NotificationsNone>
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip
+                      title="Đã đăng ký nhận thông báo"
+                      placement="right"
+                    >
+                      <IconButton
+                        aria-label="more"
+                        style={{ height: "40px" }}
+                        onClick={() => {
+                          setGetNotification("unfollow");
+                          setShowModalForWinner(false);
+                          setShowModal(true);
+                        }}
+                      >
+                        <NotificationsActive></NotificationsActive>
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </div>
+              )}
+            </div>
             {product?.stateSlug !== "da-ket-thuc" && (
               <CountDownTime
                 productId={idProduct}

@@ -6,19 +6,21 @@ import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import { auction } from "../../asset/images";
 import "./NotificationDrawer.css";
-import { ArrowForwardIos, Delete, MoreVert } from "@mui/icons-material";
+import { ArrowForwardIos, Delete, MoreVert, RemoveRedEye } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import formatDateTime from "../../utils/formatDay";
 import userApi from "../../api/userApi";
+import { Link } from "react-router-dom";
 
 interface INotification {
   _id: string;
   createdAt: string;
   img: string;
   content: string;
+  link?: string;
   read: boolean;
   type: string;
-  recipient: string;
+  recipient: string[];
 }
 
 const NotificationDrawer = ({
@@ -37,8 +39,6 @@ const NotificationDrawer = ({
   const [show, setShow] = React.useState(false);
   const [notifications, setNotifications] = React.useState<any>();
   const [refreshNotifi, setRefreshNotifi] = React.useState<boolean>(false);
-
-
 
   React.useEffect(() => {
     setShow(open);
@@ -121,7 +121,11 @@ const NotificationDrawer = ({
               <ListItem key={item._id}>
                 <div className={`notification-item ${item.type}`}>
                   <div className="notification-circle">
-                    <img src={item.img || auction} alt="img-notification" />
+                    <img
+                      onError={(e: any) => (e.target.src = auction)}
+                      src={item.img}
+                      alt="img-notification"
+                    />
                   </div>
                   <div className="notification-content">
                     {item.content}
@@ -140,11 +144,25 @@ const NotificationDrawer = ({
                         <IconButton
                           aria-label="more"
                           style={{ height: "40px" }}
-                          onClick={()=>handleDeleteNotif(item._id)}
+                          onClick={() => handleDeleteNotif(item._id)}
                         >
                           <Delete />
                         </IconButton>
                       </Tooltip>
+                      {item.link && (
+                        <Tooltip title="Chi tiết" placement="right">
+                          <IconButton
+                            aria-label="more"
+                            style={{ height: "40px" }}
+                            
+                          >
+                            <Link to={item.link}>
+                            <RemoveRedEye />
+
+                            </Link>
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </div>
                   </div>
 

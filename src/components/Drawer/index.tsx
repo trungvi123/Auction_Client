@@ -84,9 +84,9 @@ export default function TemporaryDrawer({
   const list = () => (
     <Box role="presentation">
       <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
-        <div className="d-flex justify-content-center">
+        <Link to={'/'} className="d-flex justify-content-center">
           <img style={{ width: "180px" }} src={logo} alt="" />
-        </div>
+        </Link>
       </List>
       <List>
         <ListItem disablePadding onClick={toggleDrawer(false)}>

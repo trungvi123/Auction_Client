@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, Container, Row } from "react-bootstrap";
@@ -13,6 +13,7 @@ import formatMoney from "../../utils/formatMoney";
 import formatDay from "../../utils/formatDay";
 import { useSelector } from "react-redux";
 import { IRootState } from "../../interface";
+import SEO from "../../components/SEO";
 
 const Checkout = () => {
   const params = useParams();
@@ -77,6 +78,8 @@ const Checkout = () => {
 
   return (
     <Container>
+      <SEO title={'Thanh toán'}></SEO>
+
       <Breadcrumbs
         title={productQuery.data?.name}
         type={"thanh toán"}

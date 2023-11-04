@@ -16,6 +16,7 @@ import { Home } from "./pages";
 import userApi from "./api/userApi";
 import { setImages, setInforPage } from "./redux/uiSlice";
 import Favicon from "react-favicon";
+import ChatBot from "./components/Chatbot";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,13 +42,13 @@ function App() {
 
         dispatch(
           setInforPage({
-            shortIntro: res.data.short_intro,
-            longIntro: res.data.long_intro,
-            address: res.data.address,
-            phoneNumber: res.data.phoneNumber,
-            email: res.data.email,
-            map: res.data.map,
-            mst: res.data.mst,
+            shortIntro: res.data?.short_intro,
+            longIntro: res.data?.long_intro,
+            address: res.data?.address,
+            phoneNumber: res.data?.phoneNumber,
+            email: res.data?.email,
+            map: res.data?.map,
+            mst: res.data?.mst,
           })
         );
 
@@ -115,6 +116,7 @@ function App() {
           },
         }}
       />
+      <ChatBot></ChatBot>
     </div>
   );
 }

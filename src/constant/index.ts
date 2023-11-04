@@ -1,5 +1,5 @@
 const baseUrl = 'http://localhost:3000'
-// const baseUrl = 'https://auction-server-wuf4.onrender.com'
+// const baseUrl = 'https://auction-server-nu.vercel.app'
 
 
 const auctionType: any = {

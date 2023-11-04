@@ -71,25 +71,25 @@ const UiManagement = () => {
       const dataEdit = tempaltes.find((item: any) => item._id === tempalte);
 
       const dataReset = {
-        address: dataEdit.address,
-        color_primary: dataEdit.colors[0].color_primary,
-        color_secondary: dataEdit.colors[0].color_secondary,
-        email: dataEdit.email,
-        long_intro: dataEdit.long_intro,
-        mst: dataEdit.mst,
-        phoneNumber: dataEdit.phoneNumber,
-        short_intro: dataEdit.short_intro,
-        configName: dataEdit.configName,
+        address: dataEdit?.address,
+        color_primary: dataEdit?.colors[0]?.color_primary,
+        color_secondary: dataEdit?.colors[0]?.color_secondary,
+        email: dataEdit?.email,
+        long_intro: dataEdit?.long_intro,
+        mst: dataEdit?.mst,
+        phoneNumber: dataEdit?.phoneNumber,
+        short_intro: dataEdit?.short_intro,
+        configName: dataEdit?.configName,
       };
-      setShortIntro(dataEdit.short_intro);
-      setLongIntro(dataEdit.long_intro);
-      setIsActive(dataEdit.isActive);
+      setShortIntro(dataEdit?.short_intro);
+      setLongIntro(dataEdit?.long_intro);
+      setIsActive(dataEdit?.isActive);
 
       setImgEdit({
-        0: dataEdit.images[0]?.img_intro_homePage,
-        1: dataEdit.images[0]?.img_logo,
-        2: dataEdit.images[0]?.img_mini_logo,
-        3: dataEdit.images[0]?.img_breadcrum,
+        0: dataEdit?.images[0]?.img_intro_homePage,
+        1: dataEdit?.images[0]?.img_logo,
+        2: dataEdit?.images[0]?.img_mini_logo,
+        3: dataEdit?.images[0]?.img_breadcrum,
       });
       reset(dataReset);
     } else {
@@ -99,15 +99,15 @@ const UiManagement = () => {
 
   const submit = (data: any) => {
     const payload = {
-      address: data.address,
-      color_primary: data.color_primary,
-      color_secondary: data.color_secondary,
-      email: data.email,
+      address: data?.address,
+      color_primary: data?.color_primary,
+      color_secondary: data?.color_secondary,
+      email: data?.email,
       long_intro: longIntro,
-      mst: data.mst,
-      phoneNumber: data.phoneNumber,
+      mst: data?.mst,
+      phoneNumber: data?.phoneNumber,
       short_intro: shortIntro,
-      configName: data.configName,
+      configName: data?.configName,
     };
 
     if (!tempalte || tempalte === "empty") {
@@ -132,6 +132,7 @@ const UiManagement = () => {
         if (res?.status === "success") {
           toast.success("Cập nhật giao diện thành công!");
           setRefresh(!refresh);
+          dispatch(setChangeTheme(!changeTheme));
         }
       };
       updateApi();
@@ -298,15 +299,6 @@ const UiManagement = () => {
             controlId="validationCustom03"
           >
             <Form.Label>Giới thiệu ngắn:</Form.Label>
-            {/* <Form.Control
-              type="text"
-              as="textarea"
-              placeholder="Giới thiệu ngắn..."
-              {...register("short_intro", { required: true })}
-            />
-            {errors?.short_intro?.type === "required" && (
-              <p className="text__invalid">Vui lòng nhập một đoạn giới thiệu</p>
-            )} */}
             <TextEditor
               description={shortIntro}
               handlerodDescription={hanleShortIntro}
@@ -319,16 +311,8 @@ const UiManagement = () => {
             controlId="validationCustom03"
           >
             <Form.Label>Giới thiệu dài:</Form.Label>
-            {/* <Form.Control
-              type="text"
-              as="textarea"
-              placeholder="Giới thiệu dài..."
-              {...register("long_intro", { required: true })}
-            />
-            {errors?.long_intro?.type === "required" && (
-              <p className="text__invalid">Vui lòng nhập một đoạn giới thiệu</p>
-            )} */}
-             <TextEditor
+
+            <TextEditor
               description={longIntro}
               handlerodDescription={hanleLongIntro}
             ></TextEditor>

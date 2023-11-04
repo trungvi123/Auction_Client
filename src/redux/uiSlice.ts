@@ -36,21 +36,12 @@ const utilsSlice = createSlice({
     setInforPage: (state, actions) => {
       state.inforPage = actions.payload;
     },
-
-    // setLongIntro: (state, actions) => {
-    //   state.longIntro = actions.payload;
-    // },
-    // setShortIntro: (state, actions) => {
-    //   state.shortIntro = actions.payload;
-    // },
   },
 });
 
 export const {
   toggleFireworks,
   setInforPage,
-  // setLongIntro,
-  // setShortIntro,
   setImages,
   setChangeTheme,
 } = utilsSlice.actions;

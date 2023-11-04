@@ -18,10 +18,10 @@ const Footer = () => {
             <div className="footer-item mt-4">
               <h5>Công ty đấu giá hợp danh CIT AUCTION</h5>
               <ul className="footer-list">
-                <li>Mã số thuế: {inforPage.mst || '0999.999.999'}</li>
-                <li>Địa chỉ: {inforPage.address}</li>
-                <li><a href={`tel:${inforPage.phoneNumber}`}>Điện thoại: {inforPage.phoneNumber}</a> </li>
-                <li><a href={`mailTo:${inforPage.email}`}>Email: {inforPage.email}</a> </li>
+                <li>Mã số thuế: {inforPage?.mst || '0999.999.999'}</li>
+                <li>Địa chỉ: {inforPage?.address}</li>
+                <li><a href={`tel:${inforPage?.phoneNumber}`}>Điện thoại: {inforPage?.phoneNumber}</a> </li>
+                <li><a href={`mailTo:${inforPage?.email}`}>Email: {inforPage?.email}</a> </li>
               </ul>
             </div>
           </Col>

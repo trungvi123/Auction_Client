@@ -92,7 +92,6 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           reset(data);
           setImgsEdit(result.data.images);
           setUploadedImages(result.data.images);
-
         }
       };
       fetchProd();
@@ -199,6 +198,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             );
             reset(initialStateData);
             setResetImgs(true);
+            setDescription("");
           }
         };
         createProd();
@@ -527,7 +527,7 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
           </Form.Label>
           <DropImages
             resetSelectedImages={resetImgs}
-            onImagesUpload={handleImageUpload}
+            handleImageUpload={handleImageUpload}
           ></DropImages>
           {imgsEdit.length > 0 && (
             <div className="selected-images">

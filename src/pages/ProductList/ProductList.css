@@ -67,6 +67,11 @@
   border: 1px solid #e0e0e0;
 }
 
+.checkmark.radio{
+  border-radius: 50%;
+
+}
+
 .containerCheckbox input:checked ~ .checkmark {
   background-color: #b41712;
 }
@@ -113,10 +118,16 @@
   border-radius: 0;
 }
 
-.productList .row > * {
+.productList.special-row .row > * {
   padding-left: 4px !important;
   padding-right: 4px !important;
 }
+
+.productList.store .products-row > * {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
 
 @media only screen and (max-width: 992px) {
   .filter-container {

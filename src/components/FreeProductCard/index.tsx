@@ -2,6 +2,7 @@ import React from "react";
 import { BiSolidShareAlt } from "react-icons/bi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import { FacebookIcon, FacebookShareButton } from "react-share";
 
 import { auction } from "../../asset/images";
 import formatDateTime from "../../utils/formatDay";
@@ -43,8 +44,21 @@ const FreeProductCard = ({ data }: { data: IProps }) => {
           >
             <span className="btn-11__content">Chi tiết</span>
           </Link>
-          <div className="card-more__share">
+          {/* <div className="card-more__share">
             <BiSolidShareAlt></BiSolidShareAlt>
+          </div> */}
+           <div className="card-more__share">
+            <BiSolidShareAlt></BiSolidShareAlt>
+            <div className="share-list">
+              <FacebookShareButton
+                url={`https://cit-auction.web.app/chi-tiet-chia-se/${data?._id}`}
+                quote={"sadsadsadsa"}
+                hashtag={"#citauction"}
+                className="Demo__some-network__share-button"
+              >
+                <FacebookIcon size={34} round />
+              </FacebookShareButton>
+            </div>
           </div>
         </div>
       </div>
