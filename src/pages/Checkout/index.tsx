@@ -42,12 +42,16 @@ const Checkout = () => {
       price: price.toFixed(2).toString(),
     };
     const order: any = await paymentApi.createOrderPayPal(payload);
+   
+    
     if (order) {
       return order.id;
     }
   };
 
   const onApprove = async (data: any) => {
+
+    
     // Order is captured on the server and the response is returned to the browser
     if (!params.id) {
       toast.error("Thanh toán thất bại!");
@@ -174,6 +178,7 @@ const Checkout = () => {
                   <PayPalButtons
                     createOrder={createOrder}
                     onApprove={onApprove}
+
                   />
                 </PayPalScriptProvider>
               </div>

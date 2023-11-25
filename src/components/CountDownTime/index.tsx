@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import productApi from "../../api/productApi";
-
 import "./CountDownTime.css";
-
+import {socket} from '../Header'
 interface IProps {
   time: {
     time: any;
@@ -32,17 +32,21 @@ const CountDownTime = ({
         // Tính khoảng thời gian giữa thời gian hiện tại và thời gian cụ thể
         const countTime = new Date(time?.time).getTime() - new Date().getTime();
 
-        if (countTime <= 0 && time.type === "start") {
+        if (countTime <= 0 && time.type === "start") { // hết thời gian -> đang diễn ra
           const fectProduct = async () => {
             const result: any = await productApi.updateAuctionStarted(
               productId
             );
             if (result?.status === "success") {
               refreshProductCb("finishStart");
+              socket.emit('refreshProductState',{
+                productId,
+                type: 'addHappenningProduct'  // thêm vào mục đang diễn ra
+              })
             }
           };
           fectProduct();
-        } else if (countTime <= 0 && time.type === "end") {
+        } else if (countTime <= 0 && time.type === "end") { // hết thời gian -> kết thúc
           const fectProduct = async () => {
             const result: any = await productApi.updateAuctionEnded({
               id: productId,
@@ -51,6 +55,10 @@ const CountDownTime = ({
             });
             if (result?.status === "success") {
               refreshProductCb("finishEnd");
+              socket.emit('refreshProductState',{
+                productId,
+                type: 'removeHappenningProduct' // xóa khỏi mục đang diễn ra
+              })
               setDownLoop(true);
             }
           };
@@ -69,7 +77,7 @@ const CountDownTime = ({
         clearInterval(clockInterval);
       };
     }
-  }, [downLoop, idClient, productId, refreshProductCb, stop, time]);
+  }, [downLoop, idClient, productId, refreshProductCb, stop, time?.time, time?.type]);
 
   return (
     <>

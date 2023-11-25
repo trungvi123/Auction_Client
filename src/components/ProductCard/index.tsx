@@ -27,7 +27,7 @@ const ProductCard = ({ data }: { data: IProduct }) => {
             className="card-img"
             width={292}
             height={225}
-            src={data?.images[0] ? data.images[0] : auction} // use normal <img> attributes as props
+            src={data?.images?.length > 0 ? data.images[0] : auction} // use normal <img> attributes as props
           />
         </div>
         <Link to={`/chi-tiet-dau-gia/${data?._id}`}>

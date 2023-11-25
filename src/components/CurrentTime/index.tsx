@@ -1,4 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { IRootState } from "../../interface";
 
 import "./CurrentTime.css";
 
@@ -11,9 +14,22 @@ const CurrentTime = ({
   socket: any;
   clientId: string;
 }) => {
+  const location = useLocation();
+  const happenningProduct = useSelector(
+    (e: IRootState) => e.product?.happenningProduct
+  );
+  const upcomingProduct = useSelector(
+    (e: IRootState) => e.product?.upcomingProduct
+  );
+  let url = location.pathname;
+  // let arrUpdateProductRealtime = updateProductRealtime;
+  let outTimeId:any[] = [];
+  let upcomingList = upcomingProduct;
+  
+
+  let arrMilestones = milestones;
   const [time, setTime]: any = useState();
   const [time2, setTime2]: any = useState();
-  let arrMilestones = milestones;
 
   const formatDate = useCallback(
     (date: Date) => {
@@ -42,6 +58,76 @@ const CurrentTime = ({
           );
         }
       });
+      if (url.split("/")[1].trim() !== "chi-tiet-dau-gia") {
+        happenningProduct?.forEach((item: any) => {
+          if (!item.auctionEnded && !outTimeId.includes(item._id) ) {
+            if (new Date(item.endTime).getTime() <= date.getTime()) {
+              //cal api
+              socket.emit("updateProductRealTime", {
+                productId: item._id,
+                type: "endTime",
+              });
+              socket.emit("refreshProductState", {
+                productId: item._id,
+                type: "removeHappenningProduct",
+              });
+              outTimeId.push(item._id)
+            }
+          }
+        });
+        upcomingList?.forEach((item: any) => {
+          if (!item.auctionStarted && !outTimeId.includes(item._id)) {
+            if (new Date(item.startTime).getTime() <= date.getTime()) {
+              //call api
+              socket.emit("updateProductRealTime", {
+                productId: item._id,
+                type: "startTime",
+              });
+              socket.emit("refreshProductState", {
+                productId: item._id,
+                type: "addHappenningProduct",
+              });
+              outTimeId.push(item._id)
+            }
+          }
+        });
+
+        // arrUpdateProductRealtime?.forEach((item: any) => {
+        //   if (item.auctionStarted && !item.auctionEnded) {
+        //     if (new Date(item.endTime).getTime() <= date.getTime()) {
+        //       //cal api
+        //       socket.emit("updateProductRealTime", {
+        //         productId: item._id,
+        //         type: "endTime",
+        //       });
+        //       socket.emit("refreshProductState", {
+        //         productId: item._id,
+        //         type: "removeHappenningProduct",
+        //       });
+        //       // eslint-disable-next-line react-hooks/exhaustive-deps
+        //       arrUpdateProductRealtime = arrUpdateProductRealtime.filter(
+        //         (item2: any) => item2._id !== item._id
+        //       );
+        //     }
+        //   } else if (!item.auctionStarted) {
+        //     if (new Date(item.startTime).getTime() <= date.getTime()) {
+        //       //call api
+        //       socket.emit("updateProductRealTime", {
+        //         productId: item._id,
+        //         type: "startTime",
+        //       });
+        //       socket.emit("refreshProductState", {
+        //         productId: item._id,
+        //         type: "addHappenningProduct",
+        //       });
+        //       // eslint-disable-next-line react-hooks/exhaustive-deps
+        //       arrUpdateProductRealtime = arrUpdateProductRealtime.filter(
+        //         (item2: any) => item2._id !== item._id
+        //       );
+        //     }
+        //   }
+        // });
+      }
 
       const dn: string[] = [
         "Chủ nhật",
@@ -67,22 +153,10 @@ const CurrentTime = ({
 
       return `${hours}:${minutes}:${seconds}`;
     },
-    [milestones, arrMilestones]
+    [milestones, arrMilestones,happenningProduct,upcomingList]
   );
-  // const updateVisibility = () => {
-  //   const windowWidth = window.innerWidth;
-  //   if (windowWidth < 850) {
-  //     setIsVisible(false); // Ẩn component khi màn hình có chiều ngang dưới 850px
-  //   } else {
-  //     setIsVisible(true);
-  //   }
-  // };
-  useEffect(() => {
-    // Gọi hàm cập nhật hiển thị khi màn hình thay đổi kích thước
-    // window.addEventListener("resize", updateVisibility);
 
-    // Gọi hàm cập nhật hiển thị ban đầu
-    // updateVisibility();
+  useEffect(() => {
     let clockInterval: any = null;
 
     clockInterval = setInterval(() => {
@@ -94,7 +168,6 @@ const CurrentTime = ({
 
     return () => {
       clearInterval(clockInterval);
-      // window.removeEventListener("resize", updateVisibility);
     };
   }, [formatDate]);
 

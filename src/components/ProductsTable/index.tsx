@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
+import { socket } from "../Header";
 
 import { auction } from "../../asset/images";
 import productApi from "../../api/productApi";
@@ -115,6 +116,9 @@ function ProductsTable({
             { statusFreeAuction: "Đã được duyệt" },
           ],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["freePproducts"],
+        });
       } else {
         queryClient.invalidateQueries({
           queryKey: ["auction-list__admin", { statusAuction }],
@@ -122,6 +126,7 @@ function ProductsTable({
         queryClient.invalidateQueries({
           queryKey: ["auction-list__admin", { statusAuction: "Đã được duyệt" }],
         });
+        socket.emit("refreshPage");
       }
 
       // thêm api gửi mail
@@ -471,6 +476,7 @@ function ProductsTable({
             buyer: string;
             shipping: boolean;
             auctionStarted: boolean;
+            rate: string;
             successfulTransaction: boolean;
             paid: boolean;
             checkoutTypeSlug: string;
@@ -482,6 +488,7 @@ function ProductsTable({
             shipping: boolean;
             successfulTransaction: boolean;
             paid: boolean;
+            rate: string;
             auctionStarted: boolean;
             checkoutTypeSlug: string;
             seller: string;
@@ -524,13 +531,10 @@ function ProductsTable({
                   {typeList === "create" &&
                     data.auctionStarted &&
                     (data.paid || data.checkoutTypeSlug === "cod") &&
+                    !data.shipping &&
                     data.status === "Đã được duyệt" && (
                       <div
-                        className={`btn-11 ${
-                          data.checkoutTypeSlug === "cod" && data.shipping
-                            ? "d-none"
-                            : ""
-                        } ${data.shipping ? "disable" : ""}`}
+                        className={`btn-11 ${data.checkoutTypeSlug === "cod"}`}
                         onClick={() => {
                           if (!data.shipping) {
                             setModalMode("");
@@ -545,9 +549,7 @@ function ProductsTable({
                           }
                         }}
                       >
-                        <span className="btn-11__content">
-                          {data.shipping ? "Đã xác nhận" : "Xác nhận"}
-                        </span>
+                        <span className="btn-11__content">Xác nhận</span>
                       </div>
                     )}
 
@@ -695,7 +697,8 @@ function ProductsTable({
                   {/* Nút xác nhận của người mua khi nhận được hàng bằng hình thức COD */}
                   {(typeList === "win" || typeList === "buy") &&
                     data.statusPaymentSlug === "chua-thanh-toan" &&
-                    data.checkoutTypeSlug === "cod" && (
+                    data.checkoutTypeSlug === "cod" &&
+                    data.shipping && (
                       <div
                         onClick={() => {
                           setModalMode("");
@@ -726,27 +729,30 @@ function ProductsTable({
                       </div>
                     )}
                   {/* Nút đánh giá sản phẩm */}
-                  {data.successfulTransaction && !freeProduct && typeList !== 'create' &&(
-                    <div
-                      className="btn-11 mt-2"
-                      onClick={() => {
-                        setModalMode("rate");
-                        setInforHanle({
-                          variable: "rate",
-                          id: data._id,
-                        });
-                        handleShow();
-                      }}
-                    >
-                      <span className="btn-11__content">Đánh giá</span>
-                    </div>
-                  )}
+                  {data.successfulTransaction &&
+                    !freeProduct &&
+                    !data.rate &&
+                    typeList !== "create" && (
+                      <div
+                        className="btn-11 mt-2"
+                        onClick={() => {
+                          setModalMode("rate");
+                          setInforHanle({
+                            variable: "rate",
+                            id: data._id,
+                          });
+                          handleShow();
+                        }}
+                      >
+                        <span className="btn-11__content">Đánh giá</span>
+                      </div>
+                    )}
                   {/* Nút xóa sản phẩm */}
                   <div
                     className="btn-11 mt-2"
                     onClick={() => {
                       setModalMode("");
-                      setMsgModal("Bạn có chắc muốn xóa cuộc đấu giá này?");
+                      setMsgModal("Bạn có chắc muốn ẩn cuộc đấu giá này?");
                       setInforHanle({
                         variable: "delete",
                         id: data._id,
@@ -754,7 +760,7 @@ function ProductsTable({
                       handleShow();
                     }}
                   >
-                    <span className="btn-11__content">Xóa</span>
+                    <span className="btn-11__content">Ẩn</span>
                   </div>
                 </div>
               ) : (
@@ -944,8 +950,8 @@ function ProductsTable({
   };
 
   const handleRate = async (id: string) => {
-    console.log('do');
-    
+    console.log("do");
+
     const formData = new FormData();
     const config = {
       headers: {
@@ -965,7 +971,6 @@ function ProductsTable({
       toast.success("Đánh giá thành công!");
     }
     console.log(res);
-    
   };
 
   return (

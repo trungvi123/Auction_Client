@@ -136,7 +136,7 @@ const FreeProductDetail = () => {
               </div>
               <div className="infor-row">
                 <p className="infor-row__left">Trạng thái:</p>
-                <p className="infor-row__right">Còn sản phẩm</p>
+                <p className="infor-row__right"> {product?.outOfStock ? 'Sản phẩm đã được nhận':'Còn sản phẩm'} </p>
               </div>
               <div className="infor-row">
                 <p className="infor-row__left">Tên chủ tài sản:</p>

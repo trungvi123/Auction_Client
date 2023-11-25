@@ -149,6 +149,7 @@
 }
 .chat-screen .chat-input input:focus {
     border-color: #f9dcff;
+    outline: none;
 }
 .chat-screen .chat-input input:focus + .input-action-icon a svg.feather-send {
     color: #bc32ef;

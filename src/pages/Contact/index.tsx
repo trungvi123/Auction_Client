@@ -2,8 +2,10 @@
 import React from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { BiMap, BiPhoneCall, BiEnvelope } from "react-icons/bi";
 import { useSelector } from "react-redux";
+import userApi from "../../api/userApi";
 import { long_intro } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import SEO from "../../components/SEO";
@@ -17,10 +19,27 @@ const Contact = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const submit = (data: any) => {
-    console.log(data);
+    const handleContact = async () => {
+      const res: any = await userApi.contact({
+        name: data?.name,
+        email: data?.email,
+        address:data?.address,
+        content: data?.message,
+        phoneNumber: data?.phoneNumber,
+      });
+
+      if (res?.status === "success") {
+        toast.success(
+          "Gửi liên hệ thành công, chúng tôi sẽ sớm liên lạc với bạn qua email!"
+        );
+        reset();
+      }
+    };
+    handleContact()
   };
 
   return (
@@ -143,8 +162,16 @@ const Contact = () => {
                   <Form.Control
                     type="email"
                     placeholder="Email"
-                    {...register("email", { required: false })}
+                    {...register("email", {
+                      required: false,
+                      pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+                    })}
                   />
+                  {errors?.email?.type === "pattern" && (
+                    <p className="text__invalid">
+                      Email của bạn có vẻ không hợp lệ!
+                    </p>
+                  )}
                 </Form.Group>
                 <Form.Group
                   className="mb-3"
@@ -190,8 +217,13 @@ const Contact = () => {
                     type="message"
                     as={"textarea"}
                     placeholder="Lời nhắn"
-                    {...register("message", { required: false })}
+                    {...register("message", { required: true })}
                   />
+                  {errors?.message?.type === "required" && (
+                    <p className="text__invalid">
+                      Vui lòng nhập lời nhắn của bạn!
+                    </p>
+                  )}
                 </Form.Group>
               </Row>
               <div onClick={handleSubmit(submit)} className="btn-11">

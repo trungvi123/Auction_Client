@@ -1,6 +1,7 @@
 const routes = {
   home: "/",
   news: "/news",
+  newsDetail: '/tin-tuc/:id',
   management: "/management",
   register: "/dang-ky",
   forgotPass: "/quen-mat-khau",
@@ -19,11 +20,14 @@ const routes = {
   introduce: "/gioi-thieu",
   contact: "/lien-he",
   store: "/cua-hang",
+  newsManagement: 'quan-li-tin-tuc',
 
   // share: "/share/:type/:id",
 
-
   dashboard: "/admin/dashboard",
+  AdNews: "/admin/news",
+
+  Adcontact: "/admin/contact",
   ui: "/admin/ui",
   reports: "/admin/reports",
   AdUsers: "/admin/users",

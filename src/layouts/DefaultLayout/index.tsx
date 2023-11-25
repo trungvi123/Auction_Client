@@ -1,6 +1,5 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import './DefaultLayout.css'
 import { useSelector } from "react-redux";
 import { IRootState } from "../../interface";
 import Fireworks from "../../components/Fireworks";

@@ -11,7 +11,7 @@ interface IMessage {
 const ChatBot = () => {
   const [messages, setMessages] = useState<IMessage[]>([
     {
-      message: "Chào bạn, rất vui khi được giải đáp thắc mắc của bạn!",
+      message: "Chào bạn 👋!, rất vui khi được giải đáp thắc mắc của bạn!",
       sender: "bot",
     },
   ]);
@@ -52,30 +52,13 @@ const ChatBot = () => {
         <div className="chat-header">
           <div className="chat-header-title">CIT AUCTION</div>
         </div>
-        <div className="chat-mail">
-          <div className="row">
-            <div className="col-md-12 text-center mb-2">
-              <p>
-                Xin chào 👋! Chúng tôi rất hân hạnh giải đáp các thắc mắc của
-                bạn.
-              </p>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12">
-              <button className="btn btn-primary btn-rounded btn-block">
-                Start Chat
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="chat-body hide">
+        <div className="chat-body">
           <div className="chat-start">
             {formatDateTime(new Date().toString())}
           </div>
 
           {messages.map((item, index) => {
-            let mess =  item.message.replace(item.message[0],item.message[0].toLocaleUpperCase())
+            let mess =  item.message.replace(item?.message[0],item?.message[0]?.toLocaleUpperCase())
             if (item.sender !== "user") {
               return (
                 <div key={index} className="chat-bubble you" >
@@ -145,7 +128,7 @@ const ChatBot = () => {
           
         </div>
 
-        <div className="chat-input hide">
+        <div className="chat-input">
           <input
             type="text"
             value={message}

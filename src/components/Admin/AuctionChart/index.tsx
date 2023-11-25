@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto"; // Sử dụng chart.js/auto để hỗ trợ TypeScript
-import productApi from "../../../api/productApi";
 import userApi from "../../../api/userApi";
 import { useQuery } from "@tanstack/react-query";
 import TitleH2 from "../../TitleH2";
@@ -30,13 +29,14 @@ interface ITotalData {
   product: IDataCreateChart[];
   freeProduct: IDataCreateChart[];
   user: IDataCreateChart[];
+  news: IDataCreateChart[];
 }
 
 function AuctionChart({ yearSelect }: { yearSelect: string }) {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartUserRef = useRef<HTMLCanvasElement | null>(null);
+  const chartNewsRef = useRef<HTMLCanvasElement | null>(null);
   const chartFreeProductRef = useRef<HTMLCanvasElement | null>(null);
-
   const [totalData, setTotalData] = useState<ITotalData>();
 
   const createChar = (ctxx: any, typee: any, labell: string, dataa: any) => {
@@ -67,18 +67,17 @@ function AuctionChart({ yearSelect }: { yearSelect: string }) {
   const dataChart = useQuery({
     queryKey: ["getStatisticByYear", { year: yearSelect }],
     queryFn: async () => {
-      
-        const res = await userApi.getStatisticByYear(yearSelect);
-        return res.data;
-      
+      const res = await userApi.getStatisticByYear(yearSelect);
+      return res.data;
     },
   });
 
   useEffect(() => {
     if (dataChart?.data?.months) {
-      const productTemp = [];
-      const freeProductTemp = [];
-      const userTemp = [];
+      const productTemp: any = [];
+      const freeProductTemp: any = [];
+      const userTemp: any = [];
+      const newsTemp: any = [];
 
       for (let i = 1; i <= 12; i++) {
         const check = dataChart?.data.months?.find(
@@ -101,11 +100,18 @@ function AuctionChart({ yearSelect }: { yearSelect: string }) {
           color: colorChart[i - 1],
           count: check ? check.userCountInMonth : 0,
         });
+
+        newsTemp.push({
+          month: `Tháng ${i.toString()}`,
+          color: colorChart[i - 1],
+          count: check ? check.newsCountInMonth : 0,
+        });
       }
       setTotalData({
         freeProduct: freeProductTemp,
         product: productTemp,
         user: userTemp,
+        news: newsTemp,
       });
     }
   }, [dataChart?.data]);
@@ -164,20 +170,85 @@ function AuctionChart({ yearSelect }: { yearSelect: string }) {
     };
   }, [totalData?.user]);
 
+  useEffect(() => {
+    if (!chartNewsRef.current) return;
+
+    const ctx = chartNewsRef.current.getContext("2d");
+
+    if (!ctx) return;
+
+    const label = "Số bài viết được tạo trong tháng";
+    const type = "bar";
+    const data = totalData?.news || [];
+
+    const mychart = createChar(ctx, type, label, data);
+    return () => {
+      mychart.destroy();
+    };
+  }, [totalData?.news]);
+
   return (
     <>
       <TitleH2
         title={`Số cuộc đấu giá được đăng trong các tháng của năm ${yearSelect}`}
       ></TitleH2>
       <canvas ref={chartRef} />
+      <div className="d-flex justify-content-center mt-3">
+        <a
+          href="http://localhost:5000/admin/handleExport/2023/product"
+          target={"_blank"}
+          rel="noreferrer"
+          className="btn-11"
+          style={{ width: "250px" }}
+        >
+          <span className="btn-11__content">Xuất Excel</span>
+        </a>
+      </div>
       <TitleH2
         title={`Số tài sản chia sẻ được tạo trong các tháng của năm ${yearSelect}`}
       ></TitleH2>
       <canvas ref={chartFreeProductRef}></canvas>
+      <div className="d-flex justify-content-center mt-3">
+        <a
+          href="http://localhost:5000/admin/handleExport/2023/freeProduct"
+          target={"_blank"}
+          rel="noreferrer"
+          className="btn-11"
+          style={{ width: "250px" }}
+        >
+          <span className="btn-11__content">Xuất Excel</span>
+        </a>
+      </div>
       <TitleH2
         title={`Số lượng tài khoản được tạo trong các tháng của năm ${yearSelect}`}
       ></TitleH2>
       <canvas ref={chartUserRef}></canvas>
+      <div className="d-flex justify-content-center mt-3">
+        <a
+          href="http://localhost:5000/admin/handleExport/2023/user"
+          target={"_blank"}
+          rel="noreferrer"
+          className="btn-11"
+          style={{ width: "250px" }}
+        >
+          <span className="btn-11__content">Xuất Excel</span>
+        </a>
+      </div>
+      <TitleH2
+        title={`Số lượng bài viết được tạo trong các tháng của năm ${yearSelect}`}
+      ></TitleH2>
+      <canvas ref={chartNewsRef}></canvas>
+      <div className="d-flex justify-content-center mt-3">
+        <a
+          href="http://localhost:5000/admin/handleExport/2023/news"
+          target={"_blank"}
+          rel="noreferrer"
+          className="btn-11"
+          style={{ width: "250px" }}
+        >
+          <span className="btn-11__content">Xuất Excel</span>
+        </a>
+      </div>
     </>
   );
 }

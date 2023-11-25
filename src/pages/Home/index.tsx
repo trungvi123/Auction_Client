@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
 import productApi from "../../api/productApi";
 import { banner_res, product_bg, home_intro } from "../../asset/images/";
@@ -12,29 +14,57 @@ import ProductCard from "../../components/ProductCard";
 import SEO from "../../components/SEO";
 import TitleH2 from "../../components/TitleH2";
 import { IRootState } from "../../interface";
+import { setHappenningProduct, setUpcomingProduct } from "../../redux/productSlice";
 
 import "./Home.css";
 const Home = () => {
-  const banner_infor = useSelector((e: IRootState) => e.ui?.images?.short_intro);
+  const banner_infor = useSelector(
+    (e: IRootState) => e.ui?.images?.short_intro
+  );
   const intro = useSelector((e: IRootState) => e.ui?.inforPage?.shortIntro);
-
-  const productsQuery = useQuery({
-    queryKey: ["products"],
-    queryFn: () => productApi.getPrepareToStart(),
-    staleTime: 1000 * 600,
-  });
+  const goingOnList = useSelector((e:IRootState)=> e.product?.happenningProduct)
+  const prepareToStart = useSelector((e:IRootState)=> e.product?.upcomingProduct)
+ 
+  const dispatch = useDispatch()
 
   const freeProductsQuery = useQuery({
     queryKey: ["freePproducts"],
-    queryFn: () => freeProductApi.getAllFreeProducts(9),
+    queryFn: () => freeProductApi.getFreeProducts(9),
     staleTime: 1000 * 600,
   });
 
+  const allProductsQuery = useQuery({
+    queryKey: ["allProducts"],
+    queryFn: () => productApi.getAllProducts(),
+    staleTime: 1000 * 600,
+  });
+
+  const caterogyQuery = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => {
+      const res: any = await categoryApi.getAllCategory();
+      return res;
+    },
+    staleTime: 1000 * 600,
+  });
+
+  useEffect(() => {
+    const list1:any[] = [];
+    const list2:any[] = [];
+    allProductsQuery?.data?.data?.forEach((item: any) => {
+      if (item.auctionEnded === false && item.auctionStarted === true) { // dang dien ra
+        list1.push(item)
+      } else if (item.auctionEnded === false && item.auctionStarted === false) { // sap dien ra
+        list2.push(item)
+      }
+    });
+    dispatch(setHappenningProduct(list1))
+    dispatch(setUpcomingProduct(list2))
+  }, [allProductsQuery?.data?.data, dispatch]);
+
   return (
     <Container fluid>
-      <SEO
-        title={'Trang chủ'}
-      ></SEO>
+      <SEO title={"Trang chủ"}></SEO>
       <section className="home-intro">
         <img className="home-intro__bg" src={home_intro} alt="background" />
         <div className="under-banner"></div>
@@ -53,7 +83,7 @@ const Home = () => {
                 }}
                 className="home-intro__left__text2"
               ></div>
-              <Link to={'/gioi-thieu'} className="btn-11">
+              <Link to={"/gioi-thieu"} className="btn-11">
                 <span className="btn-11__content">KHÁM PHÁ</span>
               </Link>
             </div>
@@ -80,12 +110,17 @@ const Home = () => {
               <h1 className="home-intro__left__h1 res">
                 Nền tảng đấu giá trực tuyến
               </h1>
-              <div dangerouslySetInnerHTML={{
+              <div
+                dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(intro),
-                }} className="home-intro__left__text2 res">
-                
-              </div>
-              <Link style={{width:'300px'}} to={'/gioi-thieu'} className="btn-11">
+                }}
+                className="home-intro__left__text2 res"
+              ></div>
+              <Link
+                style={{ width: "300px" }}
+                to={"/gioi-thieu"}
+                className="btn-11"
+              >
                 <span className="btn-11__content">KHÁM PHÁ</span>
               </Link>
             </div>
@@ -93,38 +128,136 @@ const Home = () => {
         </Row>
       </section>
 
-      <section className="product-section">
-        <img className="product-section__bg" src={product_bg} alt="" />
-        <Container>
-          <div>
-            {productsQuery?.data?.data?.length > 0 && (
+      {goingOnList?.length > 0 && (
+        <section className="product-section">
+          <img className="product-section__bg" src={product_bg} alt="" />
+          <Container>
+            <div>
+              <TitleH2 title="Tài sản đang được đấu giá"></TitleH2>
+
+              {goingOnList?.length >= 3 ? (
+                <div>
+                  {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                  {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                  <MySlider type={"product"} data={goingOnList}></MySlider>
+                </div>
+              ) : (
+                <div>
+                  <Row>
+                    {goingOnList?.map((item: any) => {
+                      return (
+                        <Col md={6} lg={4} sm={12} key={item._id}>
+                          <ProductCard data={item}></ProductCard>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </div>
+              )}
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {prepareToStart?.length > 0 && (
+        <section className="product-section">
+          <img className="product-section__bg" src={product_bg} alt="" />
+          <Container>
+            <div>
               <TitleH2 title="Tài sản sắp được đấu giá"></TitleH2>
-            )}
-            {productsQuery?.data?.data?.length >= 3 ? (
-              <div>
-                {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
-                {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
-                <MySlider
-                  type={"product"}
-                  data={productsQuery?.data?.data}
-                ></MySlider>
-              </div>
-            ) : (
-              <div>
-                <Row>
-                  {productsQuery?.data?.data?.map((item: any) => {
-                    return (
-                      <Col md={6} lg={4} sm={12} key={item._id}>
-                        <ProductCard data={item}></ProductCard>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </div>
-            )}
-          </div>
-        </Container>
-      </section>
+
+              {prepareToStart?.length >= 3 ? (
+                <div>
+                  {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                  {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                  <MySlider
+                    type={"product"}
+                    data={prepareToStart}
+                  ></MySlider>
+                </div>
+              ) : (
+                <div>
+                  <Row>
+                    {prepareToStart?.map((item: any) => {
+                      return (
+                        <Col md={6} lg={4} sm={12} key={item._id}>
+                          <ProductCard data={item}></ProductCard>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </div>
+              )}
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {caterogyQuery?.data?.category.map((cate: any) => {
+        const allProducts =  [...goingOnList,...prepareToStart]
+        let dataFilter = allProducts.filter(
+          (item: any) =>
+            item.category.link === cate.link &&
+            item.auctionEnded === false &&
+            item.auctionStarted === false
+        );
+
+        dataFilter?.sort((a: any, b: any) => {
+          if (a.startTime < b.startTime) {
+            return -1;
+          }
+          if (a.startTime > b.startTime) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        });
+        if (dataFilter?.length > 0) {
+          return (
+            <section className="product-section" key={cate.link}>
+              <img className="product-section__bg" src={product_bg} alt="" />
+
+              <Container>
+                <div>
+                  <TitleH2
+                    title={`${
+                      cate.link === "khac"
+                        ? "Các cuộc đấu giá khác"
+                        : `${cate.name} sắp được đấu giá`
+                    } `}
+                  ></TitleH2>
+
+                  {dataFilter?.length >= 3 ? (
+                    <div>
+                      {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                      {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                      <MySlider
+                        type={"product"}
+                        data={dataFilter || []}
+                      ></MySlider>
+                    </div>
+                  ) : (
+                    <div>
+                      <Row>
+                        {dataFilter?.map((item: any) => {
+                          return (
+                            <Col md={6} lg={4} sm={12} key={item._id}>
+                              <ProductCard data={item}></ProductCard>
+                            </Col>
+                          );
+                        })}
+                      </Row>
+                    </div>
+                  )}
+                </div>
+              </Container>
+            </section>
+          );
+        } else {
+          return null;
+        }
+      })}
 
       <section className="product-section">
         <img className="product-section__bg" src={product_bg} alt="" />

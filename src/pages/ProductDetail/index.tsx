@@ -92,9 +92,10 @@ const ProductDetail = () => {
     (state: string) => {
       if (state === "finishStart" || state === "finishEnd") {
         fectProduct(idProduct);
+        queryClient.invalidateQueries({ queryKey: ["allProducts"] });
       }
     },
-    [fectProduct, idProduct]
+    [fectProduct, idProduct, queryClient]
   );
 
   useEffect(() => {
@@ -227,8 +228,6 @@ const ProductDetail = () => {
       const update = async () => {
         const result: any = await productApi.updateAuctionEnded({
           id: idProduct,
-          idUser: idClient,
-          type: "buy",
         });
         if (result.status === "success") {
           setStopCountDown(true);
@@ -262,23 +261,37 @@ const ProductDetail = () => {
     } else {
       let success = false;
       if (inforPreEnd.time) {
-        const res1: any = await userApi.addFollowProduct({
-          type: "pre-end",
-          time: inforPreEnd.time,
-          productId: idProduct,
-        });
-        if (res1?.status === "success") {
-          success = true;
+        const timeLeft = new Date(
+          new Date(product?.endTime || "").getTime() - new Date().getTime()
+        ).getMinutes();
+        if (inforPreEnd.time > timeLeft) {
+          success = false;
+        } else {
+          const res1: any = await userApi.addFollowProduct({
+            type: "pre-end",
+            time: inforPreEnd.time,
+            productId: idProduct,
+          });
+          if (res1?.status === "success") {
+            success = true;
+          }
         }
       }
       if (inforPreStart.time) {
-        const res2: any = await userApi.addFollowProduct({
-          type: "pre-start",
-          time: inforPreStart.time,
-          productId: idProduct,
-        });
-        if (res2?.status === "success") {
-          success = true;
+        const timeLeft = new Date(
+          new Date(product?.startTime || "").getTime() - new Date().getTime()
+        ).getMinutes();
+        if (inforPreStart.time > timeLeft) {
+          success = false;
+        } else {
+          const res2: any = await userApi.addFollowProduct({
+            type: "pre-start",
+            time: inforPreStart.time,
+            productId: idProduct,
+          });
+          if (res2?.status === "success") {
+            success = true;
+          }
         }
       }
 
@@ -287,6 +300,8 @@ const ProductDetail = () => {
         queryClient.invalidateQueries({ queryKey: ["userNotification"] });
         fectProduct(idProduct);
         handleClose();
+      } else {
+        toast.error("Vui lòng kiểm tra lại thời gian!");
       }
     }
   };
@@ -315,7 +330,7 @@ const ProductDetail = () => {
         backdrop="static"
         keyboard={false}
       >
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Thông báo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -492,7 +507,10 @@ const ProductDetail = () => {
                 </p>
               )}
               {product?.stateSlug === "da-ket-thuc" && (
-                <p className="countdown-time-title">Cuộc đấu giá đã kêt thúc</p>
+                <p className="countdown-time-title">
+                  Cuộc đấu giá đã kêt thúc{" "}
+                  {product?.sold && "( Sản phẩm đã được mua ngay )"}
+                </p>
               )}
               {(!product?.auctionEnded || !product?.auctionStarted) && (
                 <div>

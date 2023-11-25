@@ -26,6 +26,8 @@ import {
   Dashboard,
   Group,
   Web,
+  RecentActors,
+  Flag,
 } from "@mui/icons-material";
 import Collapse from "@mui/material/Collapse";
 import { Link } from "react-router-dom";
@@ -50,7 +52,7 @@ export default function TemporaryDrawer({
   isAdmin?: boolean;
 }) {
   const [show, setShow] = React.useState(false);
-  const logo = useSelector((e:IRootState)=>e.ui.images.logo)
+  const logo = useSelector((e: IRootState) => e.ui.images.logo);
 
   const [openCate, setOpenCate] = React.useState(isAdmin ? false : true);
   const [openNews, setOpenNews] = React.useState(isAdmin ? false : true);
@@ -84,7 +86,7 @@ export default function TemporaryDrawer({
   const list = () => (
     <Box role="presentation">
       <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
-        <Link to={'/'} className="d-flex justify-content-center">
+        <Link to={"/"} className="d-flex justify-content-center">
           <img style={{ width: "180px" }} src={logo} alt="" />
         </Link>
       </List>
@@ -120,12 +122,36 @@ export default function TemporaryDrawer({
               <ListItemText primary={"Quản lí cuộc đấu giá"} />
             </ListItemButton>
           </Link>
+          <Link to={`/admin/news`}>
+            <ListItemButton onClick={toggleDrawer(false)}>
+              <ListItemIcon>
+                <Group />
+              </ListItemIcon>
+              <ListItemText primary={"Quản lí tin tức"} />
+            </ListItemButton>
+          </Link>
           <Link to={`/admin/users`}>
             <ListItemButton onClick={toggleDrawer(false)}>
               <ListItemIcon>
                 <Group />
               </ListItemIcon>
               <ListItemText primary={"Quản lí người dùng"} />
+            </ListItemButton>
+          </Link>
+          <Link to={`/admin/reports`}>
+            <ListItemButton onClick={toggleDrawer(false)}>
+              <ListItemIcon>
+                <Flag />
+              </ListItemIcon>
+              <ListItemText primary={"Quản lý khiếu nại"} />
+            </ListItemButton>
+          </Link>
+          <Link to={`/admin/contact`}>
+            <ListItemButton onClick={toggleDrawer(false)}>
+              <ListItemIcon>
+                <RecentActors />
+              </ListItemIcon>
+              <ListItemText primary={"Quản lý liên hệ"} />
             </ListItemButton>
           </Link>
           <Link to={`/admin/ui`}>
@@ -179,41 +205,23 @@ export default function TemporaryDrawer({
               })}
           </List>
         </Collapse>
-        <ListItemButton onClick={() => setOpenNews(!openNews)}>
-          <ListItemIcon>
-            <Newspaper />
-          </ListItemIcon>
-          <ListItemText sx={{ pr: 4 }} primary="Tin tức" />
-          {openNews ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openNews} unmountOnExit>
-          <List component="div" disablePadding>
-            <Link to={`/tin-tuc`}>
-              <ListItemButton sx={{ pl: 4 }} onClick={toggleDrawer(false)}>
-                <ListItemIcon>
-                  <CircleNotifications />
-                </ListItemIcon>
-                <ListItemText primary={"Thông báo đấu giá"} />
-              </ListItemButton>
-            </Link>
-            <Link to={`/tin-tuc`}>
-              <ListItemButton sx={{ pl: 4 }} onClick={toggleDrawer(false)}>
-                <ListItemIcon>
-                  <Tag />
-                </ListItemIcon>
-                <ListItemText primary={"Tin khác"} />
-              </ListItemButton>
-            </Link>
-          </List>
-        </Collapse>
-       <Link to={`/gioi-thieu`}>
+        <Link to={`/news`}>
+          <ListItemButton onClick={toggleDrawer(false)}>
+            <ListItemIcon>
+              <Newspaper />
+            </ListItemIcon>
+            <ListItemText sx={{ pr: 4 }} primary="Tin tức" />
+          </ListItemButton>
+        </Link>
+
+        <Link to={`/gioi-thieu`}>
           <ListItemButton onClick={toggleDrawer(false)}>
             <ListItemIcon>
               <Badge />
             </ListItemIcon>
             <ListItemText primary="Giới thiệu" />
           </ListItemButton>
-       </Link>
+        </Link>
         <Link to={`/lien-he`}>
           <ListItemButton onClick={toggleDrawer(false)}>
             <ListItemIcon>

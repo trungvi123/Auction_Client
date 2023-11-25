@@ -1,6 +1,5 @@
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
-import "./AdminDefaultLayout.css";
 
 const AdminDefaultLayout: any = ({ children }: any) => {
   return (

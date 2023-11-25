@@ -24,6 +24,10 @@ import {
   Introduce,
   Contact,
   Store,
+  ContactManagement,
+  ManagementNews,
+  NewsManagement,
+  NewsDetail,
   // Share
 } from "../pages";
 
@@ -53,8 +57,8 @@ export const publicRoute: IRoute[] = [
   { path: routes.introduce, element: Introduce },
   { path: routes.contact, element: Contact },
   { path: routes.store, element: Store },
-
-  // { path: routes.share, element: Share }
+  { path: routes.newsManagement, element: ManagementNews },
+  { path: routes.newsDetail, element: NewsDetail }
 
 
 ];
@@ -75,6 +79,16 @@ export const privateRoute: IRoute[] = [
   {
     path: routes.reports,
     element: ReportManagement,
+    layout: "AdminDefaultLayout",
+  },
+  {
+    path: routes.Adcontact,
+    element: ContactManagement,
+    layout: "AdminDefaultLayout",
+  },
+  {
+    path: routes.AdNews,
+    element: NewsManagement,
     layout: "AdminDefaultLayout",
   },
 ];

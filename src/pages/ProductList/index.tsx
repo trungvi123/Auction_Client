@@ -181,13 +181,15 @@ const ProductList = () => {
     }
     if (productTemp?.length > 9) {
       const pageCount = Math.ceil(productTemp?.length / 9);
-      const newArrProd = productTemp?.slice((1 - 1) * 9, 1 * 9);
+      const newArrProd = productTemp?.slice(0, 9);
       setPage(1);
       setProductRender(newArrProd);
       setPageNumber(pageCount);
+      setProduct(productTemp);
+    } else {
+      setProduct(productTemp);
+      setProductRender(productTemp);
     }
-    setProduct(productTemp);
-    setProductRender(productTemp);
   }, [
     filter?.category,
     filter?.status,

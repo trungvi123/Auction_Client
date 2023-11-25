@@ -31,10 +31,15 @@ import {
   Password,
   VolunteerActivism,
   Widgets,
+  Feed,
 } from "@mui/icons-material";
 import NotificationDrawer from "../NotificationDrawer";
 import apiConfig from "../../api/axiosConfig";
 import userApi from "../../api/userApi";
+import {
+  setHappenningProduct,
+  setUpcomingProduct,
+} from "../../redux/productSlice";
 const socket = io.connect(apiConfig.baseUrl);
 
 const Header = () => {
@@ -44,12 +49,18 @@ const Header = () => {
   const crrEmail = useSelector((e: IRootState) => e.auth.email);
   const logo = useSelector((e: IRootState) => e.ui.images.logo);
   const basicUser = useSelector((e: IRootState) => e.auth.basicUser);
-
+  const happenningProduct = useSelector(
+    (e: IRootState) => e.product?.happenningProduct
+  );
+  const upcomingProduct = useSelector(
+    (e: IRootState) => e.product?.upcomingProduct
+  );
   const [loadNotifications, setLoadNotifications] = useState<boolean>(false);
   const [milestones, setMilestones] = useState<any[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<ReactNode>(0);
   const [openNotificationDrawer, setOpenNotificationDrawer] =
     useState<boolean>(false);
+
   const queryClient = useQueryClient();
 
   const caterogyQuery = useQuery({
@@ -60,7 +71,6 @@ const Header = () => {
     },
     staleTime: 1000 * 600,
   });
-  
 
   useQuery({
     queryKey: ["userNotification"],
@@ -75,6 +85,8 @@ const Header = () => {
       return res.data;
     },
   });
+
+  
 
   const openMyModal = () => {
     dispatch(setStatus("login"));
@@ -114,7 +126,39 @@ const Header = () => {
         queryClient.invalidateQueries({ queryKey: ["userNotification"] });
       }
     });
+    socket.on("respone_refreshPage", () => {
+      queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+    });
   }, [clientId, loadNotifications, queryClient]);
+
+  useEffect(() => {
+    socket.on(
+      "respone_refreshProductState",
+      (data: { type: string; productId: string }) => {
+        if (data?.type === "removeHappenningProduct") {
+          const filter = happenningProduct.filter(
+            (item: any) => item._id !== data?.productId
+          );
+          dispatch(setHappenningProduct(filter));
+          if(filter.length === 0){
+            queryClient.invalidateQueries({queryKey: ["allProducts"]})
+          }
+        } else {
+          const arr1: any = [];
+
+          upcomingProduct.forEach((item: any) => {
+            if (item._id !== data?.productId) {
+              arr1.push(item);
+            } else {
+              dispatch(setHappenningProduct([...happenningProduct, item]));
+            } 
+          });
+          dispatch(setUpcomingProduct(arr1));
+        }
+      }
+    );
+  }, [dispatch, happenningProduct, queryClient, upcomingProduct]);
+
 
   return (
     <div className={`header`}>
@@ -155,10 +199,16 @@ const Header = () => {
                       <Link to={"/admin/auction"}>Quản lý cuộc đấu giá</Link>
                     </li>
                     <li className="head-link">
+                      <Link to={"/admin/news"}>Quản lý tin tức</Link>
+                    </li>
+                    <li className="head-link">
                       <Link to={"/admin/users"}>Quản lý người dùng</Link>
                     </li>
                     <li className="head-link">
                       <Link to={"/admin/reports"}>Quản lý khiếu nại</Link>
+                    </li>
+                    <li className="head-link">
+                      <Link to={"/admin/contact"}>Quản lý liên hệ</Link>
                     </li>
                     <li className="head-link">
                       <Link to={"/admin/ui"}>Quản lý giao diện</Link>
@@ -195,22 +245,10 @@ const Header = () => {
             </div>
 
             <div className="NavLink-box">
-              <Nav.Link>
+              <Nav.Link as={Link} to="/news">
                 Tin tức
-                <div className="arrow-icon__box">
-                  <BiChevronDown className="arrow-icon"></BiChevronDown>
-                </div>
               </Nav.Link>
-              <div className="head-menu-child">
-                <ul>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Thông báo đấu giá</Link>
-                  </li>
-                  <li className="head-link">
-                    <Link to={"/category/quan-ao"}>Tin khác</Link>
-                  </li>
-                </ul>
-              </div>
+             
             </div>
 
             <Nav.Link as={Link} to="/gioi-thieu">
@@ -307,6 +345,17 @@ const Header = () => {
                         <Widgets></Widgets>
                         <span className="px-2 d-block head-link-span">
                           Quản lí cuộc đấu giá
+                        </span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/quan-li-tin-tuc"
+                        className="head-link d-flex align-items-center head-menu-child-item"
+                      >
+                        <Feed></Feed>
+                        <span className="px-2 d-block head-link-span">
+                          Quản lí tin tức
                         </span>
                       </Link>
                     </li>

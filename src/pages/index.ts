@@ -19,14 +19,18 @@ export { default as Profile } from "./Profile";
 export { default as Share } from "./Share";
 export { default as Store } from "./Store";
 
+export { default as ManagementNews } from "./ManagementNews";
+export { default as NewsDetail } from "./NewsDetail";
 
 
  
 
 
 export { default as ReportManagement } from "./Admin/ReportManagement";
-export { default as UiManagement } from "./Admin/UiManagement";
 
+export { default as UiManagement } from "./Admin/UiManagement";
+export { default as NewsManagement } from "./Admin/NewsManagement";
+export { default as ContactManagement } from "./Admin/ContactManagement";
 export { default as TransactionManagement } from "./Admin/TransactionManagement";
 export { default as Dashboard } from "./Admin/Dashboard";
 export { default as UsersManagement } from "./Admin/UsersManagement";

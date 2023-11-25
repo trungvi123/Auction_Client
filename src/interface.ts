@@ -3,6 +3,11 @@ export interface IMyModal {
   status: string;
 }
 
+export interface IProductSlice {
+  happenningProduct: IProduct[];
+  upcomingProduct: IProduct[];
+}
+
 export interface IUi {
   fireworks: boolean;
   changeTheme: boolean;
@@ -47,6 +52,7 @@ export interface IRootState {
   auth: IAuth;
   utils: IUtils;
   ui: IUi;
+  product: IProductSlice;
 }
 
 // interface for product
@@ -84,6 +90,7 @@ export interface IFreeProduct {
   createdAt: string;
   currentPrice: any;
   description: string;
+  outOfStock: boolean;
   images: string[];
   name: string;
   owner: string;

@@ -6,20 +6,20 @@ import toast from "react-hot-toast";
 import { BiArrowBack } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
-
-
 import { forgotPassBg, logo } from "../../asset/images";
 import userApi, { IResetPass } from "../../api/userApi";
 import "./ForgotPass.css";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const ForgotPass = () => {
   const refForm: any = useRef();
   const [validated, setValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
 
   const handleSubmit = async () => {
     const form = refForm.current;
-
+    setLoading(true);
     if (form.checkValidity()) {
       // do sómething
       const data: IResetPass = { email };
@@ -29,6 +29,9 @@ const ForgotPass = () => {
         toast.success(
           "Chúng tôi đã gửi mật khẩu tạm thời qua email của bạn, vui lòng kiểm tra!"
         );
+        setEmail("");
+
+        setLoading(false);
       }
     }
     setValidated(true);
@@ -39,6 +42,12 @@ const ForgotPass = () => {
       <div className="side-bar">
         <img className="side-bar__bg" src={forgotPassBg} alt="bg side bar" />
       </div>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Container>
         <div className="forgot-main">
           <div className="forgot-logo">
@@ -61,7 +70,12 @@ const ForgotPass = () => {
               validated={validated}
               className="forgot-form"
             >
-              <Form.Group as={Col} sm={12} md="6" controlId="validationCustom01">
+              <Form.Group
+                as={Col}
+                sm={12}
+                md="6"
+                controlId="validationCustom01"
+              >
                 <Form.Label className="email-lable">Email</Form.Label>
                 <Form.Control
                   required
@@ -74,6 +88,7 @@ const ForgotPass = () => {
                   Email của bạn có vẻ không hợp lệ!
                 </Form.Control.Feedback>
               </Form.Group>
+
               <div onClick={handleSubmit} className="btn-11 mt-4">
                 <span className="btn-11__content">Tiếp tục</span>
               </div>

@@ -18,8 +18,9 @@ export { default as uploadImg } from "./icon/uploadImg.png";
 export { default as minus } from "./icon/minus.png";
 export { default as intro_icon1 } from "./icon/intro_icon1.png";
 export { default as intro_icon2 } from "./icon/intro_icon2.png";
-export { default as intro_icon3 } from "./icon/intro_icon3.png";
 export { default as intro_icon4 } from "./icon/intro_icon4.png";
+export { default as intro_icon3 } from "./icon/intro_icon3.png";
+export { default as camera } from "./icon/camera.png";
 
 
 

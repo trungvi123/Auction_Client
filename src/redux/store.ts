@@ -4,6 +4,7 @@ import myModalSlice from "./myModalSlice";
 import searchModalSlice from "./searchModalSlice";
 import uiSlice from "./uiSlice";
 import utilsSlice from "./utilsSlice";
+import productSlice from "./productSlice";
 
 // Khôi phục state từ localStorage (nếu có)
 
@@ -17,6 +18,7 @@ export const store = configureStore({
     searchModal: searchModalSlice,
     utils: utilsSlice,
     ui: uiSlice,
+    product: productSlice,
   },
   preloadedState: initialState,
 });
@@ -24,5 +26,12 @@ export const store = configureStore({
 // Lưu state vào localStorage trước khi trang reload
 window.addEventListener("beforeunload", () => {
   const state = store.getState();
-  localStorage.setItem("reduxState", JSON.stringify(state));
+  const reloadState = {
+    ...state,
+    product:{
+      happenningProduct : [],
+      upcomingProduct:[]
+    }
+  }
+  localStorage.setItem("reduxState", JSON.stringify(reloadState));
 });

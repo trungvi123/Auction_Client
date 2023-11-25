@@ -33,6 +33,7 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/signIn";
     return axiosClient.post(url, payload);
   },
+
   signUp: (payload: ISignUpPayload) => {
     const url = apiConfig.baseUrl + "user/signUp";
     return axiosClient.post(url, payload);
@@ -41,8 +42,12 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/resetPass";
     return axiosClientJWT.post(url, payload);
   },
-  chat: (payload:{message:string}) => {
+  chat: (payload: { message: string }) => {
     const url = "http://127.0.0.1:5001/api/chatbot";
+    return axiosClient.post(url, payload);
+  },
+  contact: (payload: any) => {
+    const url = apiConfig.baseUrl + "user/contact";
     return axiosClient.post(url, payload);
   },
   changePass: (payload: IChangePassPayload) => {
@@ -80,7 +85,7 @@ const userApi = {
   },
   verifyAccount: (payload: { OTP: string }) => {
     const url = apiConfig.baseUrl + `user/verifyAccount`;
-    return axiosClientJWT.post(url,payload);
+    return axiosClientJWT.post(url, payload);
   },
   addFollowProduct: (payload: {
     productId: string;
@@ -163,19 +168,9 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/updateNotifications/${userId}`;
     return axiosClientJWT.patch(url);
   },
-  updateProfile: (payload: {
-    birthday: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    userId: string;
-    phoneNumber: string;
-    idCard: string;
-    address: string;
-    emailPaypal: string;
-  }) => {
+  updateProfile: (payload: any,config:any) => {
     const url = apiConfig.baseUrl + `user/updateProfile/`;
-    return axiosClientJWT.patch(url, payload);
+    return axiosClientJWT.patch(url, payload,config);
   },
   deleteNotification: (payload: { id: string; userId: string }) => {
     const url = apiConfig.baseUrl + `user/deleteNotification/${payload.id}`;
@@ -258,7 +253,26 @@ const userApi = {
     const url = apiConfig.baseUrl + `admin/activeTemplate/${id}`;
     return axiosClientJWT.patch(url);
   },
-
+  handleExport: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/handleExport`;
+    return axiosClientJWT.post(url, payload);
+  },
+  handleExport2: () => {
+    const url = apiConfig.baseUrl + `admin/handleExport2`;
+    return axiosClientJWT.get(url);
+  },
+  getNewContact: () => {
+    const url = apiConfig.baseUrl + `admin/getNewContact`;
+    return axiosClientJWT.get(url);
+  },
+  getContactReply: () => {
+    const url = apiConfig.baseUrl + `admin/getContactReply`;
+    return axiosClientJWT.get(url);
+  },
+  replyContact: (payload: any) => {
+    const url = apiConfig.baseUrl + `admin/replyContact/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
   payouts: (payload: {
     productId: string;
     emailPaypal: string;

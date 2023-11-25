@@ -11,6 +11,7 @@ interface IProTable {
   year: string;
   userCount: number;
   auctionCount: number;
+  newsCount: number;
   freeProductCount: number;
   handle: {
     year: string;
@@ -22,7 +23,7 @@ function StatisticTable({
   handleSelectYear,
 }: {
   data: any;
-  handleSelectYear: (year:string)=>void;
+  handleSelectYear: (year: string) => void;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [msgModal, setMsgModal] = useState("");
@@ -48,6 +49,7 @@ function StatisticTable({
         return {
           year: item.year,
           userCount: item.userCount,
+          newsCount: item.newsCount,
           auctionCount: item.auctionCount,
           freeProductCount: item.freeProductCount,
           handle: {
@@ -108,6 +110,11 @@ function StatisticTable({
         id: "freeProductCount",
       },
       {
+        header: "Số bài viết",
+        accessorKey: "newsCount",
+        id: "newsCount",
+      },
+      {
         header: "Xử lí",
         accessorKey: "handle",
         Cell: ({ cell }) => {
@@ -131,7 +138,10 @@ function StatisticTable({
                 {/* handleSelectYear */}
                 <span className="btn-11__content">Xóa</span>
               </div>
-              <div className="btn-11 mt-2" onClick={()=>handleSelectYear(data.year)}>
+              <div
+                className="btn-11 mt-2"
+                onClick={() => handleSelectYear(data.year)}
+              >
                 <span className="btn-11__content">Biểu đồ</span>
               </div>
             </>

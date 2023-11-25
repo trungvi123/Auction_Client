@@ -196,9 +196,9 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
             toast.success(
               "Bạn có thể bắt đầu cuộc đấu giá ngay sau khi được hệ thống của chúng tôi thông qua!"
             );
-            reset(initialStateData);
-            setResetImgs(true);
-            setDescription("");
+            // reset(initialStateData);
+            // setResetImgs(true);
+            // setDescription("");
           }
         };
         createProd();

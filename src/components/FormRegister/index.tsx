@@ -5,12 +5,12 @@ import Row from "react-bootstrap/Row";
 import toast from "react-hot-toast";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-
 import { useDispatch, useSelector } from "react-redux";
 import userApi, { ISignUpPayload } from "../../api/userApi";
 import { IRootState } from "../../interface";
 import { setEmail, setEmailPaypal, setLastName } from "../../redux/authSlice";
 import { setShow } from "../../redux/myModalSlice";
+import { camera } from "../../asset/images";
 import "./FormRegister.css";
 
 const inititalStatePayload = {
@@ -23,6 +23,7 @@ const inititalStatePayload = {
   address: "",
   emailPaypal: "",
   verifyAccount: false,
+  avatar: "",
 };
 
 function FormRegister({ status = "register" }: { status?: string }) {
@@ -43,6 +44,7 @@ function FormRegister({ status = "register" }: { status?: string }) {
   const [errEmail, setErrEmail] = useState<boolean>(false);
   const [errEmailPaypal, setErrEmailPaypal] = useState<boolean>(false);
   const [showModal, setShowModal] = useState(false);
+  const [newAvatar, setNewAvatar] = useState<any>();
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -96,6 +98,7 @@ function FormRegister({ status = "register" }: { status?: string }) {
             address: res.data.address,
             emailPaypal: res.data.emailPaypal || "",
             verifyAccount: res.data.verifyAccount,
+            avatar: res.data.avatar,
           });
         }
       };
@@ -138,10 +141,30 @@ function FormRegister({ status = "register" }: { status?: string }) {
         }
         setValidated(true);
       } else {
-        const res: any = await userApi.updateProfile({
-          ...payload,
-          userId: clientId,
-        });
+
+        const formData = new FormData();
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
+        formData.append("name", payload.birthday);
+        formData.append("firstName", payload.firstName);
+        formData.append("lastName", payload.lastName);
+        formData.append("email", payload.email);
+        formData.append("phoneNumber", payload.phoneNumber);
+        formData.append("idCard", payload.idCard);
+        formData.append("address", payload.address);
+        formData.append("emailPaypal", payload.emailPaypal);
+        formData.append("verifyAccount", payload.verifyAccount.toString());
+        if(newAvatar?.length > 0){
+          formData.append("avatar", newAvatar[0]);
+        }
+
+        formData.append("userId", clientId);
+
+        const res: any = await userApi.updateProfile(formData,config);
+
         if (res?.status === "success") {
           toast.success("Cập nhật hồ sơ thành công");
           dispatch(setEmailPaypal(payload.emailPaypal));
@@ -154,15 +177,14 @@ function FormRegister({ status = "register" }: { status?: string }) {
 
   const handleVertifyAccount = async () => {
     const res: any = await userApi.verifyAccount({ OTP });
-    console.log(res);
     if (res?.status === "success") {
       setModalMode("vertify");
       setModalMode("");
       handleClose();
       setPayload({ ...payload, verifyAccount: true });
-      toast.success('Xác minh tài khoản thành công!')
-    }else {
-      toast.error('Xác minh tài khoản thất bại!')
+      toast.success("Xác minh tài khoản thành công!");
+    } else {
+      toast.error("Xác minh tài khoản thất bại!");
     }
   };
 
@@ -227,6 +249,48 @@ function FormRegister({ status = "register" }: { status?: string }) {
       </>
       <Form noValidate validated={validated} ref={refForm}>
         <Row className=" mt-5">
+          <div className="mb-4 d-flex justify-content-center">
+            <input
+              id="img-select"
+              accept=".jpg, .jpeg, .png ,.html,.htm"
+              type={"file"}
+              className="d-none"
+              onChange={(e) => setNewAvatar(e.target.files)}
+            />
+            <label
+              htmlFor="img-select"
+              style={{ cursor: "pointer", width: "120px" }}
+              className="d-flex label-avatar flex-column justify-content-center align-items-center"
+            >
+              <img
+                className="avatar"
+                style={{
+                  height: "100px",
+                  width: "100px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+                src={
+                  newAvatar?.length > 0
+                    ? URL.createObjectURL(newAvatar[0])
+                    : payload?.avatar
+                }
+                alt="upload img"
+              />
+              <div
+                style={{
+                  backgroundImage: `url(${
+                    newAvatar?.length > 0
+                      ? URL.createObjectURL(newAvatar[0])
+                      : payload?.avatar
+                  })`,
+                }}
+                className="avatar-update"
+              ></div>
+              <img className="camera" src={camera} alt="" />
+            </label>
+          </div>
+
           <Form.Group
             className="mb-3"
             as={Col}

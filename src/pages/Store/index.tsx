@@ -1,5 +1,6 @@
 import {
   EventAvailable,
+  Gavel,
   MoreVert,
   PeopleOutline,
   Reply,
@@ -14,7 +15,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
 import productApi from "../../api/productApi";
@@ -26,7 +27,6 @@ import FreeProductCard from "../../components/FreeProductCard";
 import MyImageGallery from "../../components/MyImageGallery";
 import ProductCard from "../../components/ProductCard";
 import SEO from "../../components/SEO";
-import TextEditor from "../../components/TextEditor";
 import { IRootState } from "../../interface";
 import formatDateTime from "../../utils/formatDay";
 
@@ -90,7 +90,7 @@ const Store = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
 
   const [products, setProduct] = useState<any>([]);
-  const [productsRender, setProductRender] = useState<any>([]);
+  const [productsRender, setProductsRender] = useState<any>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,7 +117,7 @@ const Store = () => {
       const pageCount = Math.ceil(products.length / 9);
       const newArrProd = products.slice((pageCurr - 1) * 9, pageCurr * 9);
       setPage(pageCurr);
-      setProductRender(newArrProd);
+      setProductsRender(newArrProd);
       setPageNumber(pageCount);
     }
   };
@@ -266,13 +266,15 @@ const Store = () => {
       }
       if (productTemp?.length > 9) {
         const pageCount = Math.ceil(productTemp?.length / 9);
-        const newArrProd = productTemp?.slice((1 - 1) * 9, 1 * 9);
+        const newArrProd = productTemp?.slice(0, 9);
         setPage(1);
-        setProductRender(newArrProd);
+        setProductsRender(newArrProd);
         setPageNumber(pageCount);
+        setProduct(productTemp);
+      } else {
+        setProduct(productTemp);
+        setProductsRender(productTemp);
       }
-      setProduct(productTemp);
-      setProductRender(productTemp);
     } else {
       let starTemp = rateData.rate;
       if (filter?.star.length > 0) {
@@ -316,13 +318,15 @@ const Store = () => {
     if (res?.status === "success") {
       toast.success("Phản hồi bình luận thành công!");
       setShowReply({});
-      setRefresh(!refresh)
+      setRefresh(!refresh);
     }
   };
 
   return (
     <Container
-      className={`productList store ${typeList === "feedback" ? "feedback" : ""}`}
+      className={`productList store ${
+        typeList === "feedback" ? "feedback" : ""
+      }`}
     >
       <SEO title={"Cửa hàng"}></SEO>
       <Breadcrumbs
@@ -342,17 +346,21 @@ const Store = () => {
               <div className="d-flex" style={{ gap: "10px" }}>
                 <div className="left-content__inner__circle">
                   <img
-                    src="https://ui-avatars.com/api/name=Trung%20vi&background=random"
+                    src={rateData?.avatar}
                     alt=""
                   />
                 </div>
                 <span className="email mt-2">{user}</span>
               </div>
-              <div className="d-flex justify-content-end">
-                <div className="follow-btn" onClick={handleFollow}>
-                  <span>{followAlready ? "- Hủy theo dõi" : "+ Theo dõi"}</span>
+              {crrUser.email !== user && (
+                <div className="d-flex justify-content-end">
+                  <div className="follow-btn" onClick={handleFollow}>
+                    <span>
+                      {followAlready ? "- Hủy theo dõi" : "+ Theo dõi"}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </Col>
@@ -780,6 +788,12 @@ const Store = () => {
                         <span className="time">
                           {formatDateTime(item.createdAt)}
                         </span>
+                      </div>
+                      <div className="feedback-item__center mt-2">
+                        <Link to={`/chi-tiet-dau-gia/${item.product}`}>
+                          <Gavel sx={{ fontSize: "18px" }}></Gavel>
+                          <b>{item.productName}</b>
+                        </Link>
                       </div>
                       <div className="feedback-item__center">
                         <p>{item.comment}</p>
