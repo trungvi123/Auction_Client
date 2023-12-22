@@ -26,6 +26,11 @@ export interface IChangePassPayload {
 
 export interface IResetPass {
   email: String;
+  OTP: string;
+}
+
+export interface IConfirmResetPass {
+  email: String;
 }
 
 const userApi = {
@@ -38,8 +43,16 @@ const userApi = {
     const url = apiConfig.baseUrl + "user/signUp";
     return axiosClient.post(url, payload);
   },
+  getNumberOfIntro: () => {
+    const url = apiConfig.baseUrl + "user/getNumberOfIntro";
+    return axiosClient.get(url);
+  },
   resetPass: (payload: IResetPass) => {
     const url = apiConfig.baseUrl + "user/resetPass";
+    return axiosClientJWT.post(url, payload);
+  },
+  confirmResetPass: (payload: IConfirmResetPass) => {
+    const url = apiConfig.baseUrl + "user/confirmResetPass";
     return axiosClientJWT.post(url, payload);
   },
   chat: (payload: { message: string }) => {
@@ -62,6 +75,7 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/getUserByEmail/${email}`;
     return axiosClient.get(url);
   },
+  
   createReport: (payload: {
     type: string[];
     accuserId: string;
@@ -164,13 +178,14 @@ const userApi = {
     const url = apiConfig.baseUrl + `user/notifications/${userId}`;
     return axiosClientJWT.get(url);
   },
+
   updateNotifications: (userId: string) => {
     const url = apiConfig.baseUrl + `user/updateNotifications/${userId}`;
     return axiosClientJWT.patch(url);
   },
-  updateProfile: (payload: any,config:any) => {
+  updateProfile: (payload: any, config: any) => {
     const url = apiConfig.baseUrl + `user/updateProfile/`;
-    return axiosClientJWT.patch(url, payload,config);
+    return axiosClientJWT.patch(url, payload, config);
   },
   deleteNotification: (payload: { id: string; userId: string }) => {
     const url = apiConfig.baseUrl + `user/deleteNotification/${payload.id}`;
@@ -204,6 +219,10 @@ const userApi = {
   deleteTemplate: (id: string) => {
     const url = apiConfig.baseUrl + `admin/deleteTemplate/${id}`;
     return axiosClientJWT.delete(url);
+  },
+  getProfitByYear:(id: string)=>{
+    const url = apiConfig.baseUrl + `admin/getProfitByYear/${id}`;
+    return axiosClientJWT.get(url);
   },
   getReports: () => {
     const url = apiConfig.baseUrl + `admin/reports`;
@@ -268,6 +287,10 @@ const userApi = {
   getContactReply: () => {
     const url = apiConfig.baseUrl + `admin/getContactReply`;
     return axiosClientJWT.get(url);
+  },
+  deleteUserById: (userId:string) => {
+    const url = apiConfig.baseUrl + `admin/deleteUser/${userId}`;
+    return axiosClientJWT.delete(url);
   },
   replyContact: (payload: any) => {
     const url = apiConfig.baseUrl + `admin/replyContact/${payload.id}`;

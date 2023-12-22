@@ -160,8 +160,8 @@ function NewsTable({
         toast.success("Đã từ chối bài viết thành công!");
         handleRefreshList();
       }
-    } else if (inforFunc.variant === "admin_delete") {
-      const res: any = await newsApi.deleteNews(inforFunc.id);
+    } else if (inforFunc.variant === "delete") {
+      const res: any = await newsApi.deleteNews(inforFunc.id)
 
       if (res?.status === "success") {
         toast.success("Đã xóa bài viết thành công!");
@@ -233,6 +233,12 @@ function NewsTable({
         toast.success("Đăng bài thành công!");
         handleCloseDialog();
         handleRefreshList();
+        setPayload({
+          title: "",
+          description: "",
+        });
+        setContent("");
+        setImgNews(null);
       }
     } else {
       toast.error("Vui lòng nhập đầy đủ thông tin cho bài viết!");
@@ -362,7 +368,9 @@ function NewsTable({
                           id: data.id,
                           variant: "admin_reApprove",
                         });
-                        setMsgModal("Xác nhận rằng bạn muốn duyệt lại bài viết này!");
+                        setMsgModal(
+                          "Xác nhận rằng bạn muốn duyệt lại bài viết này!"
+                        );
                       }}
                     >
                       <span className="btn-11__content">Duyệt lại</span>
@@ -376,7 +384,7 @@ function NewsTable({
                         handleShow();
                         setInforFunc({
                           id: data.id,
-                          variant: "admin_delete",
+                          variant: "delete",
                         });
                         setMsgModal("Xác nhận rằng bạn muốn xóa bài viết này!");
                       }}
@@ -427,21 +435,38 @@ function NewsTable({
                   )}
 
                   {typeList === "hide" && (
-                    <div
-                      className={`btn-11 mt-2`}
-                      onClick={() => {
-                        handleShow();
-                        setInforFunc({
-                          id: data.id,
-                          variant: "show",
-                        });
-                        setMsgModal(
-                          "Xác nhận rằng bạn muốn hiển thị bài viết này!"
-                        );
-                      }}
-                    >
-                      <span className="btn-11__content">Hiển thị</span>
-                    </div>
+                    <>
+                      <div
+                        className={`btn-11 mt-2`}
+                        onClick={() => {
+                          handleShow();
+                          setInforFunc({
+                            id: data.id,
+                            variant: "show",
+                          });
+                          setMsgModal(
+                            "Xác nhận rằng bạn muốn hiển thị bài viết này!"
+                          );
+                        }}
+                      >
+                        <span className="btn-11__content">Hiển thị</span>
+                      </div>
+                      <div
+                        className={`btn-11 mt-2`}
+                        onClick={() => {
+                          handleShow();
+                          setInforFunc({
+                            id: data.id,
+                            variant: "delete",
+                          });
+                          setMsgModal(
+                            "Xác nhận rằng bạn muốn xóa bài viết này!"
+                          );
+                        }}
+                      >
+                        <span className="btn-11__content">Xóa</span>
+                      </div>
+                    </>
                   )}
                   {typeList !== "hide" && (
                     <div

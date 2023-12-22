@@ -8,7 +8,7 @@ const axiosClient = axios.create({
   // withCredentials: true,
   baseURL: apiConfig.baseUrl,
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
   paramsSerializer: (params) => queryString.stringify({ ...params }),
 });
@@ -24,7 +24,14 @@ axiosClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 400) {
       // Xử lý lỗi ở đây mà không cần thông báo đỏ lên màn hình
-      toast.error(error.response.data.errors?.msg);
+      if (error.response?.status === 400) {
+        toast.error(
+          error.response?.data?.msg
+            ? error.response.data?.msg
+            : "Có lỗi xảy ra!!"
+        );
+        return null;
+      }
     }
     if (error.response && error.response.status === 422) {
       toast.error("Vui lòng nhập đúng định dạng dữ liệu!!!");
@@ -32,9 +39,16 @@ axiosClient.interceptors.response.use(
     if (error.response && error.response.status === 500) {
       toast.error("Lỗi hệ thống!!!");
     }
+    if (error.response?.status === 429) {
+      toast.error(
+        error.response?.data?.msg
+          ? error.response.data?.msg
+          : "Yêu cầu quá nhiều lần, vui lòng thử lại sau!"
+      );
+      return null;
+    }
   }
 );
-
 
 const axiosClientJWT = axios.create({
   withCredentials: true,

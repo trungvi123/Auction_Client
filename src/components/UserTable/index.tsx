@@ -53,18 +53,29 @@ function UserTable({ data }: { data: any }) {
   }, [data]);
 
   const runFunc = async () => {
-    const res: any = await userApi.updateBlockUserById({
-      id: inforFunc.idUser,
-      type: inforFunc.variant,
-    });
-    if (res?.status === "success") {
-      if (inforFunc.variant === "block") {
-        toast.success("Khóa tài khoản người dùng thành công!");
-      } else {
-        toast.success("Mở khóa tài khoản người dùng thành công!");
+    if (inforFunc.variant === "block" || inforFunc.variant === "unblock") {
+      const res: any = await userApi.updateBlockUserById({
+        id: inforFunc.idUser,
+        type: inforFunc.variant,
+      });
+      if (res?.status === "success") {
+        if (inforFunc.variant === "block") {
+          toast.success("Khóa tài khoản người dùng thành công!");
+        } else {
+          toast.success("Mở khóa tài khoản người dùng thành công!");
+        }
+        queryClient.invalidateQueries({ queryKey: ["user-list__admin"] });
       }
-      queryClient.invalidateQueries({ queryKey: ["user-list__admin"] });
+    } else {
+      const res: any = await userApi.deleteUserById(inforFunc.idUser);
+      if (res?.status === "success") {
+        toast.success("Xóa tài khoản người dùng thành công!");
+        queryClient.invalidateQueries({ queryKey: ["user-list__admin"] });
+      } else {
+        toast.success("Xóa tài khoản người dùng thất bại!");
+      }
     }
+
     handleClose();
   };
 
@@ -121,6 +132,21 @@ function UserTable({ data }: { data: any }) {
                 <span className="btn-11__content">
                   {data.block ? "Mở khóa" : "Khóa"}
                 </span>
+              </div>
+
+              <div
+                className={`btn-11 mt-2`}
+                onClick={() => {
+                  setInforFunc({
+                    variant: "delete",
+                    idUser: data.idUser,
+                  });
+                  setMsgModal("Xác nhận rằng bạn muốn xóa tài khoản này!");
+
+                  handleShow();
+                }}
+              >
+                <span className="btn-11__content">Xóa</span>
               </div>
             </>
           );

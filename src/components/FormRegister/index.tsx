@@ -10,8 +10,9 @@ import userApi, { ISignUpPayload } from "../../api/userApi";
 import { IRootState } from "../../interface";
 import { setEmail, setEmailPaypal, setLastName } from "../../redux/authSlice";
 import { setShow } from "../../redux/myModalSlice";
-import { camera } from "../../asset/images";
+import { auction, camera } from "../../asset/images";
 import "./FormRegister.css";
+import jwtDecode from "jwt-decode";
 
 const inititalStatePayload = {
   birthday: "",
@@ -25,6 +26,17 @@ const inititalStatePayload = {
   verifyAccount: false,
   avatar: "",
 };
+
+
+interface IToken {
+  _id: any;
+  email: String;
+  emailPaypal: string;
+  lastName: String;
+  role: String;
+  productPermission: string[];
+  freeProductPermission: string[];
+}
 
 function FormRegister({ status = "register" }: { status?: string }) {
   const [validated, setValidated] = useState(false);
@@ -75,11 +87,16 @@ function FormRegister({ status = "register" }: { status?: string }) {
 
   const handleIdCard = (number: string) => {
     const pattern = /^\d+$/;
-    const check = pattern.test(number);
-    setPayload({ ...payload, idCard: number });
-    setErrIdCard(false);
-    if (!check) {
-      setErrIdCard(true);
+    if (!number) {
+      setErrIdCard(false);
+      setPayload({ ...payload, idCard: number });
+    } else {
+      const check = pattern.test(number);
+      setPayload({ ...payload, idCard: number });
+      setErrIdCard(false);
+      if (!check) {
+        setErrIdCard(true);
+      }
     }
   };
 
@@ -115,7 +132,7 @@ function FormRegister({ status = "register" }: { status?: string }) {
       setErrEmail(true);
       check = false;
     }
-    if (!emailRegex.test(payload.emailPaypal)) {
+    if (payload.emailPaypal && !emailRegex.test(payload.emailPaypal)) {
       setErrEmailPaypal(true);
       check = false;
     }
@@ -141,7 +158,6 @@ function FormRegister({ status = "register" }: { status?: string }) {
         }
         setValidated(true);
       } else {
-
         const formData = new FormData();
         const config = {
           headers: {
@@ -157,19 +173,25 @@ function FormRegister({ status = "register" }: { status?: string }) {
         formData.append("address", payload.address);
         formData.append("emailPaypal", payload.emailPaypal);
         formData.append("verifyAccount", payload.verifyAccount.toString());
-        if(newAvatar?.length > 0){
+        if (newAvatar?.length > 0) {
           formData.append("avatar", newAvatar[0]);
         }
 
         formData.append("userId", clientId);
 
-        const res: any = await userApi.updateProfile(formData,config);
+        const res: any = await userApi.updateProfile(formData, config);
 
         if (res?.status === "success") {
           toast.success("Cập nhật hồ sơ thành công");
           dispatch(setEmailPaypal(payload.emailPaypal));
           dispatch(setEmail(payload.email));
           dispatch(setLastName(payload.lastName));
+          
+          localStorage.setItem("token", res.accessToken);
+          const dataToken: IToken = jwtDecode(res.accessToken);
+          dispatch(setEmailPaypal(dataToken.emailPaypal));
+          dispatch(setEmail(dataToken.email));
+          dispatch(setLastName(dataToken.lastName));
         }
       }
     }
@@ -249,47 +271,55 @@ function FormRegister({ status = "register" }: { status?: string }) {
       </>
       <Form noValidate validated={validated} ref={refForm}>
         <Row className=" mt-5">
-          <div className="mb-4 d-flex justify-content-center">
-            <input
-              id="img-select"
-              accept=".jpg, .jpeg, .png ,.html,.htm"
-              type={"file"}
-              className="d-none"
-              onChange={(e) => setNewAvatar(e.target.files)}
-            />
-            <label
-              htmlFor="img-select"
-              style={{ cursor: "pointer", width: "120px" }}
-              className="d-flex label-avatar flex-column justify-content-center align-items-center"
-            >
-              <img
-                className="avatar"
-                style={{
-                  height: "100px",
-                  width: "100px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
-                }}
-                src={
-                  newAvatar?.length > 0
-                    ? URL.createObjectURL(newAvatar[0])
-                    : payload?.avatar
-                }
-                alt="upload img"
+          {status !== "register" && (
+            <div className="mb-4 d-flex justify-content-center">
+              <input
+                id="img-select"
+                accept=".jpg, .jpeg, .png ,.html,.htm"
+                type={"file"}
+                className="d-none"
+                onChange={(e) => setNewAvatar(e.target.files)}
               />
-              <div
-                style={{
-                  backgroundImage: `url(${
+              <label
+                htmlFor="img-select"
+                style={{ cursor: "pointer", width: "120px" }}
+                className="d-flex label-avatar flex-column justify-content-center align-items-center"
+              >
+                <img
+                  className="avatar"
+                  style={{
+                    height: "100px",
+                    width: "100px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                  src={
                     newAvatar?.length > 0
                       ? URL.createObjectURL(newAvatar[0])
                       : payload?.avatar
-                  })`,
-                }}
-                className="avatar-update"
-              ></div>
-              <img className="camera" src={camera} alt="" />
-            </label>
-          </div>
+                  }
+                  alt="upload img"
+                />
+                <img
+                  // style={{
+                  //   backgroundImage: `url(${
+                  //     newAvatar?.length > 0
+                  //       ? URL.createObjectURL(newAvatar[0])
+                  //       : payload?.avatar || auction
+                  //   })`,
+                  // }}
+                  src={
+                    newAvatar?.length > 0
+                      ? URL.createObjectURL(newAvatar[0])
+                      : payload?.avatar
+                  }
+                  className="avatar-update"
+                  alt="img-under"
+                />
+                <img className="camera" src={camera} alt="camera-icon" />
+              </label>
+            </div>
+          )}
 
           <Form.Group
             className="mb-3"
@@ -448,7 +478,6 @@ function FormRegister({ status = "register" }: { status?: string }) {
           >
             <Form.Label>Căn cước công dân</Form.Label>
             <Form.Control
-              required
               type="text"
               placeholder="CCCD"
               value={payload.idCard}
@@ -457,9 +486,6 @@ function FormRegister({ status = "register" }: { status?: string }) {
             {erridCard && (
               <p className="text__invalid">Số căn cước không hợp lệ!</p>
             )}
-            <Form.Control.Feedback type="invalid">
-              Vui lòng nhập số căn cước công dân của bạn!
-            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group
             className="mb-3"

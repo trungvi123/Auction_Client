@@ -11,6 +11,8 @@ import { IconButton, Tooltip } from "@mui/material";
 import formatDateTime from "../../utils/formatDay";
 import userApi from "../../api/userApi";
 import { Link } from "react-router-dom";
+import { socket } from "../Header";
+import { useQuery } from "@tanstack/react-query";
 
 interface INotification {
   _id: string;
@@ -62,6 +64,8 @@ const NotificationDrawer = ({
         handleSetUnreadNotifications(count);
       }
     };
+
+   
     if (clientId) {
       getNotifications();
     }
@@ -71,6 +75,9 @@ const NotificationDrawer = ({
     handleSetUnreadNotifications,
     loadNotifications,
   ]);
+
+
+
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {

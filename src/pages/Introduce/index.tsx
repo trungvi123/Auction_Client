@@ -1,13 +1,26 @@
+import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { intro_icon1, intro_icon2, intro_icon3, intro_icon4, long_intro } from "../../asset/images";
+import userApi from "../../api/userApi";
+import {
+  intro_icon1,
+  intro_icon2,
+  intro_icon3,
+  intro_icon4,
+  long_intro,
+} from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { IRootState } from "../../interface";
 import "./Introduce.css";
 
 const Introduce = () => {
   const description = useSelector((e: IRootState) => e.ui.inforPage.longIntro);
+
+  const numberIntro = useQuery({
+    queryKey: ["numberIntro"],
+    queryFn: () => userApi.getNumberOfIntro(),
+  });
 
   return (
     <div
@@ -73,37 +86,35 @@ const Introduce = () => {
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
               <img className="statistics-item__img" src={intro_icon1} alt="" />
-              <span className="statistics-item__count">50+</span>
+              <span className="statistics-item__count">{numberIntro?.data?.data?.auction}+</span>
               <span className="statistics-item__type">
-                Nhà đấu giá đối tác của Lạc Việt
+                Cuộc đấu giá đã được tạo
               </span>
             </div>
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
               <img className="statistics-item__img" src={intro_icon2} alt="" />
-              <span className="statistics-item__count">200 triệu+</span>
+              <span className="statistics-item__count">{numberIntro?.data?.data?.free}+</span>
               <span className="statistics-item__type">
-                Giá trị tài sản đã bán
+                Sản phẩm được chia sẻ
               </span>
             </div>
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
               <img className="statistics-item__img" src={intro_icon3} alt="" />
-              <span className="statistics-item__count">145+</span>
+              <span className="statistics-item__count">{numberIntro?.data?.data?.news}+</span>
               <span className="statistics-item__type">
-                Tài sản đã đấu giá thành công
+                Bài viết được đăng tải
               </span>
             </div>
           </Col>
           <Col sm={6} md={3}>
             <div className="statistics-item py-md-5 py-sm-4 py-2">
               <img className="statistics-item__img" src={intro_icon4} alt="" />
-              <span className="statistics-item__count">150+</span>
-              <span className="statistics-item__type">
-                Cuộc đấu giá đã diễn ra
-              </span>
+              <span className="statistics-item__count">{numberIntro?.data?.data?.user}+</span>
+              <span className="statistics-item__type">Số lượng thành viên</span>
             </div>
           </Col>
         </Row>

@@ -30,13 +30,10 @@ const Footer = () => {
               <h5>Về chúng tôi</h5>
               <ul className="footer-list">
                 <li>
-                  <Link to={"/"}>Giới thiệu</Link>
+                  <Link to={"/gioi-thieu"}>Giới thiệu</Link>
                 </li>
                 <li>
                   <Link to={"/"}>Quy chế hoạt động</Link>
-                </li>
-                <li>
-                  <Link to={"/"}>Cơ chế giải quyết tranh chấp</Link>
                 </li>
                 <li>
                   <Link to={"/"}>Hướng dẫn sử dụng</Link>
@@ -49,16 +46,10 @@ const Footer = () => {
               <h5>Chính sách</h5>
               <ul className="footer-list">
                 <li>
-                  <Link to={"/"}>Câu hỏi thường gặp</Link>
+                  <Link to={"/tin-tuc/6573224d0732e771be58507b"}>Câu hỏi thường gặp</Link>
                 </li>
                 <li>
-                  <Link to={"/"}>Cho thuê tổ chức đấu giá trực tuyến</Link>
-                </li>
-                <li>
-                  <Link to={"/"}>Văn bản pháp quy</Link>
-                </li>
-                <li>
-                  <Link to={"/"}>Chính sách bảo mật thông tin</Link>
+                  <Link to={"/tin-tuc/65731eea8e5e17ae0ac551f0"}>Chính sách bảo mật thông tin</Link>
                 </li>
               </ul>
             </div>

@@ -84,8 +84,8 @@ const Header = () => {
       }
       return res.data;
     },
+    enabled: clientId !== '',
   });
-
   
 
   const openMyModal = () => {
@@ -119,17 +119,23 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit("join_Notification_Room", clientId);
+    if(clientId){
+      socket.emit("join_Notification_Room", clientId);
+    }
+    
+    socket.on("respone_refreshPage", () => {
+      queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+    });
+  }, [clientId, queryClient]);
+  useEffect(()=>{
     socket.on("new_notification", (data: any) => {
-      setLoadNotifications(!loadNotifications);
+      setLoadNotifications(!loadNotifications);   
+         
       if (data === "milestone_new") {
         queryClient.invalidateQueries({ queryKey: ["userNotification"] });
       }
     });
-    socket.on("respone_refreshPage", () => {
-      queryClient.invalidateQueries({ queryKey: ["allProducts"] });
-    });
-  }, [clientId, loadNotifications, queryClient]);
+  },[loadNotifications, queryClient])
 
   useEffect(() => {
     socket.on(
@@ -140,8 +146,8 @@ const Header = () => {
             (item: any) => item._id !== data?.productId
           );
           dispatch(setHappenningProduct(filter));
-          if(filter.length === 0){
-            queryClient.invalidateQueries({queryKey: ["allProducts"]})
+          if (filter.length === 0) {
+            queryClient.invalidateQueries({ queryKey: ["allProducts"] });
           }
         } else {
           const arr1: any = [];
@@ -151,14 +157,13 @@ const Header = () => {
               arr1.push(item);
             } else {
               dispatch(setHappenningProduct([...happenningProduct, item]));
-            } 
+            }
           });
           dispatch(setUpcomingProduct(arr1));
         }
       }
     );
   }, [dispatch, happenningProduct, queryClient, upcomingProduct]);
-
 
   return (
     <div className={`header`}>
@@ -248,7 +253,6 @@ const Header = () => {
               <Nav.Link as={Link} to="/news">
                 Tin tức
               </Nav.Link>
-             
             </div>
 
             <Nav.Link as={Link} to="/gioi-thieu">
@@ -261,7 +265,6 @@ const Header = () => {
           <div className="head-right">
             <CurrentTime
               clientId={clientId}
-              socket={socket}
               milestones={milestones}
             ></CurrentTime>
 

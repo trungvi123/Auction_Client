@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import axiosClient, { axiosClientJWT } from "./axiosClient";
 import apiConfig from "./axiosConfig";
 
 const roomApi = {
@@ -8,7 +8,7 @@ const roomApi = {
   },
   joinRoom: (payload: { idProd: string; idUser: string; idRoom: any }) => {
     const url = apiConfig.baseUrl + `room/join`;
-    return axiosClient.post(url, payload);
+    return axiosClientJWT.post(url, payload);
   },
 };
 

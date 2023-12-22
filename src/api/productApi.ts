@@ -10,6 +10,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/status`;
     return axiosClient.post(url, payload);
   },
+  getProductByStatusAD: (payload: { status: string }) => {
+    const url = apiConfig.baseUrl + `admin/statusAd`;
+    return axiosClientJWT.post(url, payload);
+  },
   search: (payload: { keyword: string }) => {
     const url = apiConfig.baseUrl + `product/search`;
     return axiosClientJWT.post(url, payload);
@@ -29,6 +33,10 @@ const productApi = {
   getProducts: (page: Number = 1) => {
     const url = apiConfig.baseUrl + `product/page/${page}`;
     return axiosClient.get(url);
+  },
+  getHideProductsByOwner: (userId: string) => {
+    const url = apiConfig.baseUrl + `product/getHideProductsByOwner/${userId}`;
+    return axiosClientJWT.get(url);
   },
   getAllProducts: () => {
     const url = apiConfig.baseUrl + `product/all/`;
@@ -62,7 +70,10 @@ const productApi = {
     const url = apiConfig.baseUrl + `product/share`;
     return axiosClient.post(url, payload);
   },
-
+  hideProduct: (payload: any) => {
+    const url = apiConfig.baseUrl + `product/hideProduct/${payload.id}`;
+    return axiosClientJWT.post(url, payload);
+  },
   updateShipping: (payload: { id: string }) => {
     const url = apiConfig.baseUrl + `product/edit/shipping/${payload.id}`;
     return axiosClientJWT.patch(url, payload);

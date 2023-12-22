@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -72,7 +72,6 @@ const ReceivedList = () => {
     setWinnerTemp(winner);
   };
 
-  
   return (
     <>
       {permission && (
@@ -112,10 +111,18 @@ const ReceivedList = () => {
               <Col>
                 <div className="reg__title">
                   <h1>Danh sách đăng ký nhận sản phẩm</h1>
+
+                  {dataReceived?.data?.receiver && (
+                    <h5 className="text-center">
+                      <a href={`mailto:${dataReceived?.data?.receiver?.email}`}>
+                        ( {dataReceived?.data?.receiver?.email} đã nhận )
+                      </a>
+                    </h5>
+                  )}
                 </div>
               </Col>
             </Row>
-            {showLuckyCircle  && !dataReceived?.data?.receiver && (
+            {showLuckyCircle && !dataReceived?.data?.receiver && (
               <Row>
                 <Col>
                   <LuckyCircle
@@ -134,23 +141,25 @@ const ReceivedList = () => {
                 </Col>
               </Row>
             )}
-            {dataReceived?.data?.accepterList.length > 0 && <Row className="justify-content-end my-5">
-              <Col sm={3}>
-                <div
-                  className={`btn-11 btn-11__full ${
-                    dataReceived?.data?.receiver ? "disable" : ""
-                  }`}
-                  onClick={() => {
-                    if (!dataReceived?.data?.receiver) {
-                      setShowLuckyCircle(!showLuckyCircle);
-                    }
-                  }}
-                >
-                  <span className="btn-11__content">Vòng xoay</span>
-                </div>
-              </Col>
-            </Row>}
-            
+            {dataReceived?.data?.accepterList.length > 0 && (
+              <Row className="justify-content-end my-5">
+                <Col sm={3}>
+                  <div
+                    className={`btn-11 btn-11__full ${
+                      dataReceived?.data?.receiver ? "disable" : ""
+                    }`}
+                    onClick={() => {
+                      if (!dataReceived?.data?.receiver) {
+                        setShowLuckyCircle(!showLuckyCircle);
+                      }
+                    }}
+                  >
+                    <span className="btn-11__content">Vòng xoay</span>
+                  </div>
+                </Col>
+              </Row>
+            )}
+
             <Row>
               <Col>
                 <ReceivedListTable

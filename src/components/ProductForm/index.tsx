@@ -106,8 +106,8 @@ const ProductForm = ({ type, id = "" }: { type: string; id?: string }) => {
     //   currentTime.getTime() + hoursToAdd * 1000
     // );
 
-    // So sánh newDate với currentTime + 6 tiếng
-    // nếu newDate nhỏ hơn date truyền vào thì thông qua
+    // // So sánh newDate với currentTime + 6 tiếng
+    // // nếu newDate nhỏ hơn date truyền vào thì thông qua
     // if (newDate >= date) {
     // setInvalidDate(true);
     // return false;

@@ -14,6 +14,11 @@ const freeProductApi = {
     const url = apiConfig.baseUrl + `freeProduct/getFreeProductsByEmail/${email}`;
     return axiosClient.get(url);
   },
+  getHideProductsByOwner: (userId:string) => {
+    const url = apiConfig.baseUrl + `freeProduct/getHideProductsByOwner/${userId}`;
+    return axiosClientJWT.get(url);
+  },
+
   getFreeProducts: (limit?: Number) => {
     let url = apiConfig.baseUrl + `freeProduct/all`;
     if (limit) {

@@ -31,6 +31,11 @@
     margin-bottom: 4px;
     color: var(--gray-color);
 }
+.sendOTP {
+    height: 38px !important;
+    width: 80px;
+    margin-left: 15px;
+}
 
 .email-lable {
     font-size: 14px;

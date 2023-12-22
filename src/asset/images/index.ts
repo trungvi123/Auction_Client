@@ -9,6 +9,8 @@ export { default as err } from "./bg/errors.jpg";
 export { default as banner } from "./bg/banner.jpg";
 export { default as banner_res } from "./bg/banner_res.png";
 export { default as long_intro } from "./bg/long_intro.png";
+export { default as anhbia } from "./bg/anhbia.jpg";
+
 
 export { default as footer_banner } from "./bg/footer-banner.png";
 //icon

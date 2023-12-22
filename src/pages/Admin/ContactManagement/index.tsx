@@ -25,7 +25,7 @@ const ContactManagement = () => {
 
   return (
     <Container>
-      <Row className="mt-5 justify-content-end">
+      <Row className="mt-5 justify-content-end" >
         <Col sm={4} className={"my-4"}>
           <Form.Select
             onChange={(e: any) => setTypeList(e.target.value)}
@@ -36,7 +36,7 @@ const ContactManagement = () => {
           </Form.Select>
         </Col>
       </Row>
-      <Row>
+      <Row style={{minHeight: '400px'}}>
         <Col>
           <ContactTable data={contact_list?.data || []}></ContactTable>
         </Col>

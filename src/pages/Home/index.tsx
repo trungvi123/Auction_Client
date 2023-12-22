@@ -1,20 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
+import newsApi from "../../api/newsApi";
 import productApi from "../../api/productApi";
-import { banner_res, product_bg, home_intro } from "../../asset/images/";
+import {
+  banner_res,
+  product_bg,
+  home_intro,
+  auction,
+} from "../../asset/images/";
 import FreeProductCard from "../../components/FreeProductCard";
 import MySlider from "../../components/MySlider";
 import ProductCard from "../../components/ProductCard";
 import SEO from "../../components/SEO";
 import TitleH2 from "../../components/TitleH2";
 import { IRootState } from "../../interface";
-import { setHappenningProduct, setUpcomingProduct } from "../../redux/productSlice";
+import {
+  setHappenningProduct,
+  setUpcomingProduct,
+} from "../../redux/productSlice";
+import formatDateTime from "../../utils/formatDay";
 
 import "./Home.css";
 const Home = () => {
@@ -22,10 +32,14 @@ const Home = () => {
     (e: IRootState) => e.ui?.images?.short_intro
   );
   const intro = useSelector((e: IRootState) => e.ui?.inforPage?.shortIntro);
-  const goingOnList = useSelector((e:IRootState)=> e.product?.happenningProduct)
-  const prepareToStart = useSelector((e:IRootState)=> e.product?.upcomingProduct)
- 
-  const dispatch = useDispatch()
+  const goingOnList = useSelector(
+    (e: IRootState) => e.product?.happenningProduct
+  );
+  const prepareToStart = useSelector(
+    (e: IRootState) => e.product?.upcomingProduct
+  );
+
+  const dispatch = useDispatch();
 
   const freeProductsQuery = useQuery({
     queryKey: ["freePproducts"],
@@ -48,18 +62,26 @@ const Home = () => {
     staleTime: 1000 * 600,
   });
 
+  const newsQuery = useQuery({
+    queryKey: ["news"],
+    queryFn: () => newsApi.getAllNews(),
+    staleTime: 1000 * 600,
+  });
+
   useEffect(() => {
-    const list1:any[] = [];
-    const list2:any[] = [];
+    const list1: any[] = [];
+    const list2: any[] = [];
     allProductsQuery?.data?.data?.forEach((item: any) => {
-      if (item.auctionEnded === false && item.auctionStarted === true) { // dang dien ra
-        list1.push(item)
-      } else if (item.auctionEnded === false && item.auctionStarted === false) { // sap dien ra
-        list2.push(item)
+      if (item.auctionEnded === false && item.auctionStarted === true) {
+        // dang dien ra
+        list1.push(item);
+      } else if (item.auctionEnded === false && item.auctionStarted === false) {
+        // sap dien ra
+        list2.push(item);
       }
     });
-    dispatch(setHappenningProduct(list1))
-    dispatch(setUpcomingProduct(list2))
+    dispatch(setHappenningProduct(list1));
+    dispatch(setUpcomingProduct(list2));
   }, [allProductsQuery?.data?.data, dispatch]);
 
   return (
@@ -170,10 +192,7 @@ const Home = () => {
                 <div>
                   {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
                   {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
-                  <MySlider
-                    type={"product"}
-                    data={prepareToStart}
-                  ></MySlider>
+                  <MySlider type={"product"} data={prepareToStart}></MySlider>
                 </div>
               ) : (
                 <div>
@@ -194,7 +213,7 @@ const Home = () => {
       )}
 
       {caterogyQuery?.data?.category.map((cate: any) => {
-        const allProducts =  [...goingOnList,...prepareToStart]
+        const allProducts = [...goingOnList, ...prepareToStart];
         let dataFilter = allProducts.filter(
           (item: any) =>
             item.category.link === cate.link &&
@@ -258,30 +277,134 @@ const Home = () => {
           return null;
         }
       })}
+      {freeProductsQuery?.data?.data?.length > 0 && (
+        <section className="product-section">
+          <img className="product-section__bg" src={product_bg} alt="" />
+          <Container>
+            <div>
+              <TitleH2 title="Các sản phẩm có thể nhận miễn phí"></TitleH2>
 
+              {freeProductsQuery?.data?.data?.length >= 3 ? (
+                <div>
+                  {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
+                  {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
+                  <MySlider
+                    type={"freeProduct"}
+                    data={freeProductsQuery?.data?.data}
+                  ></MySlider>
+                </div>
+              ) : (
+                <div>
+                  <Row>
+                    {freeProductsQuery?.data?.data?.map((item: any) => {
+                      return (
+                        <Col md={6} lg={4} sm={12} key={item._id}>
+                          <FreeProductCard data={item}></FreeProductCard>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </div>
+              )}
+            </div>
+          </Container>
+        </section>
+      )}
       <section className="product-section">
         <img className="product-section__bg" src={product_bg} alt="" />
         <Container>
           <div>
-            {freeProductsQuery?.data?.data?.length > 0 && (
-              <TitleH2 title="Các sản phẩm có thể nhận miễn phí"></TitleH2>
+            {newsQuery?.data?.data?.length > 0 && (
+              <TitleH2 title="Tin tức mới"></TitleH2>
             )}
-            {freeProductsQuery?.data?.data?.length >= 3 ? (
+            {newsQuery?.data?.data?.length >= 3 ? (
               <div>
                 {/* type dùng để biết xem slider này sẽ chứa card loại nào */}
                 {/* quantity dùng để xác định số lượng sản phẩm lấy về qua Api */}
-                <MySlider
-                  type={"freeProduct"}
-                  data={freeProductsQuery?.data?.data}
-                ></MySlider>
+                <MySlider type={"news"} data={newsQuery?.data?.data}></MySlider>
               </div>
             ) : (
               <div>
                 <Row>
-                  {freeProductsQuery?.data?.data?.map((item: any) => {
+                  {newsQuery?.data?.data?.map((item: any) => {
                     return (
                       <Col md={6} lg={4} sm={12} key={item._id}>
-                        <FreeProductCard data={item}></FreeProductCard>
+                        {/* <FreeProductCard data={item}></FreeProductCard> */}
+                        <div key={item._id} className="px-2">
+                          <div className="position-relative mb-3">
+                            <Link to={`/tin-tuc/${item?._id}`}>
+                              <img
+                                className="img-fluid border border-bottom-0 news-img"
+                                src={item?.img || auction}
+                                style={{
+                                  objectFit: "cover",
+                                  width: "100%",
+                                  height: "250px",
+                                }}
+                                alt="hinh-anh"
+                              />
+                            </Link>
+
+                            <div
+                              style={{ minHeight: "151px" }}
+                              className="bg-white border border-top-0 p-4"
+                            >
+                              <div className="mb-2">
+                                <div
+                                  style={{
+                                    height: "30px",
+                                    width: "100px",
+                                    borderRadius: "12px",
+                                    backgroundColor: "yellow",
+                                    fontSize: "13px",
+                                    fontWeight: "600",
+                                  }}
+                                  className=" text-uppercase d-flex justify-content-center align-items-center"
+                                >
+                                  {item?.newsSystem ? "Hệ thống" : "Tin tức"}
+                                </div>
+                              </div>
+                              <Link
+                                to={`/tin-tuc/${item?._id}`}
+                                className="h5 d-block mb-3 two-line-word text-secondary text-uppercase font-weight-bold"
+                              >
+                                {item?.title}
+                              </Link>
+                            </div>
+                            <div
+                              className="d-flex justify-content-between bg-white border border-top-0 p-4"
+                              style={{ gap: "8px" }}
+                            >
+                              <Link to={`/cua-hang?user=${item?.owner?.email}`}>
+                                <div
+                                  className="d-flex align-items-center"
+                                  style={{ gap: "8px" }}
+                                >
+                                  <img
+                                    className="rounded-circle"
+                                    src={item?.owner?.avatar}
+                                    style={{ objectFit: "cover" }}
+                                    width="45"
+                                    height="45"
+                                    alt=""
+                                  />
+                                  <div>
+                                    <small style={{ flex: 1 }}>
+                                      {item?.owner?.firstName +
+                                        " " +
+                                        item?.owner?.lastName}
+                                    </small>
+                                    <p className="text-body mb-0">
+                                      <small>
+                                        {formatDateTime(item?.createdAt)}
+                                      </small>
+                                    </p>
+                                  </div>
+                                </div>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
                       </Col>
                     );
                   })}

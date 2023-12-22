@@ -75,11 +75,11 @@ const NewsDetail = () => {
                   if (item._id !== id) {
                     return (
                       <div key={item._id} className="news-other-item mt-1">
-                        <Link to={""} className="news-other-item__img">
+                        <Link to={`/tin-tuc/${item._id}`} className="news-other-item__img">
                           <img src={item.img || auction} alt="" />
                         </Link>
                         <div className="news-other-item__content">
-                          <Link to={""} className="title">
+                          <Link to={`/tin-tuc/${item._id}`} className="title">
                             {item.title}
                           </Link>
                           <div className="d-flex justify-content-end">

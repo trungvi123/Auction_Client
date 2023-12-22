@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import freeProductApi from "../../api/freeProduct";
+import productApi from "../../api/productApi";
 import userApi from "../../api/userApi";
 import ProductsTable from "../../components/ProductsTable";
 import SEO from "../../components/SEO";
@@ -24,6 +26,8 @@ const ManagementAuction = () => {
         result = await userApi.getWinProductsByOwner(idOwner);
       } else if (typeList === "refuse") {
         result = await userApi.getRefuseProductsByOwner(idOwner);
+      } else if (typeList === "hide") {
+        result = await productApi.getHideProductsByOwner(idOwner);
       } else {
         result = await userApi.getBidsProductsByOwner(idOwner);
       }
@@ -42,7 +46,9 @@ const ManagementAuction = () => {
         result = await userApi.getParticipateProductsByOwner(idOwner);
       } else if (typeFreeList === "refuse") {
         result = await userApi.getRefuseFreeProductsByOwner(idOwner);
-      }else {
+      }else if (typeFreeList === "hide") {
+        result = await freeProductApi.getHideProductsByOwner(idOwner)
+      } else {
         result = await userApi.getReceivedProductsByOwner(idOwner);
       }
       return result;
@@ -53,7 +59,7 @@ const ManagementAuction = () => {
   return (
     <div>
       <Container>
-      <SEO title={'Quản lí'}></SEO>
+        <SEO title={"Quản lí"}></SEO>
 
         <Row className="mt-5 justify-content-end">
           <Col sm={4} className={"my-4"}>
@@ -66,6 +72,7 @@ const ManagementAuction = () => {
               <option value="join">Cuộc đấu giá bạn đã tham gia</option>
               <option value="create">Cuộc đấu giá bạn đã tạo</option>
               <option value="refuse">Sản phẩm đấu giá bị từ chối</option>
+              <option value="hide">Sản phẩm đấu giá đã ẩn</option>
             </Form.Select>
           </Col>
           <Col sm={12}>
@@ -85,6 +92,7 @@ const ManagementAuction = () => {
               <option value="participate">Sản phẩm đã đăng ký nhận</option>
               <option value="create">Sản phẩm đã chia sẻ</option>
               <option value="refuse">Sản phẩm chia sẻ đã bị từ chối</option>
+              <option value="hide">Sản phẩm chia sẻ đã ẩn</option>
 
             </Form.Select>
           </Col>

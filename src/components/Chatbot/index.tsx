@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import userApi from "../../api/userApi";
 import formatDateTime from "../../utils/formatDay";
 import "./Chatbot.css";
@@ -9,13 +9,16 @@ interface IMessage {
 }
 
 const ChatBot = () => {
+  // ui
+  const [iconActive, setIconActive] = useState<boolean>(false);
+
+  // handle
   const [messages, setMessages] = useState<IMessage[]>([
     {
-      message: "Chào bạn 👋!, rất vui khi được giải đáp thắc mắc của bạn!",
+      message: "Chào bạn 👋, rất vui khi được giải đáp thắc mắc của bạn!",
       sender: "bot",
     },
   ]);
-
   const [message, setMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
@@ -35,20 +38,33 @@ const ChatBot = () => {
     setMessages(newMessage);
     setIsTyping(true);
     const res: any = await userApi.chat(payload);
-    if (res?.status === "success") {
-      newMessage.push({
-        message: res.response,
-        sender: "bot",
-      });
-      setMessages(newMessage);
-      setMessage("");
+    setTimeout(() => {
+      if (res?.status === "success") {
+        newMessage.push({
+          message: res.response,
+          sender: "bot",
+        });
+        setMessages(newMessage);
+        setMessage("");
+      }
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  function handleOpenChatBot() {
+    setIconActive(!iconActive);
+  }
+
+  const handleKeyPress = (e: any) => {
+    if (e.key === "Enter") {
+      // Xử lý khi nhấn nút Enter
+      handleChat();
     }
-    setIsTyping(false);
   };
 
   return (
     <div>
-      <div className="chat-screen">
+      <div className={`chat-screen ${iconActive ? "show-chat" : ""}`}>
         <div className="chat-header">
           <div className="chat-header-title">CIT AUCTION</div>
         </div>
@@ -58,10 +74,13 @@ const ChatBot = () => {
           </div>
 
           {messages.map((item, index) => {
-            let mess =  item.message.replace(item?.message[0],item?.message[0]?.toLocaleUpperCase())
+            let mess = item.message.replace(
+              item?.message[0],
+              item?.message[0]?.toLocaleUpperCase()
+            );
             if (item.sender !== "user") {
               return (
-                <div key={index} className="chat-bubble you" >
+                <div key={index} className="chat-bubble you">
                   {mess}
                 </div>
               );
@@ -73,59 +92,11 @@ const ChatBot = () => {
               );
             }
           })}
-      {isTyping && <div className="chat-bubble you">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-              style={{
-                margin: "auto",
-                display: "block",
-                shapeRendering: "auto",
-                width: "43px",
-                height: "20px",
-              }}
-              viewBox="0 0 100 100"
-              preserveAspectRatio="xMidYMid"
-            >
-              <circle cx="0" cy="44.1678" r="15" fill="#ffffff">
-                <animate
-                  attributeName="cy"
-                  calcMode="spline"
-                  keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5"
-                  repeatCount="indefinite"
-                  values="57.5;42.5;57.5;57.5"
-                  keyTimes="0;0.3;0.6;1"
-                  dur="1s"
-                  begin="-0.6s"
-                ></animate>
-              </circle>{" "}
-              <circle cx="45" cy="43.0965" r="15" fill="#ffffff">
-                <animate
-                  attributeName="cy"
-                  calcMode="spline"
-                  keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5"
-                  repeatCount="indefinite"
-                  values="57.5;42.5;57.5;57.5"
-                  keyTimes="0;0.3;0.6;1"
-                  dur="1s"
-                  begin="-0.39999999999999997s"
-                ></animate>
-              </circle>{" "}
-              <circle cx="90" cy="52.0442" r="15" fill="#ffffff">
-                <animate
-                  attributeName="cy"
-                  calcMode="spline"
-                  keySplines="0 0.5 0.5 1;0.5 0 1 0.5;0.5 0.5 0.5 0.5"
-                  repeatCount="indefinite"
-                  values="57.5;42.5;57.5;57.5"
-                  keyTimes="0;0.3;0.6;1"
-                  dur="1s"
-                  begin="-0.19999999999999998s"
-                ></animate>
-              </circle>
-            </svg>
-          </div>}
-          
+          {isTyping && (
+            <div className="chat-bubble you" style={{ minWidth: "70px" }}>
+              <span className="loader"></span>
+            </div>
+          )}
         </div>
 
         <div className="chat-input">
@@ -133,7 +104,8 @@ const ChatBot = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
+            onKeyPress={handleKeyPress}
+            placeholder="Nhập câu hỏi..."
           />
           <div onClick={handleChat} className="input-action-icon">
             <div className="sendchat-btn">
@@ -156,7 +128,7 @@ const ChatBot = () => {
           </div>
         </div>
       </div>
-      <div className="chat-bot-icon">
+      <div className="chat-bot-icon" onClick={handleOpenChatBot}>
         {/* <img src="img/we-are-here.svg" alt="we are here" /> */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +140,9 @@ const ChatBot = () => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="feather feather-message-square animate"
+          className={`feather feather-message-square ${
+            iconActive ? "" : "animate"
+          }  `}
         >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
@@ -182,7 +156,7 @@ const ChatBot = () => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="feather feather-x "
+          className={`feather feather-x ${iconActive ? "animate" : ""}`}
         >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>

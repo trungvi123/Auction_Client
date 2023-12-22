@@ -268,6 +268,58 @@ function ProductsTable({
     }
   };
 
+  const handleHide = async (id: string) => {
+    const payload = {
+      id,
+      isFree: freeProduct,
+      type: "hide",
+    };
+    const res: any = await productApi.hideProduct(payload);
+    if (res?.status === "success") {
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: ["freeProduct-list__user", { typeFreeList: typeList }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["freeProduct-list__user", { typeFreeList: "hide" }],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList: "hide" }],
+        });
+      }
+    }
+  };
+
+  const handleShowAuction = async (id: string) => {
+    const payload = {
+      id,
+      isFree: freeProduct,
+      type: "show",
+    };
+    const res: any = await productApi.hideProduct(payload);
+    if (res?.status === "success") {
+      if (freeProduct) {
+        queryClient.invalidateQueries({
+          queryKey: ["freeProduct-list__user", { typeFreeList:typeList }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["freeProduct-list__user", { typeFreeList: "create" }],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["auction-list__user", { typeList: "create" }],
+        });
+      }
+    }
+  };
+
   const runFunc = (infor: { variable: string; id: string }) => {
     if (infor.variable === "approve") {
       handleApprove(infor.id);
@@ -283,6 +335,10 @@ function ProductsTable({
       handleFinishTransaction(infor.id);
     } else if (infor.variable === "rate") {
       handleRate(infor.id);
+    } else if (infor.variable === "hide") {
+      handleHide(infor.id);
+    } else if (infor.variable === "show") {
+      handleShowAuction(infor.id);
     } else {
       handleDelete(infor.id);
     }
@@ -404,7 +460,7 @@ function ProductsTable({
           }
           return (
             <div>
-              {!handleByAdmin && (
+              {!handleByAdmin && !freeProduct && (
                 <Tooltip placement="top" title={statusShipping}>
                   <IconButton>
                     {typeList === "create" && (
@@ -664,7 +720,7 @@ function ProductsTable({
                     )}
 
                   {/* Nút kiến nghị để admin duyệt lại */}
-                  {typeList === "refuse" && data.status === "Đã bị từ chối" && (
+                  {typeList === "refuse" && data.status === "Đã từ chối" && (
                     <div
                       className="btn-11"
                       onClick={() => {
@@ -747,21 +803,38 @@ function ProductsTable({
                         <span className="btn-11__content">Đánh giá</span>
                       </div>
                     )}
-                  {/* Nút xóa sản phẩm */}
-                  <div
-                    className="btn-11 mt-2"
-                    onClick={() => {
-                      setModalMode("");
-                      setMsgModal("Bạn có chắc muốn ẩn cuộc đấu giá này?");
-                      setInforHanle({
-                        variable: "delete",
-                        id: data._id,
-                      });
-                      handleShow();
-                    }}
-                  >
-                    <span className="btn-11__content">Ẩn</span>
-                  </div>
+
+                  {typeList === "hide" ? (
+                    <div
+                      className="btn-11 mt-2"
+                      onClick={() => {
+                        setModalMode("");
+                        setMsgModal("Bạn có chắc muốn hiện cuộc đấu giá này?");
+                        setInforHanle({
+                          variable: "show",
+                          id: data._id,
+                        });
+                        handleShow();
+                      }}
+                    >
+                      <span className="btn-11__content">Hiện sản phẩm</span>
+                    </div>
+                  ) : (
+                    <div
+                      className="btn-11 mt-2"
+                      onClick={() => {
+                        setModalMode("");
+                        setMsgModal("Bạn có chắc muốn ẩn cuộc đấu giá này?");
+                        setInforHanle({
+                          variable: "hide",
+                          id: data._id,
+                        });
+                        handleShow();
+                      }}
+                    >
+                      <span className="btn-11__content">Ẩn</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 // xử lý admin
@@ -802,27 +875,11 @@ function ProductsTable({
                       </div>
                     </>
                   )}
-                  {statusAuction === "Đã từ chối" && (
+                  {(statusAuction === "Đã từ chối" ||
+                    statusAuction === "Yêu cầu duyệt lại") && (
                     <>
                       <div
-                        className="btn-11"
-                        onClick={() => {
-                          setModalMode("");
-
-                          setMsgModal(
-                            "Bạn có chắc muốn duyệt lại cuộc đấu giá này?"
-                          );
-                          setInforHanle({
-                            variable: "approve",
-                            id: data._id,
-                          });
-                          handleShow();
-                        }}
-                      >
-                        <span className="btn-11__content">Duyệt lại</span>
-                      </div>
-                      <div
-                        className="btn-11 mt-2"
+                        className="btn-11 mt-2 mb-2"
                         onClick={() => {
                           setModalMode("");
 
@@ -853,6 +910,26 @@ function ProductsTable({
                       }}
                     >
                       <span className="btn-11__content">Xóa</span>
+                    </div>
+                  )}
+
+                  {statusAuction === "Yêu cầu duyệt lại" && (
+                    <div
+                      className="btn-11"
+                      onClick={() => {
+                        setModalMode("");
+
+                        setMsgModal(
+                          "Bạn có chắc muốn duyệt lại cuộc đấu giá này?"
+                        );
+                        setInforHanle({
+                          variable: "approve",
+                          id: data._id,
+                        });
+                        handleShow();
+                      }}
+                    >
+                      <span className="btn-11__content">Duyệt lại</span>
                     </div>
                   )}
                 </div>
@@ -950,8 +1027,6 @@ function ProductsTable({
   };
 
   const handleRate = async (id: string) => {
-    console.log("do");
-
     const formData = new FormData();
     const config = {
       headers: {
@@ -970,7 +1045,6 @@ function ProductsTable({
     if (res?.status === "success") {
       toast.success("Đánh giá thành công!");
     }
-    console.log(res);
   };
 
   return (

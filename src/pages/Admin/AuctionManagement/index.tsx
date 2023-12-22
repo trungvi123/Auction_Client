@@ -15,8 +15,7 @@ const AuctionManagement = () => {
       const payload = {
         status: statusAuction,
       };
-      const res = await productApi.getProductByStatus(payload);
-
+      const res = await productApi.getProductByStatusAD(payload);
       return res;
     },
     staleTime: 240 * 1000,
@@ -46,6 +45,8 @@ const AuctionManagement = () => {
             <option value="Đang chờ duyệt">Cuộc đấu giá chưa được duyệt</option>
             <option value="Đã được duyệt">Cuộc đấu giá đã được duyệt</option>
             <option value="Đã từ chối">Cuộc đấu giá đã từ chối</option>
+            <option value="Yêu cầu duyệt lại">Cuộc đấu giá yêu cầu duyệt lại</option>
+
           </Form.Select>
         </Col>
       </Row>
@@ -68,6 +69,8 @@ const AuctionManagement = () => {
             <option value="Đang chờ duyệt">Sản phẩm chia sẻ chưa được duyệt</option>
             <option value="Đã được duyệt">Sản phẩm chia sẻ đã được duyệt</option>
             <option value="Đã từ chối">Sản phẩm chia sẻ đã từ chối</option>
+            <option value="Yêu cầu duyệt lại">Sản phẩm yêu cầu duyệt lại</option>
+
           </Form.Select>
         </Col>
       </Row>

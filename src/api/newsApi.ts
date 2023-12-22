@@ -20,6 +20,12 @@ const newsApi = {
       return axiosClient.get(url);
     }
   },
+  getNewsByEmail: (email: string | undefined) => {
+    if (email) {
+      const url = apiConfig.baseUrl + `news/getNewsByEmail/${email}`;
+      return axiosClient.get(url);
+    }
+  },
   getMyNews: () => {
     const url = apiConfig.baseUrl + `news/getMyNews`;
     return axiosClientJWT.get(url);
@@ -35,6 +41,11 @@ const newsApi = {
   hideNews: (id: string) => {
     const url = apiConfig.baseUrl + `news/hideNews`;
     return axiosClientJWT.post(url, { id });
+  },
+  
+  deleteNews: (id: string) => {
+    const url = apiConfig.baseUrl + `news/deleteNews/${id}`;
+    return axiosClientJWT.delete(url);
   },
   reApprove: (id: string) => {
     const url = apiConfig.baseUrl + `news/reApprove`;
@@ -55,10 +66,6 @@ const newsApi = {
   getNewsByStatus_admin: (type: string) => {
     const url = apiConfig.baseUrl + `admin/getNewsByStatus_admin/${type}`;
     return axiosClientJWT.get(url);
-  },
-  deleteNews: (id: string) => {
-    const url = apiConfig.baseUrl + `admin/deleteNews/${id}`;
-    return axiosClientJWT.delete(url);
   },
 };
 

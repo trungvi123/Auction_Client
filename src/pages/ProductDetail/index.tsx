@@ -125,6 +125,8 @@ const ProductDetail = () => {
       checkJoin();
     }
   }, [idClient, idProduct, product, url]);
+  
+  
 
   const handleJoinAuction = () => {
     const handleJoinRoom = async () => {
@@ -132,6 +134,8 @@ const ProductDetail = () => {
         dispatch(setShow());
         dispatch(setStatus("login"));
       } else {
+
+        
         const res: any = await roomApi.joinRoom({
           idProd: idProduct,
           idRoom: product?.room,
@@ -228,17 +232,23 @@ const ProductDetail = () => {
       const update = async () => {
         const result: any = await productApi.updateAuctionEnded({
           id: idProduct,
+          idUser: idClient,
+          type: "buy",
         });
-        if (result.status === "success") {
+        if (result?.status === "success") {
           setStopCountDown(true);
           setShowModalForWinner(true);
           setShowModal(true);
 
-          setProduct(result.data);
-          setImgData(result.data.images);
+          setProduct(result?.data);
+          setImgData(result?.data?.images);
 
           socket.emit("buy_now", {
             buyNow: true,
+          });
+          socket.emit("refreshProductState", {
+            productId: idProduct,
+            type: "removeHappenningProduct",
           });
         }
       };
@@ -337,7 +347,7 @@ const ProductDetail = () => {
           {!showModalForWinner && !getNotification && (
             <h6>
               Bạn sẽ mua ngay sản phẩm {product?.name} với giá{" "}
-              {product?.price?.$numberDecimal}?
+             {formatMoney(product?.price?.$numberDecimal)}?
             </h6>
           )}
           {showModalForWinner && (
@@ -462,6 +472,7 @@ const ProductDetail = () => {
             onClick={() => {
               dispatch(toggleFireworks(false));
               handleClose();
+              setGetNotification('')
               setTypeNotification([]);
             }}
           >

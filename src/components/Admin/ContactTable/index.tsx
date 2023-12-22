@@ -86,7 +86,7 @@ function ContactTable({ data }: { data: any }) {
   }, [data]);
 
   const handleRefreshList = (a: any) => {
-    queryClient.invalidateQueries({ queryKey: ["statistic"] });
+    queryClient.invalidateQueries({ queryKey: ["contact-list"] });
   };
 
   const columns = useMemo<MRT_ColumnDef<IProTable>[]>(
@@ -181,7 +181,9 @@ function ContactTable({ data }: { data: any }) {
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
-        <CircularProgress color="inherit" />
+        {/* <CircularProgress color="inherit" /> */}
+        <span className="newsLoader"></span>
+
       </Backdrop>
       <MaterialReactTable
         columns={columns}

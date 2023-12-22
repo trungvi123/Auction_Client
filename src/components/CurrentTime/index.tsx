@@ -1,17 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { IRootState } from "../../interface";
+import { socket } from "../Header";
 
 import "./CurrentTime.css";
 
 const CurrentTime = ({
   milestones,
-  socket,
   clientId,
 }: {
   milestones: any;
-  socket: any;
   clientId: string;
 }) => {
   const location = useLocation();
@@ -43,7 +42,7 @@ const CurrentTime = ({
       const y = date.getFullYear();
 
       arrMilestones.forEach((element: any) => {
-        if (element.time <= date.getTime()) {
+        if (element.time <= date.getTime()) {          
           socket.emit("milestone", {
             productId: element.productId,
             clientId,
@@ -51,6 +50,7 @@ const CurrentTime = ({
             milestoneId: element._id,
             type: element.type,
           });
+
 
           // eslint-disable-next-line react-hooks/exhaustive-deps
           arrMilestones = arrMilestones.filter(
@@ -92,41 +92,6 @@ const CurrentTime = ({
           }
         });
 
-        // arrUpdateProductRealtime?.forEach((item: any) => {
-        //   if (item.auctionStarted && !item.auctionEnded) {
-        //     if (new Date(item.endTime).getTime() <= date.getTime()) {
-        //       //cal api
-        //       socket.emit("updateProductRealTime", {
-        //         productId: item._id,
-        //         type: "endTime",
-        //       });
-        //       socket.emit("refreshProductState", {
-        //         productId: item._id,
-        //         type: "removeHappenningProduct",
-        //       });
-        //       // eslint-disable-next-line react-hooks/exhaustive-deps
-        //       arrUpdateProductRealtime = arrUpdateProductRealtime.filter(
-        //         (item2: any) => item2._id !== item._id
-        //       );
-        //     }
-        //   } else if (!item.auctionStarted) {
-        //     if (new Date(item.startTime).getTime() <= date.getTime()) {
-        //       //call api
-        //       socket.emit("updateProductRealTime", {
-        //         productId: item._id,
-        //         type: "startTime",
-        //       });
-        //       socket.emit("refreshProductState", {
-        //         productId: item._id,
-        //         type: "addHappenningProduct",
-        //       });
-        //       // eslint-disable-next-line react-hooks/exhaustive-deps
-        //       arrUpdateProductRealtime = arrUpdateProductRealtime.filter(
-        //         (item2: any) => item2._id !== item._id
-        //       );
-        //     }
-        //   }
-        // });
       }
 
       const dn: string[] = [
@@ -179,4 +144,4 @@ const CurrentTime = ({
   );
 };
 
-export default CurrentTime;
+export default CurrentTime ;

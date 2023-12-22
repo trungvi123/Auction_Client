@@ -15,12 +15,13 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import freeProductApi from "../../api/freeProduct";
+import newsApi from "../../api/newsApi";
 import productApi from "../../api/productApi";
 import userApi from "../../api/userApi";
-import { auction, breadcrumbs } from "../../asset/images";
+import { anhbia, auction, breadcrumbs } from "../../asset/images";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import FilterDrawer from "../../components/FilterDrawer";
 import FreeProductCard from "../../components/FreeProductCard";
@@ -68,6 +69,8 @@ const Store = () => {
   const searchParam = new URLSearchParams(search);
   const user: string | null = searchParam.get("user");
   const [typeList, setTypeList] = useState("product");
+  const next = useNavigate()
+  
   const crrUser = useSelector((e: IRootState) => e.auth);
 
   const [filter, setFilter] = useState<IFilter>(initialFilter);
@@ -77,6 +80,8 @@ const Store = () => {
   const [showReply, setShowReply] = useState<any>({});
   const [data, setData] = useState<any>([]);
   const [data1, setData1] = useState<any>([]);
+  const [newsData, setNewsData] = useState<any>([]);
+
   const [followAlready, setFollowAlready] = useState<boolean>(false);
   const [rateData, setRateData] = useState<any>({
     rate: [],
@@ -88,7 +93,6 @@ const Store = () => {
   const [rateDataRender, setRateDataRender] = useState<any>([]);
   const [reply, setReply] = useState<string>("");
   const [refresh, setRefresh] = useState<boolean>(false);
-
   const [products, setProduct] = useState<any>([]);
   const [productsRender, setProductsRender] = useState<any>([]);
 
@@ -98,8 +102,9 @@ const Store = () => {
         const res: any = await productApi.getProductsByEmail(user);
         const res2: any = await freeProductApi.getProductsByEmail(user);
         const res3: any = await userApi.getUserByEmail(user);
+        const res4: any = await newsApi.getNewsByEmail(user);
         const checkFollow = res3?.data?.follow?.includes(crrUser._id);
-
+        setNewsData(res4?.data);
         setFollowAlready(checkFollow);
         setData(res?.data);
         setData1(res2?.data);
@@ -275,7 +280,7 @@ const Store = () => {
         setProduct(productTemp);
         setProductsRender(productTemp);
       }
-    } else {
+    } else if (typeList === "feedback") {
       let starTemp = rateData.rate;
       if (filter?.star.length > 0) {
         starTemp = rateData.rate.filter((item: any) =>
@@ -284,6 +289,7 @@ const Store = () => {
       }
 
       setRateDataRender(starTemp);
+    } else {
     }
   }, [
     data,
@@ -322,6 +328,13 @@ const Store = () => {
     }
   };
 
+  const handleViewProduct = async (id: string) => {
+   const res:any =await productApi.getProductById(id)
+    if (res?.status === "success") {
+      next(`/chi-tiet-dau-gia/${id}`)
+    }
+  };
+
   return (
     <Container
       className={`productList store ${
@@ -337,18 +350,11 @@ const Store = () => {
       <Row className="mt-3 mb-3 justify-content-between">
         <Col sm={6} md={5}>
           <div className="left-content">
-            <img
-              className="left-content__bg"
-              src="https://down-bs-vn.img.susercontent.com/e03048a5576062894717bb1ab92241f2_tn"
-              alt="bg"
-            />
+            <img className="left-content__bg" src={anhbia} alt="bg" />
             <div className="left-content__inner">
               <div className="d-flex" style={{ gap: "10px" }}>
                 <div className="left-content__inner__circle">
-                  <img
-                    src={rateData?.avatar}
-                    alt=""
-                  />
+                  <img src={rateData?.avatar} alt="" />
                 </div>
                 <span className="email mt-2">{user}</span>
               </div>
@@ -459,11 +465,23 @@ const Store = () => {
                     ></input>
                     <span className="checkmark radio"></span>
                   </label>
+                  <label className="containerCheckbox" htmlFor={"news"}>
+                    Tin tức
+                    <input
+                      type="radio"
+                      onChange={(e) => setTypeList(e.target.value)}
+                      id={"news"}
+                      className="status-checkall"
+                      name="radio-list"
+                      value="news"
+                    ></input>
+                    <span className="checkmark radio"></span>
+                  </label>
                 </div>
               </div>
             </div>
 
-            {typeList === "product" ? (
+            {typeList === "product" && (
               <div>
                 <div className="filter-box">
                   <div className="status-filter">
@@ -642,7 +660,8 @@ const Store = () => {
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+            {typeList === "feedback" && (
               <div className="filter-box">
                 <div className="status-filter">
                   <div className="mb-3">
@@ -738,7 +757,7 @@ const Store = () => {
           </div>
         </Col>
         <Col md={12} lg={9}>
-          {typeList === "product" ? (
+          {typeList === "product" && (
             <div>
               <Row className="justify-content-center products-row">
                 {productsRender &&
@@ -768,7 +787,9 @@ const Store = () => {
                 </Row>
               )}
             </div>
-          ) : (
+          )}
+
+          {typeList === "feedback" && (
             <div className="feedback-container mt-3">
               {rateDataRender?.map((item: any, index: number) => (
                 <div key={item._id}>
@@ -790,10 +811,10 @@ const Store = () => {
                         </span>
                       </div>
                       <div className="feedback-item__center mt-2">
-                        <Link to={`/chi-tiet-dau-gia/${item.product}`}>
+                        <div onClick={() => handleViewProduct(item.product)}>
                           <Gavel sx={{ fontSize: "18px" }}></Gavel>
                           <b>{item.productName}</b>
-                        </Link>
+                        </div>
                       </div>
                       <div className="feedback-item__center">
                         <p>{item.comment}</p>
@@ -890,6 +911,91 @@ const Store = () => {
                   <hr />
                 </div>
               ))}
+            </div>
+          )}
+
+          {typeList === "news" && (
+            <div>
+              <Row className="mt-5" style={{ minHeight: "500px" }}>
+                {newsData?.map((item: any) => {
+                  return (
+                    <div key={item._id} className="col-lg-5 col-sm-6">
+                      <div className="position-relative mb-3">
+                        <Link to={`/tin-tuc/${item._id}`}>
+                          <img
+                            className="img-fluid border border-bottom-0 w-100 news-img"
+                            src={item?.img || auction}
+                            style={{
+                              objectFit: "cover",
+                              height: "250px",
+                            }}
+                            alt="hinh-anh"
+                          />
+                        </Link>
+
+                        <div
+                          style={{ minHeight: "151px" }}
+                          className="bg-white border border-top-0 p-4"
+                        >
+                          <div className="mb-2">
+                            <div
+                              style={{
+                                height: "30px",
+                                width: "100px",
+                                borderRadius: "12px",
+                                backgroundColor: "yellow",
+                                fontSize: "13px",
+                                fontWeight: "600",
+                              }}
+                              className=" text-uppercase d-flex justify-content-center align-items-center"
+                            >
+                              {item.newsSystem ? "Hệ thống" : "Tin tức"}
+                            </div>
+                          </div>
+                          <Link
+                            to={`/tin-tuc/${item._id}`}
+                            className="h5 d-block mb-3 two-line-word text-secondary text-uppercase font-weight-bold"
+                          >
+                            {item.title}
+                          </Link>
+                        </div>
+                        <div
+                          className="d-flex justify-content-between bg-white border border-top-0 p-4"
+                          style={{ gap: "8px" }}
+                        >
+                          <Link to={`/cua-hang?user=${item.owner.email}`}>
+                            <div
+                              className="d-flex align-items-center"
+                              style={{ gap: "8px" }}
+                            >
+                              <img
+                                className="rounded-circle"
+                                src={item.owner.avatar}
+                                style={{ objectFit: "cover" }}
+                                width="45"
+                                height="45"
+                                alt=""
+                              />
+                              <div>
+                                <small style={{ flex: 1 }}>
+                                  {item?.owner?.firstName +
+                                    " " +
+                                    item?.owner?.lastName}
+                                </small>
+                                <p className="text-body mb-0">
+                                  <small>
+                                    {formatDateTime(item?.createdAt)}
+                                  </small>
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </Row>
             </div>
           )}
         </Col>

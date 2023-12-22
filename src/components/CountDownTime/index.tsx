@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import productApi from "../../api/productApi";
 import "./CountDownTime.css";
-import {socket} from '../Header'
+import { socket } from "../Header";
 interface IProps {
   time: {
     time: any;
@@ -31,22 +31,25 @@ const CountDownTime = ({
       const clockInterval = setInterval(() => {
         // Tính khoảng thời gian giữa thời gian hiện tại và thời gian cụ thể
         const countTime = new Date(time?.time).getTime() - new Date().getTime();
+       
 
-        if (countTime <= 0 && time.type === "start") { // hết thời gian -> đang diễn ra
+        if (countTime <= 0 && time.type === "start") {
+          // hết thời gian -> đang diễn ra
           const fectProduct = async () => {
             const result: any = await productApi.updateAuctionStarted(
               productId
             );
             if (result?.status === "success") {
               refreshProductCb("finishStart");
-              socket.emit('refreshProductState',{
+              socket.emit("refreshProductState", {
                 productId,
-                type: 'addHappenningProduct'  // thêm vào mục đang diễn ra
-              })
+                type: "addHappenningProduct", // thêm vào mục đang diễn ra
+              });
             }
           };
           fectProduct();
-        } else if (countTime <= 0 && time.type === "end") { // hết thời gian -> kết thúc
+        } else if (countTime <= 0 && time.type === "end") {
+          // hết thời gian -> kết thúc
           const fectProduct = async () => {
             const result: any = await productApi.updateAuctionEnded({
               id: productId,
@@ -55,18 +58,19 @@ const CountDownTime = ({
             });
             if (result?.status === "success") {
               refreshProductCb("finishEnd");
-              socket.emit('refreshProductState',{
+              socket.emit("refreshProductState", {
                 productId,
-                type: 'removeHappenningProduct' // xóa khỏi mục đang diễn ra
-              })
+                type: "removeHappenningProduct", // xóa khỏi mục đang diễn ra
+              });
               setDownLoop(true);
             }
           };
           fectProduct();
         } else {
+          
           const secondsLocal = Math.floor((countTime % 60000) / 1000);
           const minutesLocal = Math.floor((countTime % 3600000) / 60000);
-          const hoursLocal = Math.floor((countTime % 86400000) / 3600000);
+          const hoursLocal = Math.floor((countTime ) / 3600000);
           setHour(hoursLocal.toString().padStart(2, "0"));
           setMinute(minutesLocal.toString().padStart(2, "0"));
           setSecond(secondsLocal.toString().padStart(2, "0"));
@@ -77,7 +81,15 @@ const CountDownTime = ({
         clearInterval(clockInterval);
       };
     }
-  }, [downLoop, idClient, productId, refreshProductCb, stop, time?.time, time?.type]);
+  }, [
+    downLoop,
+    idClient,
+    productId,
+    refreshProductCb,
+    stop,
+    time?.time,
+    time?.type,
+  ]);
 
   return (
     <>
